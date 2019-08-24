@@ -41,19 +41,19 @@ set -gx NPM_PACKAGES $HOME/.npm-packages
 set -e MANPATH # delete if you already modified MANPATH elsewhere in your config
 set -gx MANPATH $NPM_PACKAGES/share/man:(manpath)
 
-set -gx PATH $PATH /usr/bin/
-set -gx PATH $PATH $HOME/bin/
-set -gx PATH $PATH $HOME/.local/bin/
-set -gx PATH $PATH $HOME/.cargo/bin/
-set -gx PATH $PATH /opt/cuda/bin/
-set -gx PATH $PATH /usr/bin/core_perl/
-set -gx PATH $PATH $HOME/.gem/ruby/2.3.0/bin/
-set -gx PATH $PATH $HOME/.gem/ruby/2.5.0/bin/
-set -gx PATH $PATH $HOME/.config/yarn/global/node_modules/.bin
-set -gx PATH $PATH ./node_modules/.bin
-set -gx PATH $PATH $HOME/Development/go/bin
-set -gx PATH $PATH $HOME/.yarn-global
-set -gx PATH $NPM_PACKAGES/bin:$PATH
+set -gx PATH /usr/bin/ $PATH
+set -gx PATH $HOME/bin/ $PATH
+set -gx PATH $HOME/.local/bin/ $PATH
+set -gx PATH $HOME/.cargo/bin/ $PATH
+set -gx PATH /opt/cuda/bin/ $PATH
+set -gx PATH /usr/bin/core_perl/ $PATH
+set -gx PATH $HOME/.gem/ruby/2.3.0/bin/ $PATH
+set -gx PATH $HOME/.gem/ruby/2.5.0/bin/ $PATH
+set -gx PATH $HOME/.config/yarn/global/node_modules/.bin $PATH
+set -gx PATH ./node_modules/.bin $PATH
+set -gx PATH $HOME/Development/go/bin $PATH
+set -gx PATH $HOME/.yarn-global $PATH
+set -gx PATH $NPM_PACKAGES/bin $PATH
 
 set -x LESSOPEN '| sh /usr/bin/src-hilite-lesspipe.sh %s'
 set -x LESS '-R'
