@@ -238,6 +238,14 @@ Plug 'mattn/emmet-vim', { 'for': ['html', 'vue.html.javascript.css', 'vue', 'css
 
 Plug 'JesseKPhillips/d.vim', { 'for': ['d'] }
 Plug 'mesonbuild/meson', { 'rtp': 'data/syntax-highlighting/vim/'  }
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" PANDOC-MARKDOWN
+Plug 'vim-pandoc/vim-pandoc'
+"{
+    let g:pandoc#keyboard#display_motions = 0
+"}
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 Plug 'vim-pandoc/vim-pandoc-syntax'
 Plug 'pboettch/vim-cmake-syntax', { 'for': 'cmake' }
 Plug 'tikhomirov/vim-glsl'
@@ -260,13 +268,6 @@ Plug 'jparise/vim-graphql'
 Plug 'elzr/vim-json', { 'for': 'json' }
 "{
     set conceallevel=0
-"}
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" MARKDOWN
-Plug 'plasticboy/vim-markdown', { 'for': 'markdown' } 
-"{
-    let g:vim_markdown_folding_disabled = 1
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
