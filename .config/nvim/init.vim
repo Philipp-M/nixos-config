@@ -243,6 +243,7 @@ Plug 'mesonbuild/meson', { 'rtp': 'data/syntax-highlighting/vim/'  }
 Plug 'vim-pandoc/vim-pandoc'
 "{
     let g:pandoc#keyboard#display_motions = 0
+    let g:pandoc#modules#disabled = ["folding"]
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
