@@ -180,10 +180,10 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
     nmap <silent> ]c <Plug>(coc-diagnostic-next)
 
     " Remap keys for gotos
-    nmap <silent> gd <Plug>(coc-definition)
-    nmap <silent> gy <Plug>(coc-type-definition)
-    nmap <silent> gi <Plug>(coc-implementation)
-    nmap <silent> gr <Plug>(coc-references)
+    nmap <silent> tt <Plug>(coc-definition)
+    nmap <silent> td <Plug>(coc-type-definition)
+    nmap <silent> ti <Plug>(coc-implementation)
+    nmap <silent> tr <Plug>(coc-references)
 
     " Use K for show documentation in preview window
     nnoremap <silent> K :call <SID>show_documentation()<CR>
@@ -203,8 +203,9 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
     nmap <leader>rn <Plug>(coc-rename)
 
     " Remap for format selected region
-    vmap <leader>fm  <Plug>(coc-format-selected)
-    nmap <leader>fm  <Plug>(coc-format-selected)
+    " use vim-autoformat for this still (probably change in the future)
+    " vmap <leader>f  <Plug>(coc-format-selected)
+    " nmap <leader>f  <Plug>(coc-format-selected)
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -225,6 +226,8 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
 Plug 'Chiel92/vim-autoformat'
 "{
     let g:formatters_glsl = ['clangformat']
+    vmap <leader>f :Autoformat<CR>
+    nmap <leader>f :Autoformat<CR>
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
