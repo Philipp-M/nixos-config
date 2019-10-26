@@ -124,6 +124,29 @@ Plug 'junegunn/fzf.vim'
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" COC
 Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
 "{
+    " Extensions which are installed when missing on server start
+    let g:coc_global_extensions = [
+        \ 'coc-calc',
+        \ 'coc-css',
+        \ 'coc-emmet',
+        \ 'coc-git',
+        \ 'coc-highlight',
+        \ 'coc-html',
+        \ 'coc-java',
+        \ 'coc-json',
+        \ 'coc-lists',
+        \ 'coc-marketplace',
+        \ 'coc-pairs',
+        \ 'coc-python',
+        \ 'coc-rust-analyzer',
+        \ 'coc-sh',
+        \ 'coc-svelte',
+        \ 'coc-tslint-plugin',
+        \ 'coc-tsserver',
+        \ 'coc-vetur',
+        \ 'coc-yaml',
+    \]
+
     " Better display for messages
     set cmdheight=2
 
