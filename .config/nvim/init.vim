@@ -30,7 +30,7 @@ endif
 
 " Persistent Undo
 if has('persistent_undo')
-    let undodir="$HOME/.local/share/nvim/undo"   " where to save undo histories
+    let undodir = "$HOME/.local/share/nvim/undo"   " where to save undo histories
     call system('mkdir ' . undodir)    " create undodir if not existing
     set undofile                       " Save undo's after file closes
     set undodir=$HOME/.local/share/nvim/undo   " where to save undo histories
@@ -111,9 +111,9 @@ Plug 'junegunn/fzf.vim'
     nnoremap <leader>h :History<CR>
     nnoremap <leader>gc :Commits<CR>
     nnoremap <leader>n :Find 
-    nnoremap <leader>fw *:Find <C-r>/<BS><BS><C-Left><Del><Del><CR>
-    " let $FZF_DEFAULT_COMMAND= 'ag -g "" --ignore=\*.o'
-    let $FZF_DEFAULT_COMMAND='rg --files --hidden --follow -g "!.git/*" -g "!*.o" --no-ignore-parent'
+    " nnoremap <leader>fw *:Find <C-r>/<BS><BS><C-Left><Del><Del><CR>
+    " let $FZF_DEFAULT_COMMAND = 'ag -g "" --ignore=\*.o'
+    let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow -g "!.git/*" -g "!*.o" --no-ignore-parent'
     command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --hidden --follow -g "!.git/*" --color "always" '.shellescape(<q-args>), 1, <bang>0)
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -243,9 +243,9 @@ Plug 'honza/vim-snippets'
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" LATEX
 Plug 'vim-latex/vim-latex'
 "{
-    let Tex_FoldedSections=""
-    let Tex_FoldedEnvironments=""
-    let Tex_FoldedMisc=""
+    let Tex_FoldedSections = ""
+    let Tex_FoldedEnvironments = ""
+    let Tex_FoldedMisc = ""
     let g:Tex_SmartKeyBS = 0
     let g:Tex_SmartKeyQuote = 0
     let g:Tex_SmartKeyDot = 0
@@ -301,8 +301,9 @@ Plug 'dhruvasagar/vim-table-mode'
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" TABLE MODE
 "{
     map <leader>\ :TableModeToggle<CR>
-    " let g:table_mode_header_fillchar="="
-    let g:table_mode_corner_corner="+"
+    " let g:table_mode_header_fillchar = "="
+    let g:table_mode_tableize_map = '<leader>tmt'
+    let g:table_mode_corner_corner = "+"
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -322,7 +323,7 @@ nmap <leader>x :bd<cr>
 map Y y$
 
 " polyfill for <A>
-let c='a'
+let c = 'a'
 if !has('nvim')
     while c <= 'z'
 	exec "set <A-".c.">=\e".c
@@ -363,17 +364,16 @@ nnoremap <BS> :b#<CR>
 " Map Ctrl-Backspace to delete the previous word in insert mode.
 imap <C-BS> <C-W>
 
-noremap <F4> :Autoformat<CR>
 noremap <F2> :call ToggleColemak()<CR>
 
 " Search for selected text, forwards or backwards. (* and # work with selection as well)
 vnoremap <silent> * :<C-U>
-	    \let old_reg=getreg('"')<Bar>let old_regtype=getregtype('"')<CR>
+	    \let old_reg = getreg('"')<Bar>let old_regtype = getregtype('"')<CR>
 	    \gvy/<C-R><C-R>=substitute(
 	    \escape(@", '/\.*$^~['), '\_s\+', '\\_s\\+', 'g')<CR><CR>
 	    \gV:call setreg('"', old_reg, old_regtype)<CR>
 vnoremap <silent> # :<C-U>
-	    \let old_reg=getreg('"')<Bar>let old_regtype=getregtype('"')<CR>
+	    \let old_reg = getreg('"')<Bar>let old_regtype = getregtype('"')<CR>
 	    \gvy?<C-R><C-R>=substitute(
 	    \escape(@", '?\.*$^~['), '\_s\+', '\\_s\\+', 'g')<CR><CR>
 	    \gV:call setreg('"', old_reg, old_regtype)<CR>
@@ -383,7 +383,7 @@ vnoremap <silent> # :<C-U>
 " vmap <leader>c :!xargs echo 'scale=5; ' \| BC_LINE_LENGTH=0 bc -l \| sed '/\./ s/\.\{0,1\}0\{1,\}$//'<cr><cr>
 
 " color and optical enhancements
-let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+let $NVIM_TUI_ENABLE_TRUE_COLOR = 1
 set termguicolors
 set noshowmode
 set background=dark
@@ -404,7 +404,7 @@ set relativenumber
 set number
 
 " indentation
-let g:indent_guides_enable_on_vim_startup=1
+let g:indent_guides_enable_on_vim_startup = 1
 set wildmenu
 set showcmd
 set hlsearch
@@ -416,7 +416,7 @@ set statusline+=%#warningmsg#
 " set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 
-let &t_ut=''
+let &t_ut = ''
 
 
 " Remapping for Colemak
