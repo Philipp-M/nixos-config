@@ -110,7 +110,7 @@ Plug 'junegunn/fzf.vim'
     nnoremap <leader><space> :FZF<CR>
     nnoremap <leader>h :History<CR>
     nnoremap <leader>gc :Commits<CR>
-    nnoremap <leader>n :Find 
+    nnoremap <leader>n :Find
     " nnoremap <leader>fw *:Find <C-r>/<BS><BS><C-Left><Del><Del><CR>
     " let $FZF_DEFAULT_COMMAND = 'ag -g "" --ignore=\*.o'
     let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow -g "!.git/*" -g "!*.o" --no-ignore-parent'
@@ -226,6 +226,7 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
 Plug 'Chiel92/vim-autoformat'
 "{
     let g:formatters_glsl = ['clangformat']
+    autocmd FileType vim let b:autoformat_autoindent=0
     vmap <leader>f :Autoformat<CR>
     nmap <leader>f :Autoformat<CR>
 "}
@@ -298,7 +299,7 @@ Plug 'elzr/vim-json', { 'for': 'json' }
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-Plug 'godlygeek/tabular', { 'for': 'markdown' } 
+Plug 'godlygeek/tabular', { 'for': 'markdown' }
 
 Plug 'dhruvasagar/vim-table-mode'
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" TABLE MODE
