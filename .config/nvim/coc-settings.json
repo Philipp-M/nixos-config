@@ -11,6 +11,7 @@
       }
     }
   },
+  "tslint.jsEnable": true,
   "rust-analyzer.lruCapacity": 100,
   "rust-analyzer.cargo-watch.command": "clippy",
   "rust-analyzer.enableCargoWatchOnStartup": "enabled"
