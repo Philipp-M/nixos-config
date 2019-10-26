@@ -162,14 +162,14 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
     " Use tab for trigger completion with characters ahead and navigate.
     " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
     inoremap <silent><expr> <TAB>
-          \ pumvisible() ? "\<C-n>" :
-          \ <SID>check_back_space() ? "\<TAB>" :
-          \ coc#refresh()
+        \ pumvisible() ? "\<C-n>" :
+        \ <SID>check_back_space() ? "\<TAB>" :
+        \ coc#refresh()
     inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
     function! s:check_back_space() abort
-      let col = col('.') - 1
-      return !col || getline('.')[col - 1]  =~# '\s'
+        let col = col('.') - 1
+        return !col || getline('.')[col - 1]  =~# '\s'
     endfunction
     " Use <cr> for confirm completion, `<C-g>u` means break undo chain at current position.
     " Coc only does snippet and additional edit on confirm.
@@ -189,11 +189,11 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
     nnoremap <silent> K :call <SID>show_documentation()<CR>
 
     function! s:show_documentation()
-      if &filetype == 'vim'
-        execute 'h '.expand('<cword>')
-      else
-        call CocAction('doHover')
-      endif
+        if &filetype == 'vim'
+            execute 'h '.expand('<cword>')
+        else
+            call CocAction('doHover')
+        endif
     endfunction
 
     " Highlight symbol under cursor on CursorHold
@@ -214,9 +214,9 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
 "{
 "    " \   'javascript': ['standard'],
 "    let g:ale_linters = {
-"    	    \   'cpp': [],
-"    	    \   'cs': ['OmniSharp'],
-"    	    \}
+"            \   'cpp': [],
+"            \   'cs': ['OmniSharp'],
+"            \}
 "    " let g:ale_javascript_eslint_options = '-c /usr/lib/node_modules/eslint-config-standard/eslintrc.json'
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -329,9 +329,9 @@ map Y y$
 let c = 'a'
 if !has('nvim')
     while c <= 'z'
-	exec "set <A-".c.">=\e".c
-	exec "imap \e".c." <A-".c.">"
-	let c = nr2char(1+char2nr(c))
+        exec "set <A-".c.">=\e".c
+        exec "imap \e".c." <A-".c.">"
+        let c = nr2char(1+char2nr(c))
     endw
 endif
 
@@ -371,15 +371,15 @@ noremap <F2> :call ToggleColemak()<CR>
 
 " Search for selected text, forwards or backwards. (* and # work with selection as well)
 vnoremap <silent> * :<C-U>
-	    \let old_reg = getreg('"')<Bar>let old_regtype = getregtype('"')<CR>
-	    \gvy/<C-R><C-R>=substitute(
-	    \escape(@", '/\.*$^~['), '\_s\+', '\\_s\\+', 'g')<CR><CR>
-	    \gV:call setreg('"', old_reg, old_regtype)<CR>
+    \let old_reg = getreg('"')<Bar>let old_regtype = getregtype('"')<CR>
+    \gvy/<C-R><C-R>=substitute(
+    \escape(@", '/\.*$^~['), '\_s\+', '\\_s\\+', 'g')<CR><CR>
+    \gV:call setreg('"', old_reg, old_regtype)<CR>
 vnoremap <silent> # :<C-U>
-	    \let old_reg = getreg('"')<Bar>let old_regtype = getregtype('"')<CR>
-	    \gvy?<C-R><C-R>=substitute(
-	    \escape(@", '?\.*$^~['), '\_s\+', '\\_s\\+', 'g')<CR><CR>
-	    \gV:call setreg('"', old_reg, old_regtype)<CR>
+    \let old_reg = getreg('"')<Bar>let old_regtype = getregtype('"')<CR>
+    \gvy?<C-R><C-R>=substitute(
+    \escape(@", '?\.*$^~['), '\_s\+', '\\_s\\+', 'g')<CR><CR>
+    \gV:call setreg('"', old_reg, old_regtype)<CR>
 
 
 " calculate expressions probably done by coc-calc
@@ -440,81 +440,81 @@ let s:colemakEnabled = 0
 function! ToggleColemak()
     if s:colemakEnabled
         let s:colemakEnabled = 0
-	unmap K
-	unmap J
+        unmap K
+        unmap J
 
-	unmap h
-	unmap j
-	unmap k
+        unmap h
+        unmap j
+        unmap k
 
-	unmap gh
-	unmap gj
-	unmap gk
+        unmap gh
+        unmap gj
+        unmap gk
 
-	noremap zh
-	"zK does not exist
-	unmap zj
-	unmap zJ
-	unmap zk
-	"zJ does not exist
-	unmap z<Space>
-	unmap z<S-Space>
-	unmap z<BS>
-	unmap z<S-BS>
+        noremap zh
+        "zK does not exist
+        unmap zj
+        unmap zJ
+        unmap zk
+        "zJ does not exist
+        unmap z<Space>
+        unmap z<S-Space>
+        unmap z<BS>
+        unmap z<S-BS>
 
-	unmap <A-j>
-	noremap <A-h> :bp<CR>
-	inoremap <A-h> <Esc>:bp<CR>
-	" tnoremap <A-h> <C-\><C-n>:bp<CR>
+        unmap <A-j>
+        noremap <A-h> :bp<CR>
+        inoremap <A-h> <Esc>:bp<CR>
+        " tnoremap <A-h> <C-\><C-n>:bp<CR>
 
-	unmap <C-w>h
-	unmap <C-w>H
-	unmap <C-w>j
-	unmap <C-w>J
-	unmap <C-w>k
-	unmap <C-w>K
-	unmap <C-w><Space>
-	unmap <C-w><S-Space>
-	unmap <C-w><S-BS>
-    else
-	let s:colemakEnabled = 1
-	noremap K J
-	noremap J K
+        unmap <C-w>h
+        unmap <C-w>H
+        unmap <C-w>j
+        unmap <C-w>J
+        unmap <C-w>k
+        unmap <C-w>K
+        unmap <C-w><Space>
+        unmap <C-w><S-Space>
+        unmap <C-w><S-BS>
+        else
+        let s:colemakEnabled = 1
+        noremap K J
+        noremap J K
 
-	noremap h k
-	noremap j h
-	noremap k j
+        noremap h k
+        noremap j h
+        noremap k j
 
-	noremap gh gk
-	noremap gj gh
-	noremap gk gj
+        noremap gh gk
+        noremap gj gh
+        noremap gk gj
 
-	noremap zh zk
-	"zK does not exist
-	noremap zj zh
-	noremap zJ zH
-	noremap zk zj
-	"zJ does not exist
-	noremap z<Space> zl
-	noremap z<S-Space> zL
-	noremap z<BS> zh
-	noremap z<S-BS> zH
+        noremap zh zk
+        "zK does not exist
+        noremap zj zh
+        noremap zJ zH
+        noremap zk zj
+        "zJ does not exist
+        noremap z<Space> zl
+        noremap z<S-Space> zL
+        noremap z<BS> zh
+        noremap z<S-BS> zH
 
 
-	unmap <A-h>
-	noremap <A-j> :bp<CR>
-	inoremap <A-j> <Esc>:bp<CR>
-	" tnoremap <A-j> <C-\><C-n>:bp<CR>
+        unmap <A-h>
+        noremap <A-j> :bp<CR>
+        inoremap <A-j> <Esc>:bp<CR>
+        " tnoremap <A-j> <C-\><C-n>:bp<CR>
 
-	noremap <C-w>h <C-w>k
-	noremap <C-w>H <C-w>K
-	noremap <C-w>j <C-w>h
-	noremap <C-w>J <C-w>H
-	noremap <C-w>k <C-w>j
-	noremap <C-w>K <C-w>J
-	noremap <C-w><Space> <C-w>l
-	noremap <C-w><S-Space> <C-w>L
-	noremap <C-w><S-BS> <C-w>H
+        noremap <C-w>h <C-w>k
+        noremap <C-w>H <C-w>K
+        noremap <C-w>j <C-w>h
+        noremap <C-w>J <C-w>H
+        noremap <C-w>k <C-w>j
+        noremap <C-w>K <C-w>J
+        noremap <C-w><Space> <C-w>l
+        noremap <C-w><S-Space> <C-w>L
+        noremap <C-w><S-BS> <C-w>H
     endif
 endfunction
 
