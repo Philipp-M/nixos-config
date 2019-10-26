@@ -171,6 +171,10 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
         let col = col('.') - 1
         return !col || getline('.')[col - 1]  =~# '\s'
     endfunction
+
+    " Use <c-space> to trigger completion.
+    inoremap <silent><expr> <C-space> coc#refresh()
+
     " Use <cr> for confirm completion, `<C-g>u` means break undo chain at current position.
     " Coc only does snippet and additional edit on confirm.
     inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
@@ -201,6 +205,12 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
 
     " Remap for rename current word
     nmap <leader>rn <Plug>(coc-rename)
+
+    nnoremap <silent> <leader>cd  :<C-u>CocList diagnostics<cr>
+    nnoremap <silent> <leader>co  :<C-u>CocList outline<cr>
+    nnoremap <silent> <leader>cs  :<C-u>CocList -I symbols<cr>
+    nnoremap <silent> <leader>cn  :<C-u>CocNext<cr>
+    nnoremap <silent> <leader>cp  :<C-u>CocPrev<cr>
 
     " Remap for format selected region
     " use vim-autoformat for this still (probably change in the future)
