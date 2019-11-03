@@ -111,7 +111,7 @@ Plug 'junegunn/fzf.vim'
     nnoremap <leader>h :History<CR>
     nnoremap <leader>gc :Commits<CR>
     nnoremap <leader>n :Find
-    " nnoremap <leader>fw *:Find <C-r>/<BS><BS><C-Left><Del><Del><CR>
+    nnoremap <leader>s *:Find <C-r>/<BS><BS><C-Left><Del><Del><CR>
     " let $FZF_DEFAULT_COMMAND = 'ag -g "" --ignore=\*.o'
     let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow -g "!.git/*" -g "!*.o" --no-ignore-parent'
     command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --hidden --follow -g "!.git/*" --color "always" '.shellescape(<q-args>), 1, <bang>0)
