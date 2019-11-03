@@ -110,7 +110,7 @@ Plug 'junegunn/fzf.vim'
     nnoremap <leader><space> :FZF<CR>
     nnoremap <leader>h :History<CR>
     nnoremap <leader>gc :Commits<CR>
-    nnoremap <leader>n :Find
+    nnoremap <leader>n :Find 
     nnoremap <leader>s *:Find <C-r>/<BS><BS><C-Left><Del><Del><CR>
     " let $FZF_DEFAULT_COMMAND = 'ag -g "" --ignore=\*.o'
     let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow -g "!.git/*" -g "!*.o" --no-ignore-parent'
