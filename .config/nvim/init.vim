@@ -184,10 +184,10 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
     nmap <silent> ]c <Plug>(coc-diagnostic-next)
 
     " Remap keys for gotos
-    nmap <silent> tt <Plug>(coc-definition)
-    nmap <silent> td <Plug>(coc-type-definition)
-    nmap <silent> ti <Plug>(coc-implementation)
-    nmap <silent> tr <Plug>(coc-references)
+    nmap <silent> <leader>tt <Plug>(coc-definition)
+    nmap <silent> <leader>td <Plug>(coc-type-definition)
+    nmap <silent> <leader>ti <Plug>(coc-implementation)
+    nmap <silent> <leader>tr <Plug>(coc-references)
 
     " Use K for show documentation in preview window
     nnoremap <silent> K :call <SID>show_documentation()<CR>
