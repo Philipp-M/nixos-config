@@ -1,0 +1,4 @@
+#!bin/bash
+
+xrdb -merge ~/.Xresources
+autorandr --change
