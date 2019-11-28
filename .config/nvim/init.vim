@@ -132,6 +132,7 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
         \ 'coc-highlight',
         \ 'coc-html',
         \ 'coc-java',
+        \ 'coc-omnisharp',
         \ 'coc-json',
         \ 'coc-lists',
         \ 'coc-marketplace',
