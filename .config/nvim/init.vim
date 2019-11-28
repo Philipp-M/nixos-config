@@ -190,7 +190,7 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
     nmap <silent> <leader>tr <Plug>(coc-references)
 
     " Use K for show documentation in preview window
-    nnoremap <silent> K :call <SID>show_documentation()<CR>
+    nnoremap <silent> <leader>d :call <SID>show_documentation()<CR>
 
     function! s:show_documentation()
         if &filetype == 'vim'
