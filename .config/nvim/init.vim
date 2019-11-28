@@ -10,7 +10,6 @@ let g:python_host_prog = '/usr/bin/python2.7'
 if has('nvim')
     let g:python_host_prog = '/usr/bin/python2'
     let g:python3_host_prog = '/usr/bin/python'
-    let g:ycm_server_python_interpreter = '/usr/bin/python'
 endif
 
 " Set tabs and shifts to 2 spaces
