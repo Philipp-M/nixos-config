@@ -102,6 +102,23 @@ Plug 'tpope/vim-fugitive'
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" GITGUTTER
+Plug 'airblade/vim-gitgutter'
+"{
+    let g:gitgutter_map_keys = 0
+
+    nmap <leader>ghs <Plug>(GitGutterStageHunk)
+    vmap <leader>ghs <Plug>(GitGutterStageHunk)
+    nmap <leader>ghu <Plug>(GitGutterUndoHunk)
+    vmap <leader>ghu <Plug>(GitGutterUndoHunk)
+    nmap <leader>ghp <Plug>(GitGutterPreviewHunk)
+    vmap <leader>ghp <Plug>(GitGutterPreviewHunk)
+    nnoremap <leader>gf :GitGutterFold<CR>
+    nmap ]h <Plug>(GitGutterNextHunk)
+    nmap [h <Plug>(GitGutterPrevHunk)
+"}
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" FZF
 Plug 'junegunn/fzf', { 'dir': '$HOME/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
@@ -128,7 +145,6 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
         \ 'coc-calc',
         \ 'coc-css',
         \ 'coc-emmet',
-        \ 'coc-git',
         \ 'coc-highlight',
         \ 'coc-html',
         \ 'coc-java',
