@@ -301,6 +301,8 @@ Plug 'othree/html5.vim', { 'for': ['htmldjango', 'html', 'vue.html.javascript.cs
 Plug 'tomlion/vim-solidity'
 Plug 'peterhoeg/vim-qml'
 Plug 'jparise/vim-graphql'
+Plug 'vim-scripts/ShaderHighLight'
+Plug 'ron-rs/ron.vim'
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" JSON
 Plug 'elzr/vim-json', { 'for': 'json' }
