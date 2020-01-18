@@ -224,6 +224,8 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
 
     " Remap for rename current word
     nmap <leader>rn <Plug>(coc-rename)
+    " Fix autofix problem of current line
+    nmap <leader>cf  <Plug>(coc-fix-current)
 
     nnoremap <silent> <leader>cd  :<C-u>CocList diagnostics<cr>
     nnoremap <silent> <leader>co  :<C-u>CocList outline<cr>
