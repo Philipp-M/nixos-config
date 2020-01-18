@@ -46,7 +46,9 @@ set ttimeout ttimeoutlen=5
 set hidden
 
 " set the clipboard to the X clipboard for better interaction
-set clipboard=unnamedplus
+if has('unnamedplus')
+    set clipboard=unnamedplus
+endif
 
 """" PLUGINS START """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 call plug#begin('$HOME/.local/share/nvim/plugged')
