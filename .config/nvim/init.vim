@@ -342,6 +342,7 @@ Plug 'peterhoeg/vim-qml'
 Plug 'jparise/vim-graphql'
 Plug 'vim-scripts/ShaderHighLight'
 Plug 'ron-rs/ron.vim'
+Plug 'dart-lang/dart-vim-plugin', { 'for': 'dart'}
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" JSON
 Plug 'elzr/vim-json', { 'for': 'json' }
