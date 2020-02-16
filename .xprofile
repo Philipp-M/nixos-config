@@ -2,4 +2,4 @@
 
 xrdb -merge ~/.Xresources
 autorandr --change
-picom -b
+picom -b --experimental-backends
