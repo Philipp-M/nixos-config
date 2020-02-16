@@ -2,3 +2,4 @@
 
 xrdb -merge ~/.Xresources
 autorandr --change
+picom -b
