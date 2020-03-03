@@ -50,6 +50,9 @@ floating_modifier $mod
 # bindsym $mod+w exec chromium
 bindsym $mod+w exec firefox-developer-edition
 
+# Neovim/Neovide
+bindsym $mod+e exec neovide
+
 # start a terminal
 # bindsym $mod+Return exec ~/Development/randomStuff/lukeSt/st
 # bindsym $mod+Return exec alacritty
