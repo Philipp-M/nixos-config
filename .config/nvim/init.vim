@@ -271,13 +271,10 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" AUTOFORMAT
-" TODO probably to be replaced by coc.nvim format
-Plug 'Chiel92/vim-autoformat'
+Plug 'sbdchd/neoformat'
 "{
-    let g:formatters_glsl = ['clangformat']
-    autocmd FileType vim let b:autoformat_autoindent=0
-    vmap <leader>f :Autoformat<CR>
-    nmap <leader>f :Autoformat<CR>
+    vmap <leader>f :Neoformat<CR>
+    nmap <leader>f :Neoformat<CR>
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
