@@ -6,15 +6,15 @@ margin-bottom = 2
 [colors]
 orange = #d79921
 darkgray = #8a8a8a
-white = #f9f5d7
+white = #ebdbb2
 gray = #585858
 black = #090909
 red = #db3f3f
 blue = #95aec7
 yellow = #c7ae95
 green = #aec795
-background = #111313
-background-alt = #111313
+background = #282828
+background-alt = #282828
 foreground = #f9f5d7
 foreground-alt = #f9f5d7
 primary = #111313
@@ -49,9 +49,6 @@ modules-left = i3
 background = ${colors.background}
 foreground = ${colors.foreground}
 
-underline-size = 5
-underline-color = ${colors.foreground}
-
 tray-detached = false
 tray-position = right
 tray-offset-x = 0
@@ -64,7 +61,6 @@ font-1 = "FontAwesome:size=12;0"
 
 [module/xwindow]
 type = internal/xwindow
-#format-underline = ${colors.background}
 label = %title%
 label-maxlen = 30
 
@@ -83,7 +79,6 @@ label-mode-background = ${colors.primary}
 
 label-focused = %name%
 label-focused-background =${colors.gray}
-label-focused-underline = ${colors.orange}
 label-focused-padding = 1
 
 label-unfocused = %name%
@@ -95,7 +90,6 @@ label-urgent-padding = 1
 
 label-visible = %name%
 label-visible-background = ${self.label-focused-background}
-label-visible-underline = ${self.label-focused-underline}
 label-visible-padding = ${self.label-focused-padding}
 
 [module/backlight]
@@ -104,7 +98,6 @@ card = intel_backlight
 
 format = <label>
 format-padding = 1
-format-underline = ${colors.orange}
 label =  %percentage%%
 
 bar-width = 6
@@ -122,7 +115,6 @@ bar-empty-foreground = #282a2e
 type = internal/date
 date =  %a %d %b  %H:%M:%S
 interval = 1
-format-underline = ${colors.orange}
 format-foreground = ${colors.foreground}
 format-padding = 1
 
@@ -136,7 +128,6 @@ format-volume-padding = 1
 label-muted-padding = 1
 
 format-volume = <ramp-volume> <label-volume>
-format-volume-underline = ${colors.orange}
 
 ramp-volume-0 = 
 ramp-volume-1 = 
@@ -145,7 +136,6 @@ ramp-volume-2 = 
 label-volume = %percentage%%
 
 label-muted =  muted
-label-muted-underline = ${colors.orange}
 
 [module/battery]
 type = internal/battery
@@ -156,20 +146,16 @@ interval = 10
 
 format-charging = <animation-charging> <label-charging>
 label-charging = %percentage%%
-format-charging-underline = ${colors.orange}
 format-charging-padding = 1
 
 time-format = %H:%M
 #label-discharging = %percentage%% - %time%
 label-discharging = %percentage%%
 format-discharging = <ramp-capacity> <label-discharging> 
-format-discharging-underline = ${colors.orange}
 format-discharging-padding = 1
 
 label-full = %percentage%%
 format-full = <ramp-capacity> <label-full>
-format-full-underline = ${self.format-charging-underline}
-format-full-overline = ${self.format-charging-underline}
 format-full-padding = 1
 
 ramp-capacity-0 = 
@@ -193,9 +179,7 @@ warn-temperature = 65
 interval = 5
 
 format = <ramp> <label>
-format-underline = ${colors.orange}
 format-warn = <ramp> <label-warn>
-format-warn-underline = ${colors.red}
 
 format-padding = 1
 format-warn-padding = 1
@@ -222,12 +206,10 @@ ramp-load-4 = ▅
 ramp-load-5 = ▆
 ramp-load-6 = ▇
 ramp-load-7 = █
-ramp-load-underline = ${colors.orange}
 
 type = internal/cpu
 interval = 1
 label = %{F${colors.white} %percentage:3%%
-label-underline = ${colors.orange}
 label-padding = 1
 
 [module/memory]
@@ -235,7 +217,6 @@ type = internal/memory
 interval = 2
 
 label = %{F${colors.white} %gb_free%
-label-underline = ${colors.orange}
 label-foreground = ${colors.orange}
 label-padding = 1
 
@@ -249,8 +230,6 @@ format-connected-padding = 1
 format-disconnected-padding = 0
 
 format-connected = <label-connected>
-format-connected-underline = ${colors.orange}
-format-disconnected-underline = ${colors.gray}
 
 label-connected = %essid%  %upspeed:9%  %downspeed:9%
 label-disconnected =
@@ -274,8 +253,6 @@ interval = 5
 format-connected-padding = 1
 format-disconnected-padding = 0
 
-format-connected-underline = ${colors.orange}
-format-disconnected-underline = ${colors.gray}
 
 label-connected =  %linkspeed%
 label-disconnected = 
@@ -292,7 +269,6 @@ password =
 interval = 1
 
 format-online = <icon-prev> <icon-stop> <toggle> <icon-next> <bar-progress> <label-time> <label-song>
-format-online-underline = ${colors.orange}
 label-song = 𝄞 %artist% - %title%
 
 ; Available tokens:
