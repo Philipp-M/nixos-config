@@ -12,7 +12,6 @@
     }
   },
   "tslint.jsEnable": true,
-  "rust-analyzer.lruCapacity": 100,
   "rust-analyzer.cargo-watch.command": "clippy",
-  "rust-analyzer.enableCargoWatchOnStartup": "enabled"
+  "rust-analyzer.serverPath": "~/.cargo/bin/rust-analyzer"
 }
