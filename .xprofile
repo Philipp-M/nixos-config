@@ -6,4 +6,5 @@ if lspci | grep NVIDIA; then
   nvidia-settings --assign CurrentMetaMode="DP-2: nvidia-auto-select +0+0 {ForceCompositionPipeline=On}, DP-4: nvidia-auto-select +3840+0 {ForceCompositionPipeline=On}"
 fi
 autorandr --change
+redshift -l 47.267:11.383 -t 6500:3200 &
 picom -b --experimental-backends

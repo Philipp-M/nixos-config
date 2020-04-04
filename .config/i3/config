@@ -13,9 +13,6 @@ exec_always --no-startup-id feh --bg-fill --randomize ~/.wallpaper/* &
 # for nvidia vsync
 # exec_always --no-startup-id compton -c --backend glx --paint-on-overlay --unredir-if-possible
 
-# Redshift
-exec --no-startup-id redshift -l 47.267:11.383 -t 6500:4800
-
 # Audio Control for PulseAudio
 bindsym XF86AudioRaiseVolume exec --no-startup-id ponymix increase 1
 bindsym XF86AudioLowerVolume exec --no-startup-id ponymix decrease 1
