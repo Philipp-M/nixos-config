@@ -33,8 +33,8 @@ for_window [class="Onboard"] floating enable
 for_window [class="Onboard"] sticky enable
 for_window [class="Onboard"] border none
 
-new_window pixel 1
-new_float pixel 1
+new_window pixel 0
+new_float pixel 0
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
@@ -63,8 +63,11 @@ bindsym $mod+Return exec kitty --single-instance
 bindsym $mod+q kill
 
 # Gaps settings
-gaps inner 4
-gaps outer 1
+# disable by default
+# but toggling current workspace with mod+g is possible
+
+bindsym $mod+g exec i3-msg 'gaps inner current toggle 20'
+
 # no gaps when there is only one window on the screen
 smart_gaps on
 #smart_borders on
