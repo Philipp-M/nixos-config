@@ -1,5 +1,9 @@
 #!bin/bash
 
 xrdb -merge ~/.Xresources
+
+if lspci | grep NVIDIA; then
+  nvidia-settings --assign CurrentMetaMode="DP-2: nvidia-auto-select +0+0 {ForceCompositionPipeline=On}, DP-4: nvidia-auto-select +3840+0 {ForceCompositionPipeline=On}"
+fi
 autorandr --change
 picom -b --experimental-backends
