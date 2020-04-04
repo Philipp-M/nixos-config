@@ -44,8 +44,8 @@ font pango:Fira Code 11
 floating_modifier $mod
 
 # Start browser
-# bindsym $mod+w exec chromium
-bindsym $mod+w exec firefox-developer-edition
+bindsym $mod+w exec chromium
+# bindsym $mod+w exec firefox-developer-edition
 
 # Neovim/Neovide
 bindsym $mod+e exec neovide
