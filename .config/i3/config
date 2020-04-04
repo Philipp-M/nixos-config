@@ -51,10 +51,8 @@ bindsym $mod+w exec chromium
 bindsym $mod+e exec neovide
 
 # start a terminal
-# bindsym $mod+Return exec ~/Development/randomStuff/lukeSt/st
-# bindsym $mod+Return exec alacritty
-# bindsym $mod+Return exec termite
-bindsym $mod+Return exec kitty --single-instance
+bindsym $mod+Return exec alacritty
+# bindsym $mod+Return exec kitty --single-instance
 
 # kill focused window
 bindsym $mod+q kill
