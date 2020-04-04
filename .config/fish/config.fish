@@ -47,6 +47,8 @@ set -gx PATH $HOME/bin/ $PATH
 set -gx PATH $HOME/.local/bin/ $PATH
 set -gx PATH $HOME/.cargo/bin/ $PATH
 set -gx PATH /opt/cuda/bin/ $PATH
+set -gx PATH $HOME/Android/Sdk/platform-tools/ $PATH
+set -gx PATH $HOME/Android/Sdk/tools/bin/ $PATH
 set -gx PATH /usr/bin/core_perl/ $PATH
 set -gx PATH $HOME/.gem/ruby/2.3.0/bin/ $PATH
 set -gx PATH $HOME/.gem/ruby/2.5.0/bin/ $PATH
