@@ -338,6 +338,7 @@ Plug 'peterhoeg/vim-qml'
 Plug 'jparise/vim-graphql'
 Plug 'vim-scripts/ShaderHighLight'
 Plug 'ron-rs/ron.vim'
+Plug 'udalov/kotlin-vim', { 'for': ['kotlin'] }
 Plug 'dart-lang/dart-vim-plugin', { 'for': 'dart'}
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" JSON
