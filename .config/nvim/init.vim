@@ -340,6 +340,7 @@ Plug 'vim-scripts/ShaderHighLight'
 Plug 'ron-rs/ron.vim'
 Plug 'udalov/kotlin-vim', { 'for': ['kotlin'] }
 Plug 'dart-lang/dart-vim-plugin', { 'for': 'dart'}
+Plug 'LnL7/vim-nix'
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" JSON
 Plug 'elzr/vim-json', { 'for': 'json' }
