@@ -46,6 +46,14 @@ if has('unnamedplus')
 endif
 
 """" PLUGINS START """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Install Vim Plug if not installed
+if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
+!curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall
+endif
+
 call plug#begin('$HOME/.local/share/nvim/plugged')
 
 Plug 'drmikehenry/vim-fixkey'
