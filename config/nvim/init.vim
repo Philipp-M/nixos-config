@@ -1,16 +1,11 @@
 """" GENERAL """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set nocompatible              " be iMproved, required
 filetype off                  " required
-set shell=/bin/bash
+set shell=bash
 
 set path+=**
 
-let g:python_host_prog = '/usr/bin/python2.7'
-
-if has('nvim')
-    let g:python_host_prog = '/usr/bin/python2'
-    let g:python3_host_prog = '/usr/bin/python'
-endif
+let g:python_host_prog = 'python'
 
 " Set tabs and shifts to 2 spaces
 set tabstop=2
