@@ -12,7 +12,8 @@ main = xmonad $
         def
         { 
 	  -- terminal = "st"
-	  terminal = "alacritty"
+	  -- terminal = "alacritty"
+	  terminal = "kitty"
 	, borderWidth = 0
         , handleEventHook = fullscreenEventHook
 	-- modMask = mod4Mask -- Use Super instead of Alt
