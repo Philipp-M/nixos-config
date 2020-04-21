@@ -11,8 +11,8 @@
     (import "${
         (builtins.fetchTarball {
           url =
-            "https://github.com/Philipp-M/home-manager/archive/687395ebda1a0c8062dd92daa17758d110ba67c6.tar.gz";
-          sha256 = "06q6bmg7m5j14argwp23mxgsbv1rsgjdhp6p01nzzggv4ybk06fn";
+            "https://github.com/Philipp-M/home-manager/archive/2225727bba5d1a074402406437b43584984bf0eb.tar.gz";
+          sha256 = "0871yfmi63gbmd1jdqibi8yh9kmbhy25p4304bbhv33p6nk4sjqw";
         })
       }/nixos")
   ];
@@ -23,9 +23,7 @@
       url =
         "https://github.com/nix-community/NUR/archive/8f4803cf3b1ce6f0b688ee49dabd12c62e96204f.tar.gz";
       sha256 = "19nzcjy9vrwbg8yb1chggfail3s8p5n75ar6gz725xkklw5hqpv1";
-    }) {
-      inherit pkgs;
-    };
+    }) { inherit pkgs; };
   };
 
   # Use the systemd-boot EFI boot loader.
@@ -177,5 +175,19 @@
     transmission-gtk
     unityhub
     xclip
+  ];
+
+  nixpkgs.overlays = [
+    # add fancy dual kawase blur to picom
+    (self: super: {
+      picom = super.picom.overrideAttrs (old: {
+        src = pkgs.fetchFromGitHub {
+          owner = "tryone144";
+          repo = "picom";
+          rev = "209d9b6558e430033d7ccd91e8657aea1670d1c0";
+          sha256 = "06j9vd9gbc1fvrmhvwbmqq18lyfwsvyy0gwgpqwgm8gcfplwyhfl";
+        };
+      });
+    })
   ];
 }

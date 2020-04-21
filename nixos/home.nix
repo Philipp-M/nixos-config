@@ -28,6 +28,9 @@
     enable = true;
     experimentalBackends = true;
     backend = "glx";
+    blur = true;
+    blurMethod = "dual_kawase";
+    blurStrength = 10;
     vSync = false;
     fade = true;
     fadeDelta = 8;
