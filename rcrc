@@ -1,3 +1,4 @@
 DOTFILES_DIRS=$HOME/dev/personal/dotfiles
-SYMLINK_DIRS="config/* Screenshots scripts"
-UNDOTTED="Screenshots scripts"
+SYMLINK_DIRS="config/* screenshots wallpaper scripts xmonad"
+UNDOTTED="screenshots wallpaper scripts"
+EXCLUDES="XResources xinitrc xprofile xmonad config/picom config/fish config/autorandr"
