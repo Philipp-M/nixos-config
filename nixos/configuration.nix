@@ -7,11 +7,13 @@
 {
   nixpkgs.config.allowUnfree = true;
   imports = [
+    # custom home-manager
     (import "${
-        builtins.fetchGit {
-          url = "https://github.com/Philipp-M/home-manager.git";
-          rev = "687395ebda1a0c8062dd92daa17758d110ba67c6";
-        }
+        (builtins.fetchTarball {
+          url =
+            "https://github.com/Philipp-M/home-manager/archive/687395ebda1a0c8062dd92daa17758d110ba67c6.tar.gz";
+          sha256 = "06q6bmg7m5j14argwp23mxgsbv1rsgjdhp6p01nzzggv4ybk06fn";
+        })
       }/nixos")
   ];
 
