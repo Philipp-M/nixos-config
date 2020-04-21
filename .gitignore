@@ -1,1 +1,4 @@
-
+wallpaper/*
+!wallpaper/.gitkeep
+screenshots/*
+!screenshots/.gitkeep
