@@ -17,6 +17,17 @@
       }/nixos")
   ];
 
+  # NUR
+  nixpkgs.config.packageOverrides = pkgs: {
+    nur = import (builtins.fetchTarball {
+      url =
+        "https://github.com/nix-community/NUR/archive/8f4803cf3b1ce6f0b688ee49dabd12c62e96204f.tar.gz";
+      sha256 = "19nzcjy9vrwbg8yb1chggfail3s8p5n75ar6gz725xkklw5hqpv1";
+    }) {
+      inherit pkgs;
+    };
+  };
+
   # Use the systemd-boot EFI boot loader.
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.loader.systemd-boot.enable = true;
@@ -130,6 +141,7 @@
 
     # Terminal stuff
     alacritty
+    nur.repos.kreisys.fishPlugins.bobthefish
     fasd
     file
     fish-foreign-env
