@@ -280,16 +280,6 @@ Plug 'sbdchd/neoformat'
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" EASYTAGS
-Plug 'xolox/vim-easytags', { 'for': ['html', 'vue.html.javascript.css', 'vue'] }
-"{
-    let g:easytags_async = 1
-    let g:easytags_file = '$HOME/.local/share/nvim/tags'
-    let g:easytags_updatetime_min = 2000
-    let g:easytags_always_enabled = 1
-"}
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 Plug 'honza/vim-snippets'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" LATEX
