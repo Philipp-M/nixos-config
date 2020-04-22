@@ -58,10 +58,23 @@
 
   programs.home-manager.enable = true;
 
+  programs.starship = {
+    enable = true;
+    settings = {
+      add_newline = false;
+      character.symbol = "";
+      cmd_duration = {
+        min_time = 10;
+        show_milliseconds = true;
+      };
+    };
+  };
+
   programs.fish = {
     enable = true;
     shellInit = ''
       set -gx PATH $HOME/.cargo/bin/ $PATH
+      set fish_greeting ""
     '';
     shellAliases = {
       ll = "lsd -Al";

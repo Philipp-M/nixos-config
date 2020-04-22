@@ -140,7 +140,6 @@
     # Terminal stuff
     # alacritty not used because rendering issues with powerline symbols, no ligatures and issues with vim transparency
     kitty
-    nur.repos.kreisys.fishPlugins.bobthefish
     fasd
     file
     fish-foreign-env
