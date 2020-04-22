@@ -63,6 +63,7 @@
     settings = {
       add_newline = false;
       character.symbol = "";
+      directory.truncation_length = 8;
       cmd_duration = {
         min_time = 10;
         show_milliseconds = true;
