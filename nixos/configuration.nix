@@ -49,6 +49,10 @@
   # Set your time zone.
   time.timeZone = "Europe/Vienna";
 
+  # Enable audio
+  hardware.pulseaudio.enable = true;
+  hardware.pulseaudio.support32Bit = true;    ## If compatibility with 32-bit applications is desired.
+
   # List of systemwide services
 
   # Enable the OpenSSH daemon.
