@@ -1,4 +1,31 @@
 DOTFILES_DIRS=$HOME/dev/personal/dotfiles
-SYMLINK_DIRS="config/* screenshots wallpaper scripts xmonad"
+SYMLINK_DIRS="
+  config/alacritty
+  config/autorandr
+  config/fish
+  config/i3
+  config/kitty
+  config/mpd
+  config/mpv
+  config/nvim
+  config/picom
+  config/polybar
+  config/st
+  screenshots
+  wallpaper
+  scripts
+"
 UNDOTTED="screenshots wallpaper scripts"
-EXCLUDES="XResources xinitrc xprofile xmonad config/picom config/fish config/autorandr"
+EXCLUDES="
+  XResources
+  xinitrc
+  xprofile
+  xmonad
+  config/picom
+  config/fish
+  config/autorandr
+  config/taffybar/*.nix
+  config/taffybar/*.cabal
+  config/taffybar/*.hs
+  config/taffybar/*.yaml
+"

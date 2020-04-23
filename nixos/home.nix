@@ -24,6 +24,11 @@
 
   # List of user services
 
+  services.taffybar = {
+    enable = true;
+    package = (import ../config/taffybar/default.nix);
+  };
+
   services.picom = {
     enable = true;
     experimentalBackends = true;
