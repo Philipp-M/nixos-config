@@ -90,6 +90,7 @@
       l = "lsd -l";
       lsblka = "lsblk --output NAME,LABEL,UUID,SIZE,MODEL,MOUNTPOINT,FSTYPE";
       tree = "tree -C";
+      gdiff = "git diff --no-index";
       cdot = "cd $HOME/dev/personal/dotfiles";
       cdgo = "cd $HOME/dev/personal/go/src";
       cdrust = "cd $HOME/dev/personal/rust";
