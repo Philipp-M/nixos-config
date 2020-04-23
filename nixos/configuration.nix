@@ -138,6 +138,7 @@
 
     # Document tools
     pandoc
+    libreoffice
     texlive.combined.scheme-full
     zathura
 
@@ -156,6 +157,10 @@
     ripgrep
     wget
 
+    # Graphical Editors
+    blender
+    krita
+
     # Communication
     discord
     tdesktop
@@ -172,6 +177,7 @@
     minecraft
 
     # Misc
+    scrot
     fira-code
     mpv
     source-code-pro
