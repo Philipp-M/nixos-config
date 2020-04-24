@@ -173,9 +173,7 @@
     chromium
 
     # Desktop Environment
-    # (import ../config/taffybar/default.nix)
     dmenu
-    # taffybar
 
     # Games
     minecraft
@@ -183,12 +181,14 @@
 
     # Misc
     scrot
+    feh # to view images in terminal
     fira-code
     mpv
     source-code-pro
     transmission-gtk
     unityhub
     xclip
+    nvtop
   ];
 
   nixpkgs.overlays = [
