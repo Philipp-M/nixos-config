@@ -59,6 +59,8 @@
 
   # List of systemwide services
 
+  virtualisation.docker.enable = true;
+
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
@@ -104,6 +106,7 @@
       "adbusers"
       "video"
       "wheel" # Enable ‘sudo’ for the user.
+      "docker"
     ];
   };
 
