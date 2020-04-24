@@ -49,9 +49,13 @@
   # Set your time zone.
   time.timeZone = "Europe/Vienna";
 
+  # Enable 32-bit dri support for steam
+  hardware.opengl.driSupport32Bit = true;
+  hardware.opengl.extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
+
   # Enable audio
   hardware.pulseaudio.enable = true;
-  hardware.pulseaudio.support32Bit = true;    ## If compatibility with 32-bit applications is desired.
+  hardware.pulseaudio.support32Bit = true;
 
   # List of systemwide services
 
@@ -175,6 +179,7 @@
 
     # Games
     minecraft
+    steam
 
     # Misc
     scrot
