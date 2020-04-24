@@ -96,7 +96,7 @@
       cdrust = "cd $HOME/dev/personal/rust";
       cdpy = "cd $HOME/dev/personal/python";
       cddocker = "cd $HOME/dev/docker";
-      cddev = "cd $HOME/dev";
+      cdev = "cd $HOME/dev/personal";
       cdwww = "cd $HOME/dev/www";
       cdpro = "cd $HOME/dev/projects";
       cdvox = "cd $HOME/dev/projects/voxinfinity";
