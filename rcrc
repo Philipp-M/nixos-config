@@ -25,5 +25,6 @@ EXCLUDES="
   nixos
   xinitrc
   xmonad/xmonad.hs
+  xmonad/README.md
   xprofile
 "
