@@ -4,21 +4,25 @@ SYMLINK_DIRS="
   config/nvim
   config/polybar
   screenshots
-  wallpaper
   scripts
+  wallpaper
 "
 UNDOTTED="screenshots wallpaper scripts"
 EXCLUDES="
   XResources
-  xinitrc
-  xprofile
-  xmonad
+  config/alacritty
+  config/autorandr
+  config/fish
+  config/i3
+  config/mpd
   config/picom
   config/polybar
-  config/fish
-  config/autorandr
-  config/taffybar/*.nix
   config/taffybar/*.cabal
   config/taffybar/*.hs
+  config/taffybar/*.nix
   config/taffybar/*.yaml
+  nixos
+  xinitrc
+  xmonad/xmonad.hs
+  xprofile
 "
