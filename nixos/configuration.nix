@@ -89,6 +89,9 @@
     displayManager.defaultSession = "none+xmonad";
   };
 
+  xdg.portal.enable = true;
+  services.flatpak.enable = true;
+
   # allow no password for sudo (dangerous...)
   security.sudo.enable = true;
   security.sudo.extraConfig = ''
