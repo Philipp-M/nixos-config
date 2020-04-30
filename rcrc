@@ -9,6 +9,7 @@ SYMLINK_DIRS="
 "
 UNDOTTED="screenshots wallpaper scripts"
 EXCLUDES="
+  README.md
   XResources
   config/alacritty
   config/autorandr
