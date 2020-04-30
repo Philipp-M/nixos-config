@@ -79,8 +79,13 @@
   programs.fish = {
     enable = true;
     shellInit = ''
-      set -gx PATH $HOME/.cargo/bin/ $PATH
       set fish_greeting ""
+
+      npm set prefix $HOME/.npm/global
+
+      set -gx PATH $HOME/.cargo/bin/ $PATH
+      set -gx PATH ./node_modules/.bin/ $PATH
+      set -gx PATH $HOME/.npm/global/bin/ $PATH
     '';
     shellAliases = {
       ll = "lsd -Al";
