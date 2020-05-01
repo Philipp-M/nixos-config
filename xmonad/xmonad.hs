@@ -20,5 +20,5 @@ main = xmonad $
         , manageHook = manageDocks <+> manageHook def
         , layoutHook = avoidStruts $ layoutHook def
         -- , layoutHook = spacingRaw True (Border 0 10 10 10) True (Border 10 10 10 10) True $ avoidStruts $ layoutHook def
-	-- modMask = mod4Mask -- Use Super instead of Alt
+	, modMask = mod4Mask -- Use Super instead of Alt
         }

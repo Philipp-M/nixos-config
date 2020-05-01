@@ -7,6 +7,19 @@
 
   xsession = {
     enable = true;
+    initExtra = ''
+      # Remap Escape to 'Hyper_L' for an extra 'hybrid' modifier for xmonad and other applications that use Super
+      # Caps Lock is useless anyway, so remap it to 'Hyper_L' as well...
+      ${pkgs.xorg.xmodmap}/bin/xmodmap  \
+              -e 'keycode 9 = Hyper_L'  \
+              -e 'clear Lock'           \
+              -e 'keycode 66 = Hyper_L' \
+              -e 'keycode any = Escape' \
+      # Currently the service xcape in home-manager doesn't work correctly
+      # (my guess is because xcape is started before the script above)
+      # The following line is used for reenabling Escape if it is used on its own (single tap which takes under 500ms)
+      ${pkgs.xcape}/bin/xcape -e 'Hyper_L=Escape'
+    '';
     windowManager = {
       xmonad = {
         enable = true;

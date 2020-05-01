@@ -4,9 +4,9 @@ This file describes my xmonad config, most notably my current keybindings
 
 ## Key bindings
 
-The following keybindings are still the default bindings, with subject to change
+The <kbd>mod</kbd> key is currently mapped to <kbd>Super</kbd>
 
-The <kbd>mod</kbd> key is currently the default <kbd>alt</kbd>
+The following keybindings are still the default bindings, with subject to change
 
 ### Action key bindings
 
