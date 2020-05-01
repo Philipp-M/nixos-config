@@ -60,7 +60,7 @@ Plug 'drmikehenry/vim-fixkey'
 
 Plug 'tpope/vim-dispatch'
 if has('nvim')
-    Plug 'radenling/vim-dispatch-neovim'
+  Plug 'radenling/vim-dispatch-neovim'
 endif
 
 
@@ -77,14 +77,10 @@ Plug 'bling/vim-airline'
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-Plug 'kien/rainbow_parentheses.vim'
+Plug 'luochen1990/rainbow'
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""" RAINBOW_PARENTHESES
 "{
-    let g:rainbow_active = 1
-    au VimEnter * RainbowParenthesesToggle
-    au Syntax * RainbowParenthesesLoadRound
-    au Syntax * RainbowParenthesesLoadSquare
-    au Syntax * RainbowParenthesesLoadBraces
+  let g:rainbow_active = 1
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -166,6 +162,7 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
         \ 'coc-tslint-plugin',
         \ 'coc-tsserver',
         \ 'coc-vetur',
+        \ 'coc-vimlsp',
         \ 'coc-yaml',
     \]
 
