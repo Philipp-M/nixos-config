@@ -143,6 +143,7 @@
     llvmPackages.bintools
     neovim
     nixfmt
+    haskellPackages.ormolu # haskell formatter
     nodejs_latest
     pkg-config
     python3
@@ -170,6 +171,8 @@
     pciutils
     ripgrep
     wget
+    unzip
+    zip
 
     # Graphical Editors
     blender
@@ -177,13 +180,16 @@
 
     # Communication
     discord
+    zoom-us
     tdesktop
 
     # Web
     chromium
+    firefox
 
     # Desktop Environment
     dmenu
+    xorg.xev
 
     # Games
     minecraft
