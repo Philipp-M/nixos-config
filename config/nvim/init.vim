@@ -97,25 +97,8 @@ Plug 'tpope/vim-commentary'
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" FUGITIVE
 Plug 'tpope/vim-fugitive'
 "{
-    nmap <leader>gd :Gdiff<cr>
+    nmap <leader>gdd :Gdiff<cr>
     nmap <leader>gs :Gstatus<cr>
-"}
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" GITGUTTER
-Plug 'airblade/vim-gitgutter'
-"{
-    let g:gitgutter_map_keys = 0
-
-    nmap <leader>ghs <Plug>(GitGutterStageHunk)
-    vmap <leader>ghs <Plug>(GitGutterStageHunk)
-    nmap <leader>ghu <Plug>(GitGutterUndoHunk)
-    vmap <leader>ghu <Plug>(GitGutterUndoHunk)
-    nmap <leader>ghp <Plug>(GitGutterPreviewHunk)
-    vmap <leader>ghp <Plug>(GitGutterPreviewHunk)
-    nnoremap <leader>gf :GitGutterFold<CR>
-    nmap ]h <Plug>(GitGutterNextHunk)
-    nmap [h <Plug>(GitGutterPrevHunk)
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -146,6 +129,7 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
         \ 'coc-css',
         \ 'coc-emmet',
         \ 'coc-flutter',
+        \ 'coc-git',
         \ 'coc-highlight',
         \ 'coc-html',
         \ 'coc-java',
@@ -238,7 +222,7 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
     " vmap <leader>f  <Plug>(coc-format-selected)
     " nmap <leader>f  <Plug>(coc-format-selected)
 
-    " mapping for coc-snippets
+    " mappings for coc-snippets
 
     " Use <C-l> for trigger snippet expand.
     imap <C-l> <Plug>(coc-snippets-expand)
@@ -254,6 +238,21 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
 
     " Use <C-j> for both expand and jump (make expand higher priority.)
     imap <C-j> <Plug>(coc-snippets-expand-jump)
+
+    " mappings for coc-git
+
+    nmap <leader>ghs :CocCommand git.chunkStage<CR>
+    vmap <leader>ghs :CocCommand git.chunkStage<CR>
+    nmap <leader>ghu :CocCommand git.chunkUndo<CR>
+    vmap <leader>ghu :CocCommand git.chunkUndo<CR>
+    nmap <leader>ghc :CocCommand git.showCommit<CR>
+    vmap <leader>ghc :CocCommand git.showCommit<CR>
+    vmap <leader>ghc :CocCommand git.showCommit<CR>
+    vmap <leader>ghc :CocCommand git.showCommit<CR>
+    nmap <leader>gds :CocCommand git.diffCached<CR>
+    nmap [h <Plug>(coc-git-prevchunk)
+    nmap ]h <Plug>(coc-git-nextchunk)
+    nnoremap <leader>gf :CocCommand git.foldUnchanged<CR>
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
