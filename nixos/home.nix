@@ -50,9 +50,6 @@
     blurMethod = "dual_kawase";
     blurStrength = 10;
     vSync = false;
-    fade = true;
-    fadeDelta = 8;
-    fadeSteps = [ "0.10" "0.035" ];
     inactiveDim = "0.1";
     extraOptions = "unredir-if-possible = false";
   };
