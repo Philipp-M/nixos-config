@@ -55,9 +55,12 @@
   # Set your time zone.
   time.timeZone = "Europe/Vienna";
 
-  # Enable 32-bit dri support for steam
-  hardware.opengl.driSupport32Bit = true;
-  hardware.opengl.extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
+  hardware.opengl = {
+    enable = true;
+    # Enable 32-bit dri support for steam
+    driSupport32Bit = true;
+    extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
+  };
 
   # Enable audio
   hardware.pulseaudio.enable = true;
