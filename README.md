@@ -19,7 +19,7 @@ Currently following notable applications/configs are in use and completely manag
 Following applications/configs are in use and managed via rcm:
 
 * neovim
-* kitty
+* alacritty
 * mpv
 * XResources
 
@@ -27,7 +27,7 @@ Following applications/configs are configured, but currently not in use and migh
 
 * i3
 * polybar
-* alacritty
+* kitty
 * fish (old config)
 * mpd
 * picom (old config)

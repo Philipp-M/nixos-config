@@ -11,18 +11,24 @@
     (import "${
         (builtins.fetchTarball {
           url =
-            "https://github.com/Philipp-M/home-manager/archive/7f8c5a99c4dcb1ca9475ea22101e8c4fce1d8bb4.tar.gz";
-          sha256 = "1ickv182mnv8lirccga67f3g6w6dwfd4jqpsi25wcaz5fvsiwkba";
+            "https://github.com/Philipp-M/home-manager/archive/2554ae9545104160660f1e2a0bea596d447fcac7.tar.gz";
+          sha256 = "1g5fw9k4xvly3vr89zccc7lw57f06px0mpq59a4h305vbm6idza0";
         })
       }/nixos")
   ];
 
-  # NUR
+  # NUR and other custom packages
   nixpkgs.config.packageOverrides = pkgs: {
     nur = import (builtins.fetchTarball {
       url =
         "https://github.com/nix-community/NUR/archive/54d26b858b073adca6425385ea7bb085f2676bd0.tar.gz";
       sha256 = "0d7xxrb21xim937vgb0i0nxj1bhb4k2r6kqr860alavfqf5x3ivq";
+    }) { inherit pkgs; };
+
+    all-hies = import (builtins.fetchTarball {
+      url =
+        "https://github.com/nix-community/Infinisil/all-hies/4b6aab017cdf96a90641dc287437685675d598da.tar.gz";
+      sha256 = "0ap12mbzk97zmxk42fk8vqacyvpxk29r2wrnjqpx4m2w9g7gfdya";
     }) { inherit pkgs; };
   };
 
@@ -133,23 +139,31 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     # Development
+    ## compilers and dev environment
     clang_10
+    python3
+    # gcc # conflicts with clang, only used in nix-shells anyway
+    meson
     cmake
-    gcc
     git
     gitAndTools.diff-so-fancy
     gnumake
     jdk
     llvmPackages.bintools
     neovim
+    ccls
     nixfmt
+    rnix-lsp
     haskellPackages.ormolu # haskell formatter
+    haskell.compiler.ghc882
+    (all-hies.selection { selector = p: { inherit (p) ghc882; }; })
+    carnix
     nodejs_latest
+    nodePackages.node2nix
     pkg-config
-    python3
-    rcm # manage dotfiles
     rustup
     vscode
+    rcm # manage dotfiles
 
     # Document tools
     pandoc
@@ -158,7 +172,7 @@
     zathura
 
     # Terminal stuff
-    # alacritty not used because rendering issues with powerline symbols, no ligatures and issues with vim transparency
+    alacritty
     kitty
     fasd
     file
@@ -190,12 +204,15 @@
     # Desktop Environment
     dmenu
     xorg.xev
+    xorg.xmessage
 
     # Games
     minecraft
     steam
 
     # Misc
+    mprime
+    memtester
     scrot
     feh # to view images in terminal
     fira-code

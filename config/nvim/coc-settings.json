@@ -9,9 +9,33 @@
           "directory": "/tmp/ccls"
         }
       }
+    },
+    "haskell": {
+      "command": "hie-wrapper",
+      "args": ["--lsp"],
+      "rootPatterns": [
+        "stack.yaml",
+        "cabal.config",
+        "package.yaml"
+      ],
+      "filetypes": [
+        "hs",
+        "lhs",
+        "haskell"
+      ],
+      "initializationOptions": {
+        "languageServerHaskell": {
+          "hlintOn": true
+        }
+      },
+    },
+    "nix": {
+      "command": "rnix-lsp",
+      "filetypes": ["nix"]
     }
   },
   "tslint.jsEnable": true,
   "rust-analyzer.cargo-watch.command": "clippy",
-  "rust-analyzer.serverPath": "~/.cargo/bin/rust-analyzer"
+  "rust-analyzer.serverPath": "~/.cargo/bin/rust-analyzer",
+  "git.enableGutters": true
 }

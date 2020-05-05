@@ -663,11 +663,11 @@ scrolling:
 
 custom_cursor_colors: false
 
-background_opacity: 1.0
+background_opacity: 0.90
 
 font:
   normal:
-    family: Fira Code
+    family: FiraCode Nerd Font
 
 live_config_reload: true
 
