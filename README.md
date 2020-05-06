@@ -15,6 +15,7 @@ Currently following notable applications/configs are in use and completely manag
 * starship
 * taffybar
 * xmonad
+* rofi
 
 Following applications/configs are in use and managed via rcm:
 

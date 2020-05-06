@@ -86,6 +86,29 @@
     };
   };
 
+  programs.rofi = {
+    enable = true;
+    colors = {
+      window = {
+        background = "#e5282828";
+        border = "#e5282828";
+        separator = "#c3c6c8";
+      };
+
+      rows = {
+        normal = {
+          background = "#e5282828";
+          foreground = "#ebdbb2";
+          backgroundAlt = "#e5282828";
+          highlight = {
+            background = "#458588";
+            foreground = "#ebdbb2";
+          };
+        };
+      };
+    };
+  };
+
   programs.fish = {
     enable = true;
     shellInit = ''
