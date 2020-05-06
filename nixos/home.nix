@@ -207,5 +207,6 @@
     userEmail = "philipp.mildenberger@koeln.de";
     lfs.enable = true;
     extraConfig.core.pager = "diff-so-fancy | less --tabs=4 -RFX";
+    aliases = { pushall = "!git remote | xargs -L1 git push --all"; };
   };
 }
