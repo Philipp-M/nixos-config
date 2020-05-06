@@ -37,7 +37,7 @@
       Option "RegistryDwords" "PerfLevelSrc=0x3322; PowerMizerDefaultAC=0x1"
       Option "TripleBuffer" "True"
       Option "Stereo" "0"
-      Option "nvidiaXineramaInfoOrder" "DFP-0"
+      Option "nvidiaXineramaInfoOrder" "DP-2, DP-0"
       Option "metamodes" "DP-0: nvidia-auto-select +0+0 {ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}, DP-2: nvidia-auto-select +3840+0 {ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}"
       Option "SLI" "Off"
       Option "MultiGPU" "Off"
