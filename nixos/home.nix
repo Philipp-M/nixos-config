@@ -121,28 +121,31 @@
       set -gx PATH $HOME/.npm/global/bin/ $PATH
     '';
     shellAliases = {
+      # list aliases
       ll = "lsd -Al";
       lld = "lsd -Altr";
       llt = "lsd -Altr --tree";
       lls = "lsd -ArlS --total-size";
       l = "lsd -l";
-      lsblka = "lsblk --output NAME,LABEL,UUID,SIZE,MODEL,MOUNTPOINT,FSTYPE";
-      tree = "tree -C";
-      gdiff = "git diff --no-index";
+      # package/dependency management
+      nx = "nix-shell --command fish";
+      update = "sudo nixos-rebuild switch --upgrade"; # dangerous use of sudo, don't do it at home (but it's comfortable)
+      # shortcuts for changing the directory
+      cdwork = "cd $HOME/dev/work";
+      cdev = "cd $HOME/dev/personal";
       cdot = "cd $HOME/dev/personal/dotfiles";
       cdgo = "cd $HOME/dev/personal/go/src";
+      cdc = "cd $HOME/dev/personal/c";
       cdrust = "cd $HOME/dev/personal/rust";
+      cdhs = "cd $HOME/dev/personal/haskell";
       cdpy = "cd $HOME/dev/personal/python";
       cddocker = "cd $HOME/dev/docker";
-      cdev = "cd $HOME/dev/personal";
-      cdwww = "cd $HOME/dev/www";
+      cdwww = "cd $HOME/dev/personal/www";
+      cdvue = "cd $HOME/dev/personal/www/vue";
       cdpro = "cd $HOME/dev/projects";
       cdvox = "cd $HOME/dev/projects/voxinfinity";
-      cdvue = "cd $HOME/dev/vue";
-      cdeth = "cd $HOME/dev/ethereumBased";
       cdvul = "cd $HOME/dev/vulkan";
       cdgql = "cd $HOME/dev/GraphQL";
-      cdwork = "cd $HOME/dev/work";
       cdnode = "cd $HOME/dev/nodeBased";
       cdml = "cd $HOME/dev/MachineLearning";
       cduni = "cd $HOME/Uni";
@@ -152,9 +155,13 @@
       cdray = "cd $HOME/dev/rayTracing";
       cdandroid = "cd $HOME/dev/Android";
       cdate = "date +%Y%m%d%H%M";
+      # useful shortcuts
       dus = "du -h | sort -h";
+      lsblka = "lsblk --output NAME,LABEL,UUID,SIZE,MODEL,MOUNTPOINT,FSTYPE";
       rsyncp = "rsync --info=progress2";
       sudoe = "sudo -E";
+      tree = "tree -C";
+      gdiff = "git diff --no-index";
     };
     plugins = [{
       name = "fasd";
