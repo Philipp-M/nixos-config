@@ -97,8 +97,10 @@ Plug 'tpope/vim-commentary'
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" FUGITIVE
 Plug 'tpope/vim-fugitive'
 "{
-    nmap <leader>gdd :Gdiff<cr>
-    nmap <leader>gs :Gstatus<cr>
+    nnoremap <leader>gdd :Gdiff<cr>
+    nnoremap <leader>gs :Gstatus<cr>
+    nnoremap <leader>gcc :Gcommit -v -q<CR>
+    nnoremap <leader>gca :Gcommit --amend<CR>
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -108,7 +110,7 @@ Plug 'junegunn/fzf.vim'
 "{
     nnoremap <leader><space> :FZF<CR>
     nnoremap <leader>h :History<CR>
-    nnoremap <leader>gc :Commits<CR>
+    nnoremap <leader>gcl :Commits<CR>
     nnoremap <leader>n :Find 
     nnoremap <leader>s *:Find <C-r>/<BS><BS><C-Left><Del><Del><CR>
     " let $FZF_DEFAULT_COMMAND = 'ag -g "" --ignore=\*.o'
@@ -241,15 +243,15 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
 
     " mappings for coc-git
 
-    nmap <leader>ghs :CocCommand git.chunkStage<CR>
-    vmap <leader>ghs :CocCommand git.chunkStage<CR>
-    nmap <leader>ghu :CocCommand git.chunkUndo<CR>
-    vmap <leader>ghu :CocCommand git.chunkUndo<CR>
-    nmap <leader>ghc :CocCommand git.showCommit<CR>
-    vmap <leader>ghc :CocCommand git.showCommit<CR>
-    vmap <leader>ghc :CocCommand git.showCommit<CR>
-    vmap <leader>ghc :CocCommand git.showCommit<CR>
-    nmap <leader>gds :CocCommand git.diffCached<CR>
+    nnoremap <leader>ghs :CocCommand git.chunkStage<CR>
+    vnoremap <leader>ghs :CocCommand git.chunkStage<CR>
+    nnoremap <leader>ghu :CocCommand git.chunkUndo<CR>
+    vnoremap <leader>ghu :CocCommand git.chunkUndo<CR>
+    nnoremap <leader>ghc :CocCommand git.showCommit<CR>
+    vnoremap <leader>ghc :CocCommand git.showCommit<CR>
+    vnoremap <leader>ghc :CocCommand git.showCommit<CR>
+    vnoremap <leader>ghc :CocCommand git.showCommit<CR>
+    nnoremap <leader>gds :CocCommand git.diffCached<CR>
     nmap [h <Plug>(coc-git-prevchunk)
     nmap ]h <Plug>(coc-git-nextchunk)
     nnoremap <leader>gf :CocCommand git.foldUnchanged<CR>
