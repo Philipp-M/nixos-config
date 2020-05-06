@@ -6,17 +6,18 @@ This file describes my xmonad config, most notably my current keybindings
 
 The <kbd>mod</kbd> key is currently mapped to <kbd>Super</kbd>
 
-The following keybindings are still the default bindings, with subject to change
+Most of the following keybindings are still the default bindings, with optimized colemak flavor.
 
 ### Action key bindings
 
 | Key binding                                             | Action                                                                        |
 |---------------------------------------------------------|-------------------------------------------------------------------------------|
 | <kbd>mod</kbd> - <kbd>shift</kbd>   - <kbd>slash</kbd>  | Run xmessage with a summary of the default keybindings (useful for beginners) |
-| <kbd>mod</kbd> - <kbd>shift</kbd>   - <kbd>return</kbd> | Launch terminal                                                               |
-| <kbd>mod</kbd> - <kbd>p</kbd>                           | Launch dmenu                                                                  |
+| <kbd>mod</kbd> - <kbd>return</kbd>                      | Launch terminal                                                               |
+| <kbd>mod</kbd> - <kbd>c</kbd>                           | Launch chromium                                                               |
+| <kbd>mod</kbd> - <kbd>space</kbd>                       | Launch rofi                                                                   |
 | <kbd>mod</kbd> - <kbd>shift</kbd>   - <kbd>p</kbd>      | Launch gmrun                                                                  |
-| <kbd>mod</kbd> - <kbd>shift</kbd>   - <kbd>c</kbd>      | Close the focused window                                                      |
+| <kbd>mod</kbd> - <kbd>backspace</kbd>                   | Close the focused window                                                      |
 | <kbd>mod</kbd> - <kbd>shift</kbd>   - <kbd>q</kbd>      | Quit xmonad                                                                   |
 | <kbd>mod</kbd> - <kbd>q</kbd>                           | Restart xmonad                                                                |
 
@@ -26,18 +27,19 @@ The following keybindings are still the default bindings, with subject to change
 
 | Key binding                                             | Action                                                                        |
 |---------------------------------------------------------|-------------------------------------------------------------------------------|
-| <kbd>mod</kbd> - <kbd>space</kbd>                       | Rotate through the available layout algorithms                                |
+| <kbd>mod</kbd> - <kbd>n</kbd>                           | Rotate through the available layout algorithms                                |
+| <kbd>mod</kbd> - <kbd>f</kbd>                           | Toggle Full Layout with no topbar                                             |
 | <kbd>mod</kbd> - <kbd>shift</kbd>   - <kbd>space</kbd>  | Reset the layouts on the current workspace to default                         |
 | <kbd>mod</kbd> - <kbd>n</kbd>                           | Resize viewed windows to the correct size                                     |
-| <kbd>mod</kbd> - <kbd>tab</kbd>                         | Move focus to the next window                                                 |
-| <kbd>mod</kbd> - <kbd>shift</kbd>   - <kbd>tab</kbd>    | Move focus to the previous window                                             |
-| <kbd>mod</kbd> - <kbd>j</kbd>                           | Move focus to the next window                                                 |
-| <kbd>mod</kbd> - <kbd>k</kbd>                           | Move focus to the previous window                                             |
+| <kbd>mod</kbd> - <kbd>escape</kbd>                      | Move focus to the next window                                                 |
+| <kbd>mod</kbd> - <kbd>shift</kbd>   - <kbd>escape</kbd> | Move focus to the previous window                                             |
+| <kbd>mod</kbd> - <kbd>k</kbd>                           | Move focus to the next window                                                 |
+| <kbd>mod</kbd> - <kbd>h</kbd>                           | Move focus to the previous window                                             |
 | <kbd>mod</kbd> - <kbd>m</kbd>                           | Move focus to the master window                                               |
-| <kbd>mod</kbd> - <kbd>return</kbd>                      | Swap the focused window and the master window                                 |
-| <kbd>mod</kbd> - <kbd>shift</kbd>   - <kbd>j</kbd>      | Swap the focused window with the next window                                  |
-| <kbd>mod</kbd> - <kbd>shift</kbd>   - <kbd>k</kbd>      | Swap the focused window with the previous window                              |
-| <kbd>mod</kbd> - <kbd>h</kbd>                           | Shrink the master area                                                        |
+| <kbd>mod</kbd> - <kbd>p</kbd>                           | Promote the focused window to the master area and toggle between next window  |
+| <kbd>mod</kbd> - <kbd>shift</kbd>   - <kbd>k</kbd>      | Swap the focused window with the next window                                  |
+| <kbd>mod</kbd> - <kbd>shift</kbd>   - <kbd>h</kbd>      | Swap the focused window with the previous window                              |
+| <kbd>mod</kbd> - <kbd>j</kbd>                           | Shrink the master area                                                        |
 | <kbd>mod</kbd> - <kbd>l</kbd>                           | Expand the master area                                                        |
 | <kbd>mod</kbd> - <kbd>t</kbd>                           | Push window back into tiling                                                  |
 | <kbd>mod</kbd> - <kbd>comma</kbd>                       | Increment the number of windows in the master area                            |
