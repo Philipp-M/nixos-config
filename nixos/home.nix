@@ -1,4 +1,20 @@
-{ pkgs, ... }: {
+{ pkgs, lib, config, ... }: {
+  imports = [
+    (import "${
+        (builtins.fetchTarball {
+          url =
+            "https://github.com/atpotts/base16-nix/archive/4f192afaa0852fefb4ce3bde87392a0b28d6ddc8.tar.gz";
+          sha256 = "1yf59vpd1i8lb2ml7ha8v6i4mv1b0xwss8ngzw08s39j838gyx6h";
+        })
+      }/base16.nix")
+  ];
+
+  themes.base16 = {
+    enable = true;
+    scheme = "gruvbox";
+    variant = "gruvbox-dark-medium";
+  };
+
   home.sessionVariables.EDITOR = "nvim";
 
   # X specific
@@ -89,25 +105,10 @@
 
   programs.rofi = {
     enable = true;
-    colors = {
-      window = {
-        background = "#e5282828";
-        border = "#e5282828";
-        separator = "#c3c6c8";
-      };
-
-      rows = {
-        normal = {
-          background = "#e5282828";
-          foreground = "#ebdbb2";
-          backgroundAlt = "#e5282828";
-          highlight = {
-            background = "#458588";
-            foreground = "#ebdbb2";
-          };
-        };
-      };
-    };
+    theme = builtins.toPath (config.lib.base16.template {
+      name = "rofi";
+      src = ../config/rofi/theme.rasi;
+    });
   };
 
   programs.fish = {

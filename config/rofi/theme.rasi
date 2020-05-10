@@ -1,0 +1,99 @@
+/* vim:ft=css
+ * ROFI One Dark modfied to be compatible with base16-nix
+ *
+ * Based on OneDark.vim (https://github.com/joshdick/onedark.vim)
+ *
+ * Author: Benjamin Stauss, Philipp Mildenberger
+ * User: me-benni, Philipp-M
+ *
+ */
+
+* {
+  black:      #{{base00}};
+  red:        #{{base08}};
+  green:      #{{base0B}};
+  yellow:     #{{base0A}};
+  blue:       #{{base0D}};
+  mangenta:   #{{base0E}};
+  cyan:       #{{base0C}};
+  emphasis:   #{{base02}};
+  text:       #{{base06}};
+  text-alt:   #{{base07}};
+  fg:         #{{base06}};
+  bg:         #{{base00}};
+
+  spacing: 0;
+  background-color: transparent;
+
+  font: "FiraCode Nerd Font 14";
+  text-color: @text;
+}
+
+window {
+  transparency: "real";
+  fullscreen: true;
+  background-color: #{{base00}}e5;
+}
+
+mainbox {
+  padding: 30% 30%;
+}
+
+inputbar {
+  margin: 0px 0px 20px 0px;
+  children: [prompt, textbox-prompt-colon, entry, case-indicator];
+}
+
+prompt {
+  text-color: @blue;
+}
+
+textbox-prompt-colon {
+  expand: false;
+  str: ":";
+  text-color: @text-alt;
+}
+
+entry {
+  margin: 0px 10px;
+}
+
+listview {
+  spacing: 5px;
+  dynamic: true;
+  scrollbar: false;
+}
+
+element {
+  padding: 5px;
+  text-color: @text-alt;
+  highlight: @green;
+  border-radius: 3px;
+}
+
+element selected {
+  background-color: @emphasis;
+  text-color: @text;
+}
+
+element urgent, element selected urgent {
+  text-color: @red;
+}
+
+element active, element selected active {
+  text-color: @purple;
+}
+
+message {
+  padding: 5px;
+  border-radius: 3px;
+  background-color: @emphasis;
+  border: 1px;
+  border-color: @cyan;
+}
+
+button selected {
+  padding: 5px;
+  border-radius: 3px;
+  background-color: @emphasis;
+}

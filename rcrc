@@ -18,6 +18,7 @@ EXCLUDES="
   config/mpd
   config/picom
   config/polybar
+  config/rofi
   config/taffybar/*.cabal
   config/taffybar/*.hs
   config/taffybar/*.nix
