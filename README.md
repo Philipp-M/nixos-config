@@ -8,6 +8,7 @@ The plan is to refactor all possible rcm managed config files into the *NixOS* c
 Currently following notable applications/configs are in use and completely managed via the *NixOS* configuration:
 
 * autorandr
+* alacritty
 * fish
 * git
 * picom (using tryone144s *dual_kawase* blur fork)
@@ -20,7 +21,6 @@ Currently following notable applications/configs are in use and completely manag
 Following applications/configs are in use and managed via rcm:
 
 * neovim
-* alacritty
 * mpv
 * XResources
 
@@ -30,6 +30,7 @@ Following applications/configs are configured, but currently not in use and migh
 * polybar
 * kitty
 * fish (old config)
+* alacritty (old config)
 * mpd
 * picom (old config)
 * autorandr (old config)

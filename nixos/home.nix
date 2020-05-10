@@ -90,6 +90,36 @@
 
   programs.home-manager.enable = true;
 
+  programs.alacritty = with config.lib.base16.theme; {
+    enable = true;
+    settings = {
+      live_config_reload = true;
+      scrolling = {
+        history = 100000; # max amount
+        multiplier = 5;
+      };
+      custom_cursor_colors = false;
+      background_opacity = 0.9;
+      font.normal.family = "FiraCode Nerd Font";
+      colors = {
+        primary = {
+          background = "#${base00-hex}";
+          foreground = "#${base06-hex}";
+        };
+        normal = {
+          black = "#${base00-hex}";
+          red = "#${base08-hex}";
+          green = "#${base0B-hex}";
+          yellow = "#${base0A-hex}";
+          blue = "#${base0D-hex}";
+          magenta = "#${base0E-hex}";
+          cyan = "#${base0C-hex}";
+          white = "#${base05-hex}";
+        };
+      };
+    };
+  };
+
   programs.starship = {
     enable = true;
     settings = {
