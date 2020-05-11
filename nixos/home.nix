@@ -70,6 +70,11 @@
     package = (import ../config/taffybar/default.nix);
   };
 
+  home.file.".config/taffybar/taffybar.css".source = config.lib.base16.template {
+    name = "taffybar.css";
+    src = ../config/taffybar/taffybar.css;
+  };
+
   services.picom = {
     enable = true;
     experimentalBackends = true;

@@ -20,10 +20,7 @@ EXCLUDES="
   config/picom
   config/polybar
   config/rofi
-  config/taffybar/*.cabal
-  config/taffybar/*.hs
-  config/taffybar/*.nix
-  config/taffybar/*.yaml
+  config/taffybar
   nixos
   xinitrc
   xmonad/xmonad.hs

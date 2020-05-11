@@ -1,13 +1,13 @@
 @define-color transparent rgba(0.0, 0.0, 0.0, 0.0);
-@define-color white #FFFFFF;
-@define-color black #000000;
-@define-color taffy-blue #0c7cd5;
+@define-color white #{{base06}};
+@define-color black #{{base00}};
+@define-color blue #{{base0D}};
 
-@define-color active-window-color @white;
-@define-color urgent-window-color @taffy-blue;
+@define-color active-window-color @black;
+@define-color urgent-window-color @blue;
 @define-color font-color @white;
-@define-color menu-background-color @white;
-@define-color menu-font-color @black;
+@define-color menu-background-color @black;
+@define-color menu-font-color @white;
 
 /* Top level styling */
 
@@ -18,14 +18,15 @@
 	*/
 	all: unset;
 
-	font-family: "Noto Sans", sans-serif;
+	font-family: "{{fontname}}", sans-serif;
 	font-size: 10pt;
 	color: @font-color;
 }
 
 .taffy-box {
 	border-radius: 0px;
-	background-color: rgba(40, 40, 40, 0.9);
+	background-color: #{{base00}};
+	opacity: 0.9; /* not perfect, as every item in the bar gets this value, but #rrggbbaa as background-color is not working in gtk css */
 }
 
 .inner-pad {
@@ -103,7 +104,7 @@ button {
 }
 
 button:checked, button:hover .Contents:hover {
-	box-shadow: inset 0 -3px @taffy-blue;
+	box-shadow: inset 0 -3px @blue;
 }
 
 /* Menu styling */
@@ -119,7 +120,7 @@ button:checked, button:hover .Contents:hover {
 }
 
 .taffy-window menuitem:hover, menuitem:hover {
-	background-color: @taffy-blue;
+	background-color: @blue;
 }
 
 .taffy-window menuitem:hover > label, menuitem:hover > label {
