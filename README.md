@@ -18,12 +18,11 @@ Currently following notable applications/configs are in use and completely manag
 * xmonad
 * mpv
 * rofi
+* XResources
 
 Following applications/configs are in use and managed via rcm:
 
 * neovim
-* mpv
-* XResources
 
 Following applications/configs are configured, but currently not in use and might be out of sync (and probably be removed in the near future):
 

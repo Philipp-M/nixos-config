@@ -13,6 +13,12 @@
     enable = true;
     scheme = "gruvbox";
     variant = "gruvbox-dark-medium";
+    extraParams = {
+      fontname = "FiraCode Nerd Font";
+      xftfontextra = ":style=Regular";
+      fontsize = "14";
+      dpi = "100";
+    };
   };
 
   home.sessionVariables.EDITOR = "nvim";
@@ -50,6 +56,11 @@
         config = ../xmonad/xmonad.hs;
       };
     };
+  };
+
+  home.file.".Xresources".source = config.lib.base16.template {
+    name = "Xresources";
+    src = ../Xresources;
   };
 
   # List of user services
@@ -100,7 +111,7 @@
       };
       custom_cursor_colors = false;
       background_opacity = 0.9;
-      font.normal.family = "FiraCode Nerd Font";
+      font.normal.family = fontname;
       colors = {
         primary = {
           background = "#${base00-hex}";

@@ -1,109 +1,40 @@
-#define TP #28282828
-#define C0 #282828
-#define C1 #cc241d
-#define C2 #98971a
-#define C3 #d79921
-#define C4 #458588
-#define C5 #b16286
-#define C6 #689d6a
-#define C7 #a89984
-#define C8 #928374
-#define C9 #fb4934
-#define CA #b8bb26
-#define CB #fabd2f
-#define CC #83a598
-#define CD #d3869b
-#define CE #8ec07c
-#define CF #ebdbb2
-#define BG C0
-#define FG CF
-
-!-- Dark color theme 
-! hard contrast: *background: #1d2021
-*background: BG
-! soft contrast: *background: #32302f
-*foreground: FG
-! Black + DarkGrey
-*color0:  C0
-*color8:  C8
-! DarkRed + Red
-*color1:  C1
-*color9:  C9
-! DarkGreen + Green
-*color2:  C2
-*color10: CA
-! DarkYellow + Yellow
-*color3:  C3
-*color11: CB
-! DarkBlue + Blue
-*color4:  C4
-*color12: CC
-! DarkMagenta + Magenta
-*color5:  C5
-*color13: CD
-! DarkCyan + Cyan
-*color6:  C6
-*color14: CE
-! LightGrey + White
-*color7:  C7
-*color15: CF
-
-!-- Light color theme 
-*lbackground:	#fbf1c7
-*lforeground:	#3c3836
-! Black + DarkGrey
-*lcolor0:		#fbf1c7
-*lcolor8:		#928374
-! DarkRed + Red
-*lcolor1:		#cc241d
-*lcolor9:		#9d0006
-! DarkGreen + Green
-*lcolor2:		#98971a
-*lcolor10:		#79740e
-! DarkYellow + Yellow
-*lcolor3:		#d79921
-*lcolor11:		#b57614
-! DarkBlue + Blue
-*lcolor4:		#458588
-*lcolor12:		#976678
-! DarkMagenta + Magenta
-*lcolor5:		#b16286
-*lcolor13:		#8f3f71
-! DarkCyan + Cyan
-*lcolor6:		#689d6a
-*lcolor14:		#427b58
-! LightGrey + White
-*lcolor7:		#7c6f64
-*lcolor15:		#3c3836
-
-*transparent: TP
-
-!-------------------------------------------------------------------------------
-! Xft settings
-!-------------------------------------------------------------------------------
- 
-Xft.dpi:                    100
+Xft.dpi:                    {{dpi}}
 Xft.antialias:              true
 Xft.rgba:                   rgb
 Xft.hinting:                true
+Xft.autohint:               false
 Xft.hintstyle:              hintslight 
+Xft.lcdfilter:              lcddefault
+Xft.font:                   xft:{{fontname}}{{xftfontextra}}:size={{fontsize}}
 
-! Xresources
+*color0:                    #{{base00}}
+*color1:                    #{{base08}}
+*color2:                    #{{base0B}}
+*color3:                    #{{base0A}}
+*color4:                    #{{base0D}}
+*color5:                    #{{base0E}}
+*color6:                    #{{base0C}}
+*color7:                    #{{base05}}
+*color8:                    #{{base03}}
 
-! Layout
-rofi.width:                          50
-rofi.lines:                          15
-rofi.columns:                        1
-rofi.color-enabled:                  true
-rofi.color-normal:                   BG,FG,BG,C7,FG
-rofi.color-urgent:                   BG,C3,BG,C3,BG
-rofi.color-active:                   BG,FG,BG,C4,FG
-rofi.color-window:                   BG,BG
+*color9:                    #{{base08}}
+*color10:                   #{{base0B}}
+*color11:                   #{{base0A}}
+*color12:                   #{{base0D}}
+*color13:                   #{{base0E}}
+*color14:                   #{{base0C}}
 
-! Behaviour
-rofi.terminal:                       termite 
-rofi.levenshtein-sort:               true
-rofi.kb-cancel:                      Escape,Control+c
-rofi.case-sensitive:				 false
-rofi.opacity:						 75
-rofi.font:							 Hack 14
+*color15:                   #{{base07}}
+*color16:                   #{{base09}}
+*color17:                   #{{base0F}}
+*color18:                   #{{base01}}
+*color19:                   #{{base02}}
+*color20:                   #{{base04}}
+*color21:                   #{{base06}}
+
+*foreground:                #{{base05}}
+*background:                #{{base00}}
+*fadeColor:                 #{{base07}}
+*cursorColor:               #{{base01}}
+*pointerColorBackground:    #{{base01}}
+*pointerColorForeground:    #{{base06}}

@@ -10,7 +10,7 @@ SYMLINK_DIRS="
 UNDOTTED="screenshots wallpaper scripts"
 EXCLUDES="
   README.md
-  XResources
+  Xresources
   config/alacritty
   config/autorandr
   config/fish
