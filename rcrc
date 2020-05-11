@@ -16,6 +16,7 @@ EXCLUDES="
   config/fish
   config/i3
   config/mpd
+  config/mpv
   config/picom
   config/polybar
   config/rofi

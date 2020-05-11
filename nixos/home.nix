@@ -241,4 +241,78 @@
     extraConfig.core.pager = "diff-so-fancy | less --tabs=4 -RFX";
     aliases = { pushall = "!git remote | xargs -L1 git push --all"; };
   };
+
+  programs.mpv = {
+    enable = true;
+    config = {
+      x11-netwm = "yes"; # necessary for xmonads fullscreen
+      profile = "vdpau-high";
+      video-sync = "audio";
+    };
+    profiles = {
+      vdpau-high = {
+        vo = "vdpau";
+        profile = "opengl-hq";
+        scale = "ewa_lanczossharp";
+        cscale = "ewa_lanczossharp";
+        video-sync = "display-resample";
+        interpolation = "yes";
+        tscale = "oversample";
+        vf = "vdpaupp:deint=yes:deint-mode=temporal-spatial:hqscaling=1";
+        ytdl-format = "bestvideo+bestaudio/best";
+        x11-bypass-compositor = "yes";
+        af = "acompressor";
+      };
+      vdpau-low = {
+        vo = "vdpau";
+        profile = "opengl-hq";
+        video-sync = "display-resample";
+        ytdl-format = "bestvideo+bestaudio/best";
+        x11-bypass-compositor = "yes";
+        af = "acompressor";
+      };
+      opengl-high = {
+        vo = "opengl";
+        profile = "opengl-hq";
+        scale = "ewa_lanczossharp";
+        cscale = "ewa_lanczossharp";
+        video-sync = "display-resample";
+        interpolation = "yes";
+        tscale = "oversample";
+        ytdl-format = "bestvideo+bestaudio/best";
+        x11-bypass-compositor = "yes";
+        af = "acompressor";
+      };
+      opengl-low = {
+        vo = "opengl";
+        profile = "opengl-hq";
+        video-sync = "display-resample";
+        ytdl-format = "bestvideo+bestaudio/best";
+        x11-bypass-compositor = "yes";
+        af = "acompressor";
+      };
+      xv-high = {
+        vo = "xv";
+        profile = "opengl-hq";
+        scale = "ewa_lanczossharp";
+        cscale = "ewa_lanczossharp";
+        video-sync = "display-resample";
+        interpolation = "yes";
+        tscale = "oversample";
+        ytdl-format = "bestvideo+bestaudio/best";
+        x11-bypass-compositor = "yes";
+        af = "acompressor";
+      };
+      xv-low = {
+        vo = "xv";
+        profile = "opengl-hq";
+        video-sync = "display-resample";
+        ytdl-format = "bestvideo+bestaudio/best";
+        x11-bypass-compositor = "yes";
+        af = "acompressor";
+      };
+      fun = { vo = "tct"; };
+    };
+  };
+
 }

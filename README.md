@@ -16,6 +16,7 @@ Currently following notable applications/configs are in use and completely manag
 * starship
 * taffybar
 * xmonad
+* mpv
 * rofi
 
 Following applications/configs are in use and managed via rcm:
@@ -32,6 +33,7 @@ Following applications/configs are configured, but currently not in use and migh
 * fish (old config)
 * alacritty (old config)
 * mpd
+* mpv (old config)
 * picom (old config)
 * autorandr (old config)
 * scripts directory in general
