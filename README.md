@@ -46,6 +46,7 @@ The configuration for my machines are in `nixos/machines/`.
 Following machines are configured:
 
 * zen
+* office
 
 Most (user) applications are configured in `nixos/home.nix`.
 
