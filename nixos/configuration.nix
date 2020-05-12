@@ -27,7 +27,7 @@
 
     all-hies = import (builtins.fetchTarball {
       url =
-        "https://github.com/nix-community/Infinisil/all-hies/4b6aab017cdf96a90641dc287437685675d598da.tar.gz";
+        "https://github.com/Infinisil/all-hies/archive/4b6aab017cdf96a90641dc287437685675d598da.tar.gz";
       sha256 = "0ap12mbzk97zmxk42fk8vqacyvpxk29r2wrnjqpx4m2w9g7gfdya";
     }) { inherit pkgs; };
   };
