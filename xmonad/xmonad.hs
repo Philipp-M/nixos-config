@@ -12,7 +12,7 @@ import XMonad.Hooks.ManageDocks
 import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
 import XMonad.Layout.NoBorders (smartBorders)
-import XMonad.Layout.Spiral
+import XMonad.Layout.Dwindle
 import XMonad.Layout.StackTile
 import qualified XMonad.StackSet as W
 import XMonad.Util.EZConfig
@@ -24,7 +24,7 @@ myLayouts =
     $ avoidStruts
     $ tiled
       ||| (Mirror tiled)
-      ||| (spiral 1)
+      ||| (Dwindle R CW 1.5 1.1)
       ||| (Full)
   where
     tiled = Tall nmaster delta ratio -- default master pane layout
