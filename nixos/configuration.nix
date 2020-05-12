@@ -203,9 +203,11 @@
     # Web
     chromium
     firefox
+    torbrowser
 
     # Desktop Environment
     dmenu
+    nerdfonts
     xorg.xev
     xorg.xmessage
 
@@ -216,6 +218,8 @@
     # Misc
     mprime
     memtester
+    docker-compose
+    filezilla
     scrot
     feh # to view images in terminal
     fira-code
