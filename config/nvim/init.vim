@@ -448,6 +448,10 @@ let g:airline_right_sep = "\uE0B6"
 " set the CN (column number) symbol:
 let g:airline_section_z = airline#section#create(["\uE0A1" . '%{line(".")}' . "\uE0A3" . '%{col(".")}'])
 
+" trailing spaces are shown with a ·
+set listchars=tab:▸\ ,trail:·
+set list
+
 " neovide
 set guifont=Fira\ Code\ Regular\ Nerd\ Font\ Complete:h10
 
