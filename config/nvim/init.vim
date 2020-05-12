@@ -69,6 +69,7 @@ endif
 
 Plug 'morhetz/gruvbox'
 Plug 'nathanaelkane/vim-indent-guides'
+Plug 'chriskempson/base16-vim'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" AIRLINE
 Plug 'bling/vim-airline'
@@ -432,7 +433,7 @@ let $NVIM_TUI_ENABLE_TRUE_COLOR = 1
 set termguicolors
 set noshowmode
 set background=dark
-colorscheme gruvbox
+colorscheme base16
 syntax on
 set fillchars+=vert:│
 

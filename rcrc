@@ -1,7 +1,6 @@
 DOTFILES_DIRS=$HOME/dev/personal/dotfiles
 SYMLINK_DIRS="
   config/autorandr
-  config/nvim
   config/polybar
   screenshots
   scripts
@@ -21,6 +20,7 @@ EXCLUDES="
   config/polybar
   config/rofi
   config/taffybar
+  config/nvim/autoload/airline/themes/base16.vim
   nixos
   xinitrc
   xmonad/xmonad.hs

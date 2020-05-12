@@ -58,10 +58,21 @@
     };
   };
 
+  # custom home files, currently mostly base16 templates
+
   home.file.".Xresources".source = config.lib.base16.template {
     name = "Xresources";
     src = ../Xresources;
   };
+
+  home.file.".config/nvim/colors/base16.vim".source =
+    config.lib.base16.base16template "vim";
+
+  home.file.".config/nvim/autoload/airline/themes/base16.vim".source =
+    config.lib.base16.template {
+      name = "base16-vim-airline";
+      src = ../config/nvim/autoload/airline/themes/base16.vim;
+    };
 
   # List of user services
 
@@ -70,10 +81,11 @@
     package = (import ../config/taffybar/default.nix);
   };
 
-  home.file.".config/taffybar/taffybar.css".source = config.lib.base16.template {
-    name = "taffybar.css";
-    src = ../config/taffybar/taffybar.css;
-  };
+  home.file.".config/taffybar/taffybar.css".source =
+    config.lib.base16.template {
+      name = "taffybar.css";
+      src = ../config/taffybar/taffybar.css;
+    };
 
   services.picom = {
     enable = true;
