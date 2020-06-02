@@ -66,6 +66,10 @@
   hardware.pulseaudio.enable = true;
   hardware.pulseaudio.support32Bit = true;
 
+  # debugging of local webservices from external devices like smartphones
+  networking.firewall.allowedTCPPorts = [ 80 443 8080 8081 8000 8001 3000 ];
+  networking.firewall.allowedUDPPorts = [ 80 443 8080 8081 8000 8001 3000 ];
+
   # List of systemwide services
 
   virtualisation.docker.enable = true;
