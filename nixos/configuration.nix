@@ -161,6 +161,7 @@
     neovim
     ccls
     nixfmt
+    flatpak-builder
     rnix-lsp
     haskellPackages.ormolu # haskell formatter
     haskell.compiler.ghc882
@@ -171,6 +172,10 @@
     pkg-config
     rustup
     vscode
+    vulkan-tools
+    vulkan-headers
+    vulkan-loader
+    vulkan-validation-layers
     rcm # manage dotfiles
 
     # Document tools
@@ -192,6 +197,7 @@
     lshw
     pciutils
     ripgrep
+    fd
     wget
     unzip
     zip
@@ -203,6 +209,7 @@
     # Communication
     discord
     zoom-us
+    skype
     tdesktop
 
     # Web
@@ -222,8 +229,10 @@
 
     # Misc
     mprime
+    keepassxc
     memtester
     docker-compose
+    arion
     filezilla
     scrot
     feh # to view images in terminal
@@ -234,6 +243,7 @@
     unityhub
     xclip
     nvtop
+    adb-sync
   ];
 
   nixpkgs.overlays = [
