@@ -36,6 +36,8 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  boot.tmpOnTmpfs = true;
+
   system.stateVersion = "20.09";
 
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
