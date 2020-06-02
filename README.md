@@ -18,6 +18,7 @@ Currently following notable applications/configs are in use and completely manag
 * xmonad
 * mpv
 * rofi
+* tmux
 * XResources
 
 Following applications/configs are in use and managed via rcm:

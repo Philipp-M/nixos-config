@@ -21,6 +21,7 @@ EXCLUDES="
   config/rofi
   config/taffybar
   config/nvim/autoload/airline/themes/base16.vim
+  tmux.conf
   nixos
   xinitrc
   xmonad/xmonad.hs
