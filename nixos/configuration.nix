@@ -211,6 +211,7 @@
     # Graphical Editors
     blender
     krita
+    inkscape
 
     # Communication
     discord
@@ -242,7 +243,9 @@
     filezilla
     scrot
     feh # to view images in terminal
+    imagemagick
     fira-code
+    youtube-dl
     mpv
     source-code-pro
     transmission-gtk
