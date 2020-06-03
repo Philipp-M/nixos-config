@@ -71,6 +71,18 @@
   networking.firewall.allowedTCPPorts = [ 80 443 8080 8081 8000 8001 3000 ];
   networking.firewall.allowedUDPPorts = [ 80 443 8080 8081 8000 8001 3000 ];
 
+  networking.hosts = { "127.0.0.1" = [ "work" "www" ]; };
+
+  services.nginx.enable = true;
+  services.nginx.virtualHosts."work" = {
+    root = "/home/philm/dev/work/";
+    locations."/".extraConfig = "autoindex on;";
+  };
+  services.nginx.virtualHosts."www" = {
+    root = "/home/philm/dev/personal/www/";
+    locations."/".extraConfig = "autoindex on;";
+  };
+
   # List of systemwide services
 
   virtualisation.docker.enable = true;
