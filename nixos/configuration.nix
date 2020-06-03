@@ -11,8 +11,8 @@
     (import "${
         (builtins.fetchTarball {
           url =
-            "https://github.com/Philipp-M/home-manager/archive/2554ae9545104160660f1e2a0bea596d447fcac7.tar.gz";
-          sha256 = "1g5fw9k4xvly3vr89zccc7lw57f06px0mpq59a4h305vbm6idza0";
+            "https://github.com/Philipp-M/home-manager/archive/38b6dbd31b8f1934b1a0e19eb0b00bd04ca4cf96.tar.gz";
+          sha256 = "0sjp7bgj3qmd8b6319fzw11vpgwj12bxa330b7zydv7b5av5afhp";
         })
       }/nixos")
   ];
@@ -21,8 +21,8 @@
   nixpkgs.config.packageOverrides = pkgs: {
     nur = import (builtins.fetchTarball {
       url =
-        "https://github.com/nix-community/NUR/archive/54d26b858b073adca6425385ea7bb085f2676bd0.tar.gz";
-      sha256 = "0d7xxrb21xim937vgb0i0nxj1bhb4k2r6kqr860alavfqf5x3ivq";
+        "https://github.com/nix-community/NUR/archive/681b1a020e2a943afc4f677c4b564191340c6875.tar.gz";
+      sha256 = "1klpy2lh3w2axxm8rs8ckbxn1d0qin3ww20wqbidlkvrmq0vivim";
     }) { inherit pkgs; };
 
     all-hies = import (builtins.fetchTarball {
