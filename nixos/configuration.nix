@@ -74,6 +74,11 @@
   # List of systemwide services
 
   virtualisation.docker.enable = true;
+  virtualisation.virtualbox.host = {
+    enable = true;
+    enableHardening = false;
+    enableExtensionPack = true;
+  };
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
@@ -130,6 +135,7 @@
       "docker"
     ];
   };
+  users.extraGroups.vboxusers.members = [ "philm" ];
 
   ### manage most stuff via home-manager
 
