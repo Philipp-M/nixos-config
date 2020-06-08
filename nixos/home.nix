@@ -66,7 +66,10 @@
   };
 
   home.file.".config/nvim/colors/base16.vim".source =
-    config.lib.base16.base16template "vim";
+    config.lib.base16.template {
+      name = "base16-vim";
+      src = ../config/nvim/base16.vim.template;
+    };
 
   home.file.".config/nvim/autoload/airline/themes/base16.vim".source =
     config.lib.base16.template {

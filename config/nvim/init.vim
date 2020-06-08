@@ -67,9 +67,11 @@ endif
 
 """" VISUALS """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-Plug 'morhetz/gruvbox'
-Plug 'nathanaelkane/vim-indent-guides'
-Plug 'chriskempson/base16-vim'
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""'''''''' INDENT_LINE
+Plug 'Yggdroot/indentLine'
+"{
+  let g:indentLine_char = '▏'
+"}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" AIRLINE
 Plug 'bling/vim-airline'
@@ -78,8 +80,8 @@ Plug 'bling/vim-airline'
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-Plug 'luochen1990/rainbow'
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""" RAINBOW_PARENTHESES
+Plug 'luochen1990/rainbow'
 "{
   let g:rainbow_active = 1
 "}
@@ -433,7 +435,9 @@ let $NVIM_TUI_ENABLE_TRUE_COLOR = 1
 set termguicolors
 set noshowmode
 set background=dark
+let g:base16_transparent_background = 1
 colorscheme base16
+
 syntax on
 set fillchars+=vert:│
 
