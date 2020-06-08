@@ -123,6 +123,16 @@
 
   services.xembed-sni-proxy.enable = true;
 
+  services.pasystray.enable = true;
+
+  services.network-manager-applet.enable = true;
+
+  services.flameshot.enable = true;
+
+  services.dunst.enable = true;
+
+  services.unclutter.enable = true;
+
   # List of user programs
 
   programs.home-manager.enable = true;
