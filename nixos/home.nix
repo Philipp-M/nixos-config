@@ -53,7 +53,10 @@
           hpkgs.taffybar
         ];
         enableContribAndExtras = true;
-        config = ../xmonad/xmonad.hs;
+        config = builtins.toPath (config.lib.base16.template {
+          name = "xmonad";
+          src = ../xmonad/xmonad.hs;
+        });
       };
     };
   };
@@ -98,7 +101,6 @@
     blurMethod = "dual_kawase";
     blurStrength = 10;
     vSync = false;
-    inactiveDim = "0.1";
     extraOptions = "unredir-if-possible = false";
   };
 

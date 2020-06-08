@@ -12,16 +12,47 @@ import XMonad.Hooks.ManageDocks
 import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
 import XMonad.Layout.NoBorders (smartBorders)
+import XMonad.Layout.NoFrillsDecoration
+import XMonad.Layout.Spacing
 import XMonad.Layout.Dwindle
 import XMonad.Layout.StackTile
 import qualified XMonad.StackSet as W
 import XMonad.Util.EZConfig
+
+mySpacing = spacingRaw True (Border 5 5 5 5) True (Border 5 5 5 5) True
+
+topbarHeight = 5
+
+black  = "#{{base00}}"
+white  = "#{{base06}}"
+red    = "#{{base08}}"
+green  = "#{{base0B}}"
+yellow = "#{{base0A}}"
+blue   = "#{{base0D}}"
+active = white
+
+
+topBarTheme = def
+    { inactiveBorderColor   = black
+    , inactiveColor         = black
+    , inactiveTextColor     = black
+    , activeBorderColor     = active
+    , activeColor           = active
+    , activeTextColor       = active
+    , urgentBorderColor     = red
+    , urgentTextColor       = yellow
+    , decoHeight            = topbarHeight
+    }
+
+addTopBar = noFrillsDeco shrinkText topBarTheme
 
 myLayouts =
   id
     . mkToggle (NOBORDERS ?? FULL ?? EOT)
     . mkToggle (single MIRROR)
     $ avoidStruts
+    $ addTopBar
+    $ mySpacing
     $ tiled
       ||| (Mirror tiled)
       ||| (Dwindle R CW 1.5 1.1)
