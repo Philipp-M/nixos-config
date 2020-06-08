@@ -36,6 +36,9 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  boot.extraModulePackages = [ config.boot.kernelPackages.v4l2loopback ];
+  boot.kernelModules = [ "v4l2loopback" ];
+
   boot.tmpOnTmpfs = true;
 
   system.stateVersion = "20.09";
@@ -227,6 +230,7 @@
 
     # Communication
     discord
+    v4l-utils
     zoom-us
     skype
     tdesktop
