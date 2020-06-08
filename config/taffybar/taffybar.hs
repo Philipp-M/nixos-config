@@ -1,34 +1,41 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+-- customized Widgets CPUMonitor and NetworkMonitor, probably merge upstream with pull request
+import CPUMonitor
+import NetworkMonitor
 import System.Taffybar
 import System.Taffybar.Information.CPU
+import System.Taffybar.Information.Memory
 import System.Taffybar.SimpleConfig
-import System.Taffybar.Widget
-import System.Taffybar.Widget.Generic.Graph
-import System.Taffybar.Widget.Generic.PollingGraph
 import System.Taffybar.Widget.SNITray
+import System.Taffybar.Widget.SimpleClock
+import System.Taffybar.Widget.Text.MemoryMonitor
+import System.Taffybar.Widget.Windows
+import System.Taffybar.Widget.Workspaces
 
-cpuCallback = do
-  (_, systemLoad, totalLoad) <- cpuLoad
-  return [totalLoad, systemLoad]
 
 main = do
-  let cpuCfg =
-        defaultGraphConfig
-          { graphDataColors = [(0, 1, 0, 1), (1, 0, 1, 0.5)],
-            graphLabel = Just "cpu"
-          }
-      clock = textClockNewWith defaultClockConfig
-      cpu = pollingGraphNew cpuCfg 1.5 cpuCallback
+  let clock = textClockNewWith defaultClockConfig
+      cpuMon = textCpuMonitorNew "cpu: $total$% ▏" 1.5
+      memMon = textMemoryMonitorNew "mem: $used$MB used ▏" 5
+      netMon = networkMonitorNew "▏ net: $inAuto$ ▼ $outAuto$ ▲ ▏" Nothing
+      windowsTitle =
+        windowsNew
+          WindowsConfig
+            { getMenuLabel = truncatedGetMenuLabel 100,
+              getActiveLabel = truncatedGetActiveLabel 100
+            }
       workspaces =
         workspacesNew
           defaultWorkspacesConfig
-            { getWindowIconPixbuf = scaledWindowIconPixbufGetter getWindowIconPixbufFromEWMH
+            { getWindowIconPixbuf = scaledWindowIconPixbufGetter getWindowIconPixbufFromEWMH,
+              showWorkspaceFn = hideEmpty
             }
       simpleConfig =
         defaultSimpleTaffyConfig
           { startWidgets = [workspaces],
-            endWidgets = [clock, cpu, sniTrayThatStartsWatcherEvenThoughThisIsABadWayToDoIt],
+            centerWidgets = [windowsTitle],
+            endWidgets = [clock, cpuMon, memMon, netMon, sniTrayNew],
             barHeight = 30
           }
   simpleTaffybar simpleConfig

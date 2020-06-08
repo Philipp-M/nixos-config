@@ -13,7 +13,11 @@ executable taffybar
                      , containers
                      , directory
                      , filepath
+                     , gi-gtk
                      , gtk3
+                     , HStringTemplate
                      , taffybar
+                     , text
+                     , transformers
                      , X11>=1.8
   default-language:    Haskell2010

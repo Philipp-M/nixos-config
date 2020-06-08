@@ -119,6 +119,10 @@
     imageDirectory = "%h/dev/personal/dotfiles/wallpaper/";
   };
 
+  services.status-notifier-watcher.enable = true;
+
+  services.xembed-sni-proxy.enable = true;
+
   # List of user programs
 
   programs.home-manager.enable = true;
