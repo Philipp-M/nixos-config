@@ -65,19 +65,19 @@
 
   home.file.".Xresources".source = config.lib.base16.template {
     name = "Xresources";
-    src = ../Xresources;
+    src = ../template.Xresources;
   };
 
   home.file.".config/nvim/colors/base16.vim".source =
     config.lib.base16.template {
       name = "base16-vim";
-      src = ../config/nvim/base16.vim.template;
+      src = ../config/nvim/colors/base16.template.vim;
     };
 
   home.file.".config/nvim/autoload/airline/themes/base16.vim".source =
     config.lib.base16.template {
       name = "base16-vim-airline";
-      src = ../config/nvim/autoload/airline/themes/base16.vim;
+      src = ../config/nvim/autoload/airline/themes/base16.template.vim;
     };
 
   # List of user services
@@ -90,7 +90,7 @@
   home.file.".config/taffybar/taffybar.css".source =
     config.lib.base16.template {
       name = "taffybar.css";
-      src = ../config/taffybar/taffybar.css;
+      src = ../config/taffybar/taffybar.template.css;
     };
 
   services.picom = {
@@ -184,7 +184,7 @@
     enable = true;
     theme = builtins.toPath (config.lib.base16.template {
       name = "rofi";
-      src = ../config/rofi/theme.rasi;
+      src = ../config/rofi/theme.template.rasi;
     });
   };
 
