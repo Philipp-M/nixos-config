@@ -127,6 +127,9 @@
     };
   };
 
+  # gtk themes (home-manager more specifically) seem to have problems without it
+  services.dbus.packages = [ pkgs.gnome3.dconf ];
+
   xdg.portal.enable = true;
   services.flatpak.enable = true;
 

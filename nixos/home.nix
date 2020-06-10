@@ -61,6 +61,35 @@
     };
   };
 
+  # KDE/GTK specific
+
+  gtk = {
+    enable = true;
+    theme.name = "base16";
+    # iconTheme = {
+    #   name = "Numix-Circle";
+    #   package = pkgs.numix-icon-theme-circle;
+    # };
+  };
+
+  # gtk 2
+  home.file.".themes/base16/gtk-2.0/gtkrc".source = config.lib.base16.template {
+    name = "base16-gtk-2.0";
+    src = ../config/gtk-2.0/template.gtkrc;
+  };
+
+  # gtk 3
+  home.file.".themes/base16/gtk-3.0/gtk.css".source =
+    config.lib.base16.template {
+      name = "base16-gtk-2.0";
+      src = ../config/gtk-3.0/gtk.template.css;
+    };
+
+  qt = {
+    enable = true;
+    platformTheme = "gtk";
+  };
+
   # custom home files, currently mostly base16 templates
 
   home.file.".Xresources".source = config.lib.base16.template {
