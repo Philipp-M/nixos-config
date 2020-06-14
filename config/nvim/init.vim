@@ -312,10 +312,17 @@ Plug 'mesonbuild/meson', { 'rtp': 'data/syntax-highlighting/vim/'  }
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" PANDOC-MARKDOWN
 Plug 'vim-pandoc/vim-pandoc'
 "{
+    let g:pandoc#syntax#conceal#use = 0
     let g:pandoc#keyboard#display_motions = 0
     let g:pandoc#modules#disabled = ["folding"]
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & npm i'  }
+"{
+nmap <silent> <leader>mt <Plug>MarkdownPreviewToggle
+let g:mkdp_auto_close = 0
+"}
 
 Plug 'vim-pandoc/vim-pandoc-syntax'
 Plug 'pboettch/vim-cmake-syntax', { 'for': 'cmake' }
