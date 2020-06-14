@@ -11,8 +11,8 @@
     (import "${
         (builtins.fetchTarball {
           url =
-            "https://github.com/Philipp-M/home-manager/archive/c5802bb9a956cd97cbd90c2df178637a9bacd2c1.tar.gz";
-          sha256 = "1hzxbisp1wxck50cyhiy4h0dip5m28ximy50sb9yssa00jwhjcyc";
+            "https://github.com/Philipp-M/home-manager/archive/ff514feb1edaa5b6c04db5e5a4e4a72058285eff.tar.gz";
+          sha256 = "1wva4h440xxkd2rg2nsphnjxrlhxyyp3ygw1ffrn0rxs46k3gny7";
         })
       }/nixos")
   ];
@@ -21,8 +21,8 @@
   nixpkgs.config.packageOverrides = pkgs: {
     nur = import (builtins.fetchTarball {
       url =
-        "https://github.com/nix-community/NUR/archive/681b1a020e2a943afc4f677c4b564191340c6875.tar.gz";
-      sha256 = "1klpy2lh3w2axxm8rs8ckbxn1d0qin3ww20wqbidlkvrmq0vivim";
+        "https://github.com/nix-community/NUR/archive/5f70ea761d3a5d2eda6f2034f711f21c339a9931.tar.gz";
+      sha256 = "0p7fw3s2xwzgcxbk6qykv6r6rx730vlkzal22fyr7hc01ajc730a";
     }) { inherit pkgs; };
 
     all-hies = import (builtins.fetchTarball {
@@ -278,10 +278,9 @@
     # add fancy dual kawase blur to picom
     (self: super: {
       picom = super.picom.overrideAttrs (old: {
-        src = pkgs.fetchFromGitHub {
-          owner = "tryone144";
-          repo = "picom";
-          rev = "209d9b6558e430033d7ccd91e8657aea1670d1c0";
+        src = builtins.fetchTarball {
+          url =
+            "https://github.com/tryone144/picom/archive/209d9b6558e430033d7ccd91e8657aea1670d1c0.tar.gz";
           sha256 = "06j9vd9gbc1fvrmhvwbmqq18lyfwsvyy0gwgpqwgm8gcfplwyhfl";
         };
       });
