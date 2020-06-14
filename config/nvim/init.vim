@@ -140,6 +140,7 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
         \ 'coc-java',
         \ 'coc-json',
         \ 'coc-lists',
+        \ 'coc-markdownlint',
         \ 'coc-marketplace',
         \ 'coc-omnisharp',
         \ 'coc-pairs',
@@ -258,6 +259,9 @@ Plug 'neoclide/coc.nvim', {'do': 'npm install --frozen-lockfile'}
     nmap [h <Plug>(coc-git-prevchunk)
     nmap ]h <Plug>(coc-git-nextchunk)
     nnoremap <leader>gf :CocCommand git.foldUnchanged<CR>
+
+    " without this markdownlint isn't working
+    let g:coc_filetype_map = { 'pandoc': 'markdown' }
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
