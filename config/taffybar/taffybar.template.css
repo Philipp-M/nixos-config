@@ -1,6 +1,6 @@
 @define-color transparent rgba(0.0, 0.0, 0.0, 0.0);
 @define-color white #{{base06}};
-@define-color black alpha(#{{base00}}, 0.9);
+@define-color black alpha(#{{base00}}, {{alpha}});
 @define-color blue #{{base0D}};
 
 @define-color active-window-color @black;

@@ -18,6 +18,7 @@
       xftfontextra = ":style=Regular";
       fontsize = "14";
       dpi = "100";
+      alpha = "0.85"; # background alpha for applications that support it
     };
   };
 
@@ -175,7 +176,7 @@
         multiplier = 5;
       };
       custom_cursor_colors = false;
-      background_opacity = 0.9;
+      background_opacity = builtins.fromJSON alpha;
       font.normal.family = fontname;
       colors = {
         primary = {

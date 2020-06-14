@@ -9,7 +9,7 @@ text color for entries, views and content in general */
 @define-color theme_text_color #{{base07-hex}};
 /*
 widget base background color */
-@define-color theme_bg_color alpha(#{{base00-hex}}, 0.9);
+@define-color theme_bg_color alpha(#{{base00-hex}}, alpha);
 /*
 text widgets and the like base background color */
 @define-color theme_base_color #{{base00-hex}};
