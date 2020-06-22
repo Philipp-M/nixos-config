@@ -63,5 +63,7 @@ Most of the following keybindings are still the default bindings, with optimized
 #### Screen Movement key bindings
 | Key binding                                             | Action                                                                        |
 |---------------------------------------------------------|-------------------------------------------------------------------------------|
+| <kbd>mod</kbd> - <kbd>=</kbd>                           | Switch to the next screen                                                     |
+| <kbd>mod</kbd> - <kbd>shift</kbd> - <kbd>=</kbd>        | Move client to the next screen                                                |
 | <kbd>mod</kbd> - <kbd>{w,e,r}</kbd>                     | Switch to physical/Xinerama screens 1, 2, or 3                                |
 | <kbd>mod</kbd> - <kbd>shift</kbd>   - <kbd>{w,e,r}</kbd>| Move client to screen 1, 2, or 3                                              |

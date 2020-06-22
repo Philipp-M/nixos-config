@@ -7,11 +7,12 @@ module Main where
 import System.Taffybar.Support.PagerHints (pagerHints)
 import XMonad
 import XMonad.Actions.Promote
+import XMonad.Actions.CycleWS (nextScreen, shiftNextScreen)
 import XMonad.Hooks.EwmhDesktops (ewmh, fullscreenEventHook)
 import XMonad.Hooks.ManageDocks
 import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
-import XMonad.Layout.NoBorders (smartBorders)
+import XMonad.Layout.NoBorders (smartBorders, noBorders)
 import XMonad.Layout.NoFrillsDecoration
 import XMonad.Layout.Spacing
 import XMonad.Layout.Dwindle
@@ -46,17 +47,15 @@ topBarTheme = def
 
 addTopBar = noFrillsDeco shrinkText topBarTheme
 
-myLayouts =
-  id
-    . mkToggle (NOBORDERS ?? FULL ?? EOT)
-    . mkToggle (single MIRROR)
+myLayouts = smartBorders $ mkToggle (single NBFULL)
     $ avoidStruts
     $ addTopBar
     $ mySpacing
     $ tiled
-      ||| (Mirror tiled)
+      -- ||| (Mirror tiled)
       ||| (Dwindle R CW 1.5 1.1)
-      ||| (Full)
+      -- ||| Dwindle L CW 1.5 1.1
+      -- currently only use 2 layouts: Dwindle and tiled
   where
     tiled = Tall nmaster delta ratio -- default master pane layout
     nmaster = 1
@@ -68,9 +67,11 @@ myKeybindings =
     ("M-<Backspace>", kill),
     ("M-<Return>", spawn myTerminal),
     ("M-<Space>", spawn myLauncher),
-    ("M-f", sendMessage $ Toggle FULL),
+    ("M-f", sendMessage $ Toggle NBFULL),
     ("M-n", sendMessage NextLayout),
     ("M-p", promote),
+    ("M-=", nextScreen),
+    ("M-S-=", shiftNextScreen),
     ("M-k", windows W.focusDown),
     ("M-h", windows W.focusUp),
     ("M-S-h", windows W.swapUp),
