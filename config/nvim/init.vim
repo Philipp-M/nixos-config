@@ -343,6 +343,8 @@ Plug 'peterhoeg/vim-qml'
 Plug 'jparise/vim-graphql'
 Plug 'vim-scripts/ShaderHighLight'
 Plug 'ron-rs/ron.vim'
+Plug 'elixir-editors/vim-elixir'
+Plug 'arzg/vim-rust-syntax-ext', { 'for': ['rust'] }
 Plug 'udalov/kotlin-vim', { 'for': ['kotlin'] }
 Plug 'dart-lang/dart-vim-plugin', { 'for': 'dart'}
 Plug 'LnL7/vim-nix'
