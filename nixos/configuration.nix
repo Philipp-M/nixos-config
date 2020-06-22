@@ -174,6 +174,7 @@
     ## compilers and dev environment
     clang_10
     python3
+    elixir
     # gcc # conflicts with clang, only used in nix-shells anyway
     meson
     cmake
@@ -222,16 +223,20 @@
     pciutils
     ripgrep
     fd
+    bat
     wget
     unzip
+    youtube-dl
     zip
 
     # GRAPHICS
     blender
     krita
+    gimp
     inkscape
 
     # AUDIO
+    bitwig-studio
 
     # COMMUNICATION
     discord
@@ -246,10 +251,13 @@
     torbrowser
 
     # XORG/DESKTOP ENVIRONMENT
+    awf
     dmenu
     nerdfonts
     xorg.xev
     xorg.xmessage
+    xorg.xkill
+    xorg.xwininfo
 
     # Games
     minecraft
@@ -266,11 +274,9 @@
     feh # to view images in terminal
     imagemagick
     fira-code
-    youtube-dl
     mpv
     source-code-pro
     transmission-gtk
-    unityhub
     xclip
     nvtop
     adb-sync
