@@ -170,7 +170,7 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    # Development
+    # DEVELOPMENT
     ## compilers and dev environment
     clang_10
     python3
@@ -202,13 +202,13 @@
     vulkan-validation-layers
     rcm # manage dotfiles
 
-    # Document tools
+    # OFFICE/DOCUMENTING
     pandoc
     libreoffice
     texlive.combined.scheme-full
     zathura
 
-    # Terminal stuff
+    # TERMINAL/CLI
     alacritty
     kitty
     fasd
@@ -226,24 +226,26 @@
     unzip
     zip
 
-    # Graphical Editors
+    # GRAPHICS
     blender
     krita
     inkscape
 
-    # Communication
+    # AUDIO
+
+    # COMMUNICATION
     discord
     v4l-utils
     zoom-us
     skype
     tdesktop
 
-    # Web
+    # WEB
     chromium
     firefox
     torbrowser
 
-    # Desktop Environment
+    # XORG/DESKTOP ENVIRONMENT
     dmenu
     nerdfonts
     xorg.xev
