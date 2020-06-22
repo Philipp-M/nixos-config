@@ -238,13 +238,15 @@
       l = "lsd -l";
       # package/dependency management
       nx = "nix-shell --command fish";
-      update = "sudo nixos-rebuild switch --upgrade"; # dangerous use of sudo, don't do it at home (but it's comfortable)
+      update = "sudo nixos-rebuild switch --upgrade";
       # shortcuts for changing the directory
       cdwork = "cd $HOME/dev/work";
       cdev = "cd $HOME/dev/personal";
+      cdenv = "cd $HOME/dev/personal/desktop-environment";
       cdot = "cd $HOME/dev/personal/dotfiles";
       cdgo = "cd $HOME/dev/personal/go/src";
       cdc = "cd $HOME/dev/personal/c";
+      cdelx = "cd $HOME/dev/personal/elixir";
       cdrust = "cd $HOME/dev/personal/rust";
       cdhs = "cd $HOME/dev/personal/haskell";
       cdpy = "cd $HOME/dev/personal/python";
