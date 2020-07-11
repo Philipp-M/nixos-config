@@ -206,6 +206,8 @@
     vulkan-headers
     vulkan-loader
     vulkan-validation-layers
+    cudatoolkit
+    steam-run
     rcm # manage dotfiles
 
     # OFFICE/DOCUMENTING
@@ -257,19 +259,23 @@
 
     # XORG/DESKTOP ENVIRONMENT
     awf
+    dolphin
     dmenu
     nerdfonts
+    wmctrl
     xorg.xev
     xorg.xmessage
     xorg.xkill
     xorg.xwininfo
 
-    # Games
+    # GAMES
+    lutris
     minecraft
     steam
 
-    # Misc
+    # MISC
     mprime
+    patchelf
     keepassxc
     memtester
     docker-compose
