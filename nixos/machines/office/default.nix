@@ -18,6 +18,8 @@
 
   boot.kernelParams = [ "nomodeset" "pci=nomsi" ];
 
+  virtualisation.docker.enableNvidia = true;
+
   services.xserver = {
     dpi = 110;
     screenSection = ''

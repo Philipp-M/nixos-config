@@ -17,6 +17,8 @@
   networking.interfaces.enp39s0.useDHCP = true;
   networking.interfaces.wlo1.useDHCP = true;
 
+  virtualisation.docker.enableNvidia = true;
+
   services.xserver = {
     dpi = 110;
     screenSection = ''
