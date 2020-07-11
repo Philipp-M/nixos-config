@@ -74,7 +74,7 @@
   networking.firewall.allowedTCPPorts = [ 80 443 8080 8081 8000 8001 3000 ];
   networking.firewall.allowedUDPPorts = [ 80 443 8080 8081 8000 8001 3000 ];
 
-  networking.hosts = { "127.0.0.1" = [ "work" "www" ]; };
+  networking.hosts = { "127.0.0.1" = [ "work" "www" "spa-test" ]; };
 
   services.nginx.enable = true;
   services.nginx.virtualHosts."work" = {
@@ -85,6 +85,11 @@
     root = "/home/philm/dev/personal/www/";
     locations."/".extraConfig = "autoindex on;";
   };
+  services.nginx.virtualHosts."spa-test" =
+    { # simple test for SPAs, that need to use / with normal history routing
+      root = "/home/philm/dev/personal/www/spa-test";
+      locations."/".extraConfig = "autoindex on;";
+    };
 
   # List of systemwide services
 
