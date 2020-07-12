@@ -187,8 +187,6 @@
 
   services.status-notifier-watcher.enable = true;
 
-  services.xembed-sni-proxy.enable = true;
-
   services.pasystray.enable = true;
 
   services.network-manager-applet.enable = true;
