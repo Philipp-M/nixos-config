@@ -10,6 +10,7 @@ UNDOTTED="screenshots wallpaper scripts"
 EXCLUDES="
   README.md
   Xresources
+  local
   config/alacritty
   config/autorandr
   config/fish

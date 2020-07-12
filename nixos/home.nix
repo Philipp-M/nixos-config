@@ -110,6 +110,9 @@
       src = ../config/nvim/autoload/airline/themes/base16.template.vim;
     };
 
+  home.file.".local/share/fonts/Fira Code Regular Nerd Font Complete.otf".source =
+    ./. + "/../local/share/fonts/Fira Code Regular Nerd Font Complete.otf";
+
   # List of user services
 
   services.taffybar = {
