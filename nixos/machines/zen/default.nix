@@ -9,6 +9,9 @@
 
   imports = [ ./hardware-configuration.nix ../../configuration.nix ];
 
+  boot.supportedFilesystems = [ "zfs" ];
+
+  networking.hostId = "80e43ffd";
   networking.hostName = "zen";
 
   hardware.enableRedistributableFirmware = true;

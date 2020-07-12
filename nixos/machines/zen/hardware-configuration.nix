@@ -22,6 +22,26 @@
     fsType = "vfat";
   };
 
+  fileSystems."/tank" = {
+    device = "tank";
+    fsType = "zfs";
+  };
+
+  fileSystems."/tank/media" = {
+    device = "tank/media";
+    fsType = "zfs";
+  };
+
+  fileSystems."/tank/backup" = {
+    device = "tank/backup";
+    fsType = "zfs";
+  };
+
+  fileSystems."/tank/games" = {
+    device = "tank/games";
+    fsType = "zfs";
+  };
+
   swapDevices =
     [{ device = "/dev/disk/by-uuid/ce9405eb-d20b-430f-80dd-adcda01bc5b7"; }];
 
