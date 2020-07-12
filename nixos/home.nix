@@ -17,6 +17,7 @@
       fontname = "FiraCode Nerd Font";
       xftfontextra = ":style=Regular";
       fontsize = "14";
+      xcursorSize = "32";
       dpi = "100";
       alpha = "0.85"; # background alpha for applications that support it
     };
@@ -95,6 +96,50 @@
     };
   };
 
+  xresources.properties = with config.lib.base16.theme; {
+    "Xft.dpi" = dpi;
+    "Xft.antialias" = true;
+    "Xft.rgba" = "rgb";
+    "Xft.hinting" = true;
+    "Xft.autohint" = false;
+    "Xft.hintstyle" = "hintslight";
+    "Xft.lcdfilter" = "lcddefault";
+    "Xft.font" = "xft:${fontname}${xftfontextra}:size=${fontsize}";
+    "Xcursor.size"  = xcursorSize;
+
+    "*color0" = "#${base00-hex}";
+    "*color1" = "#${base08-hex}";
+    "*color2" = "#${base0B-hex}";
+    "*color3" = "#${base0A-hex}";
+    "*color4" = "#${base0D-hex}";
+    "*color5" = "#${base0E-hex}";
+    "*color6" = "#${base0C-hex}";
+    "*color7" = "#${base05-hex}";
+    "*color8" = "#${base03-hex}";
+
+    "*color9" = "#${base08-hex}";
+    "*color10" = "#${base0B-hex}";
+    "*color11" = "#${base0A-hex}";
+    "*color12" = "#${base0D-hex}";
+    "*color13" = "#${base0E-hex}";
+    "*color14" = "#${base0C-hex}";
+
+    "*color15" = "#${base07-hex}";
+    "*color16" = "#${base09-hex}";
+    "*color17" = "#${base0F-hex}";
+    "*color18" = "#${base01-hex}";
+    "*color19" = "#${base02-hex}";
+    "*color20" = "#${base04-hex}";
+    "*color21" = "#${base06-hex}";
+
+    "*foreground" = "#${base05-hex}";
+    "*background" = "#${base00-hex}";
+    "*fadeColor" = "#${base07-hex}";
+    "*cursorColor" = "#${base01-hex}";
+    "*pointerColorBackground" = "#${base01-hex}";
+    "*pointerColorForeground" = "#${base06-hex}";
+  };
+
   # KDE/GTK specific
 
   gtk = {
@@ -125,11 +170,6 @@
   };
 
   # custom home files, currently mostly base16 templates
-
-  home.file.".Xresources".source = config.lib.base16.template {
-    name = "Xresources";
-    src = ../template.Xresources;
-  };
 
   home.file.".config/nvim/colors/base16.vim".source =
     config.lib.base16.template {
