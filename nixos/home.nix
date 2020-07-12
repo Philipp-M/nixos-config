@@ -222,7 +222,7 @@
 
   services.random-background = {
     enable = true;
-    imageDirectory = "%h/dev/personal/dotfiles/wallpaper/";
+    imageDirectory = "%h/wallpaper/";
   };
 
   services.status-notifier-watcher.enable = true;
