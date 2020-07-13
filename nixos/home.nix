@@ -403,7 +403,10 @@
     lfs.enable = true;
     delta.enable = true;
     extraConfig.pull.rebase = true;
-    aliases = { pushall = "!git remote | xargs -L1 git push --all"; };
+    aliases = {
+      pushall = "!git remote | xargs -L1 git push --all";
+      spull = "!git stash && git pull && git stash pop";
+    };
   };
 
   programs.mpv = {
