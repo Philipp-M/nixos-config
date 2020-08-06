@@ -230,6 +230,8 @@
     pciutils
     ripgrep
     fd
+    tokei
+    du-dust
     bat
     wget
     unzip
@@ -243,6 +245,7 @@
     inkscape
 
     # AUDIO
+    cantata
     bitwig-studio
 
     # COMMUNICATION
@@ -254,6 +257,7 @@
 
     # WEB
     chromium
+    google-chrome
     firefox
     torbrowser
 
@@ -276,6 +280,9 @@
     # MISC
     mprime
     patchelf
+    qdirstat
+    ecryptfs
+    ecryptfs-helper
     keepassxc
     memtester
     docker-compose

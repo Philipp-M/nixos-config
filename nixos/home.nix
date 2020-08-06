@@ -281,6 +281,7 @@
         min_time = 10;
         show_milliseconds = true;
       };
+      time.disabled = false;
     };
   };
 
