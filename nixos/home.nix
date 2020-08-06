@@ -313,7 +313,10 @@
       l = "lsd -l";
       # package/dependency management
       nx = "nix-shell --command fish";
-      update = "sudo nixos-rebuild switch --upgrade";
+      upgrade =
+        "sudo nixos-rebuild switch --upgrade"; # dangerous use of sudo, don't do it at home (but it's comfortable)
+      update =
+        "sudo nixos-rebuild switch"; # dangerous use of sudo, don't do it at home (but it's comfortable)
       # shortcuts for changing the directory
       cdwork = "cd $HOME/dev/work";
       cdev = "cd $HOME/dev/personal";
