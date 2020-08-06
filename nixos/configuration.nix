@@ -308,8 +308,18 @@
       picom = super.picom.overrideAttrs (old: {
         src = builtins.fetchTarball {
           url =
-            "https://github.com/tryone144/picom/archive/209d9b6558e430033d7ccd91e8657aea1670d1c0.tar.gz";
-          sha256 = "06j9vd9gbc1fvrmhvwbmqq18lyfwsvyy0gwgpqwgm8gcfplwyhfl";
+            "https://github.com/ibhagwan/picom/archive/82ecc90b51fa2489d26ef3f08abe1f06efcb53d8.tar.gz";
+          sha256 = "0pk1711kd6qqjhghrc73ldjl0m82p53yiiz5acyxvaw55hvm558h";
+        };
+      });
+
+      neovim-unwrapped = super.neovim-unwrapped.overrideAttrs (old: rec {
+        version = "0.5-dev";
+        src = builtins.fetchTarball {
+          url =
+            # "https://github.com/tryone144/picom/archive/209d9b6558e430033d7ccd91e8657aea1670d1c0.tar.gz";
+            "https://github.com/neovim/neovim/archive/f26df8bb66158baacb79c79822babaf137607cd6.tar.gz";
+          sha256 = "0ci5bgkw1j4gr2pls84q3vgn859zwwxfnr3wnyqaj5hyimr9yz6h";
         };
       });
     })
