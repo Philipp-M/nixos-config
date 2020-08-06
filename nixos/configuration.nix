@@ -69,6 +69,8 @@
   # Enable audio
   hardware.pulseaudio.enable = true;
   hardware.pulseaudio.support32Bit = true;
+  hardware.pulseaudio.package =
+    pkgs.pulseaudio.override { jackaudioSupport = true; };
 
   # debugging of local webservices from external devices like smartphones
   networking.firewall.allowedTCPPorts = [ 80 443 8080 8081 8000 8001 3000 ];
