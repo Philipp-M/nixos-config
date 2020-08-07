@@ -179,10 +179,10 @@
   environment.systemPackages = with pkgs; [
     # DEVELOPMENT
     ## compilers and dev environment
-    clang_10
+    # clang_10 # conflicts with clang
     python3
     elixir
-    # gcc # conflicts with clang, only used in nix-shells anyway
+    gcc10
     meson
     cmake
     git
