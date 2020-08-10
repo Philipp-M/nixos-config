@@ -41,6 +41,7 @@
       $DRY_RUN_CMD mkdir -p $VERBOSE_ARG $HOME/dev/personal/rust/
       $DRY_RUN_CMD mkdir -p $VERBOSE_ARG $HOME/dev/personal/rust/playground
       $DRY_RUN_CMD mkdir -p $VERBOSE_ARG $HOME/dev/personal/www/
+      $DRY_RUN_CMD mkdir -p $VERBOSE_ARG $HOME/dev/personal/www/spa-test/
       $DRY_RUN_CMD mkdir -p $VERBOSE_ARG $HOME/dev/personal/www/frontend-libs/
       $DRY_RUN_CMD mkdir -p $VERBOSE_ARG $HOME/dev/work/scripts/
       $DRY_RUN_CMD mkdir -p $VERBOSE_ARG $HOME/dev/work/playground/
