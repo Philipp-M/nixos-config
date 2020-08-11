@@ -317,9 +317,8 @@
         version = "0.5-dev";
         src = builtins.fetchTarball {
           url =
-            # "https://github.com/tryone144/picom/archive/209d9b6558e430033d7ccd91e8657aea1670d1c0.tar.gz";
-            "https://github.com/neovim/neovim/archive/f26df8bb66158baacb79c79822babaf137607cd6.tar.gz";
-          sha256 = "0ci5bgkw1j4gr2pls84q3vgn859zwwxfnr3wnyqaj5hyimr9yz6h";
+            "https://github.com/neovim/neovim/archive/94b7ff730a1914c14f347f5dc75175dc34a4b3f5.tar.gz";
+          sha256 = "15fpihn2xbdzp4nb1sgni0wyr94q89y45jaxfmzh6vjbx8f76m0w";
         };
       });
 
