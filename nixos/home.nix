@@ -191,7 +191,7 @@
 
   services.taffybar = {
     enable = true;
-    package = (import ../config/taffybar/default.nix);
+    package = (import ../config/taffybar/default.nix) { inherit pkgs; };
   };
 
   home.file.".config/taffybar/taffybar.css".source =
