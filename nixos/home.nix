@@ -203,12 +203,46 @@
   services.picom = {
     enable = true;
     experimentalBackends = true;
-    backend = "glx";
-    blur = true;
-    blurMethod = "dual_kawase";
-    blurStrength = 10;
-    vSync = false;
-    extraOptions = "unredir-if-possible = false";
+    settings = {
+      # general
+      backend = "glx";
+      vsync = false;
+      refresh-rate = 0;
+      unredir-if-possible = false;
+      # blur
+      blur-background = true;
+      blur-background-exclude = [ ];
+      blur-method = "dual_kawase";
+      blur-strength = 10;
+      wintypes = {
+        desktop = {
+          opacity = builtins.fromJSON config.lib.base16.theme.alpha;
+          corner-radius = 0;
+          corner-radius-top-left = 4;
+          corner-radius-top-right = 4;
+          round-borders = 1;
+        };
+        normal = {
+          round-borders = 1;
+        };
+      };
+      # rounded corners and alpha-transparency
+      detect-rounded-corners = true;
+      round-borders = 1;
+      corner-radius = 0;
+      corner-radius-bottom-left = 4;
+      corner-radius-bottom-right = 4;
+      rounded-corners-exclude = [
+        "window_type = 'menu'"
+        "window_type = 'dock'"
+        "window_type = 'dropdown_menu'"
+        "window_type = 'popup_menu'"
+        "class_g = 'Polybar'"
+        "class_g = 'Rofi'"
+        "class_g = 'Dunst'"
+      ];
+      frame-opacity = builtins.fromJSON config.lib.base16.theme.alpha;
+    };
   };
 
   services.redshift = {

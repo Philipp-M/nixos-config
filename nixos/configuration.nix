@@ -308,8 +308,8 @@
       picom = super.picom.overrideAttrs (old: {
         src = builtins.fetchTarball {
           url =
-            "https://github.com/ibhagwan/picom/archive/82ecc90b51fa2489d26ef3f08abe1f06efcb53d8.tar.gz";
-          sha256 = "0pk1711kd6qqjhghrc73ldjl0m82p53yiiz5acyxvaw55hvm558h";
+            "https://github.com/Philipp-M/picom/archive/2b1d9faf0bf5dfad04a5acf02b34a432368de805.tar.gz";
+          sha256 = "041zaq43f8n5lkmj7mfwl38gsrbqihx5vfgj8hkkx46x0biwjc4n";
         };
       });
 
