@@ -95,7 +95,7 @@ Plug 'scrooloose/nerdtree'
 Plug 'tpope/vim-sleuth'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
-Plug 'tpope/vim-commentary'
+Plug 'tomtom/tcomment_vim'
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" FUGITIVE
 Plug 'tpope/vim-fugitive'
