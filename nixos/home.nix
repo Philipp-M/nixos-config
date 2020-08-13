@@ -272,6 +272,11 @@
 
   services.unclutter.enable = true;
 
+  # audio services
+
+  services.pulseeffects.enable = true;
+  # services.pulseeffects.preset = "HD800S";
+
   # List of user programs
 
   programs.home-manager.enable = true;
