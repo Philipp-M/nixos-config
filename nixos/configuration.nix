@@ -11,8 +11,8 @@
     (import "${
         (builtins.fetchTarball {
           url =
-            "https://github.com/Philipp-M/home-manager/archive/ff514feb1edaa5b6c04db5e5a4e4a72058285eff.tar.gz";
-          sha256 = "1wva4h440xxkd2rg2nsphnjxrlhxyyp3ygw1ffrn0rxs46k3gny7";
+            "https://github.com/Philipp-M/home-manager/archive/1dbb7d2660da1ca1a089aab9788c54520cbc3383.tar.gz";
+          sha256 = "0dljxwb75v5rpkn7s7ndi052ybnxlih2qrdrlkk7z42bwin54b4x";
         })
       }/nixos")
   ];
