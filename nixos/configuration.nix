@@ -90,7 +90,10 @@
   services.nginx.virtualHosts."spa-test" =
     { # simple test for SPAs, that need to use / with normal history routing
       root = "/home/philm/dev/personal/www/spa-test";
-      locations."/".extraConfig = "autoindex on;";
+      locations."/".extraConfig = ''
+        try_files $uri $uri/ /index.html;
+        autoindex on;
+      '';
     };
 
   # List of systemwide services
