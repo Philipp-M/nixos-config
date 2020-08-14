@@ -22,7 +22,7 @@ import XMonad.Util.EZConfig
 
 mySpacing = spacingRaw True (Border 5 5 5 5) True (Border 5 5 5 5) True
 
-topbarHeight = 5
+topbarHeight = 7
 
 black  = "#{{base00}}"
 white  = "#{{base06}}"
@@ -30,7 +30,7 @@ red    = "#{{base08}}"
 green  = "#{{base0B}}"
 yellow = "#{{base0A}}"
 blue   = "#{{base0D}}"
-active = white
+active = blue
 
 
 topBarTheme = def

@@ -218,8 +218,8 @@
         desktop = {
           opacity = builtins.fromJSON config.lib.base16.theme.alpha;
           corner-radius = 0;
-          corner-radius-top-left = 4;
-          corner-radius-top-right = 4;
+          corner-radius-top-left = 5;
+          corner-radius-top-right = 5;
           round-borders = 1;
         };
         normal = {
@@ -230,8 +230,8 @@
       detect-rounded-corners = true;
       round-borders = 1;
       corner-radius = 0;
-      corner-radius-bottom-left = 4;
-      corner-radius-bottom-right = 4;
+      corner-radius-bottom-left = 5;
+      corner-radius-bottom-right = 5;
       rounded-corners-exclude = [
         "window_type = 'menu'"
         "window_type = 'dock'"
