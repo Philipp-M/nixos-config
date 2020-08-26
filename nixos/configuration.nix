@@ -84,6 +84,7 @@
     locations."/".extraConfig = "autoindex on;";
   };
   services.nginx.virtualHosts."www" = {
+    default = true;
     root = "/home/philm/dev/personal/www/";
     locations."/".extraConfig = "autoindex on;";
   };
