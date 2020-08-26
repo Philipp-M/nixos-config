@@ -3,7 +3,13 @@
     "ccls": {
       "command": "ccls",
       "filetypes": ["c", "cpp", "objc", "objcpp"],
-      "rootPatterns": [".ccls", "compile_commands.json", ".vim/", ".git/", ".hg/"],
+      "rootPatterns": [
+        ".ccls",
+        "compile_commands.json",
+        ".vim/",
+        ".git/",
+        ".hg/"
+      ],
       "initializationOptions": {
         "cache": {
           "directory": "/tmp/ccls"
@@ -13,29 +19,20 @@
     "haskell": {
       "command": "hie-wrapper",
       "args": ["--lsp"],
-      "rootPatterns": [
-        "stack.yaml",
-        "cabal.config",
-        "package.yaml"
-      ],
-      "filetypes": [
-        "hs",
-        "lhs",
-        "haskell"
-      ],
+      "rootPatterns": ["stack.yaml", "cabal.config", "package.yaml"],
+      "filetypes": ["hs", "lhs", "haskell"],
       "initializationOptions": {
         "languageServerHaskell": {
           "hlintOn": true
         }
-      },
+      }
     },
     "nix": {
       "command": "rnix-lsp",
       "filetypes": ["nix"]
     }
   },
-  "tslint.jsEnable": true,
-  "rust-analyzer.cargo-watch.command": "clippy",
   "rust-analyzer.serverPath": "~/.cargo/bin/rust-analyzer",
-  "git.enableGutters": true
+  "git.enableGutters": true,
+  "omnisharp.path": "/run/current-system/sw/bin/omnisharp"
 }

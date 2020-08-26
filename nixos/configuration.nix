@@ -195,6 +195,7 @@
     llvmPackages.bintools
     neovim
     ccls
+    omnisharp-roslyn
     nixfmt
     flatpak-builder
     rnix-lsp
@@ -202,6 +203,7 @@
     haskell.compiler.ghc882
     (all-hies.selection { selector = p: { inherit (p) ghc882; }; })
     carnix
+    yarn
     nodejs_latest
     nodePackages.node2nix
     pkg-config
