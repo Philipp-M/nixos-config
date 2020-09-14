@@ -267,7 +267,6 @@
     awf
     dolphin
     dmenu
-    nerdfonts
     wmctrl
     xorg.xev
     xorg.xmessage
@@ -293,14 +292,18 @@
     scrot
     feh # to view images in terminal
     imagemagick
+    # unityhub
     fira-code
     mpv
     source-code-pro
     transmission-gtk
+    deluge
     xclip
     nvtop
     adb-sync
   ];
+
+  fonts.fonts = with pkgs; [ nerdfonts google-fonts ];
 
   nixpkgs.overlays = [
     # add fancy dual kawase blur to picom
