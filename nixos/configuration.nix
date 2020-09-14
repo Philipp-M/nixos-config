@@ -11,8 +11,8 @@
     (import "${
         (builtins.fetchTarball {
           url =
-            "https://github.com/Philipp-M/home-manager/archive/1dbb7d2660da1ca1a089aab9788c54520cbc3383.tar.gz";
-          sha256 = "0dljxwb75v5rpkn7s7ndi052ybnxlih2qrdrlkk7z42bwin54b4x";
+            "https://github.com/Philipp-M/home-manager/archive/2d0fca0e3a6ee6d126a8658646e8851f9d3f7c14.tar.gz";
+          sha256 = "15dqgcwrhyz1jnsi1hhk9h831dxn9zz2j4gn3s11daylbxq4jvd9";
         })
       }/nixos")
   ];
@@ -23,12 +23,6 @@
       url =
         "https://github.com/nix-community/NUR/archive/5f70ea761d3a5d2eda6f2034f711f21c339a9931.tar.gz";
       sha256 = "0p7fw3s2xwzgcxbk6qykv6r6rx730vlkzal22fyr7hc01ajc730a";
-    }) { inherit pkgs; };
-
-    all-hies = import (builtins.fetchTarball {
-      url =
-        "https://github.com/Infinisil/all-hies/archive/4b6aab017cdf96a90641dc287437685675d598da.tar.gz";
-      sha256 = "0ap12mbzk97zmxk42fk8vqacyvpxk29r2wrnjqpx4m2w9g7gfdya";
     }) { inherit pkgs; };
   };
 
@@ -202,7 +196,6 @@
     rnix-lsp
     haskellPackages.ormolu # haskell formatter
     haskell.compiler.ghc882
-    (all-hies.selection { selector = p: { inherit (p) ghc882; }; })
     carnix
     yarn
     nodejs_latest
@@ -323,48 +316,59 @@
         version = "0.5-dev";
         src = builtins.fetchTarball {
           url =
-            "https://github.com/neovim/neovim/archive/3ccdbc570d856ee3ff1f64204e352a40b9030ac2.tar.gz";
-          sha256 = "09cdrw2r4fi7csqyw0hh9kdxw5wqvqx0ypvn91zqxw6islaz9pl9";
+            "https://github.com/neovim/neovim/archive/f34eeba2d85b4382d7504e1f3e12a7afb0788c1d.tar.gz";
+          sha256 = "1bx2i8fqid2qlp8lb9ih2bisp4bhjsw7vsixmsd8hh94qss4sxfl";
         };
       });
 
-      haskellPackages = with self.haskell.lib;
-        super.haskellPackages.extend (hself: hsuper: {
-          gi-cairo-render = overrideCabal (hsuper.gi-cairo-render) (drv: {
-            src = self.fetchFromGitHub {
-              owner = "thestr4ng3r";
-              repo = "gi-cairo-render";
-              rev = "8727c43cdf91aeedffc9cb4c5575f56660a86399";
-              sha256 = "16kqh2ck0dad1l4m6q9xs5jqj9q0vgpqrzb2dc90jk8xwslmmhxd";
-            };
+      haskellPackages = let
+        gi-cairo-render-src = self.fetchFromGitHub {
+          owner = "cohomology";
+          repo = "gi-cairo-render";
+          rev = "051de28ff092e0be0dc28612c6acb715a8bca846";
+          sha256 = "1v9kdycc91hh5s41n2i1dw2x6lxp9s1lnnb3qj6vy107qv8i4p6s";
+        };
+      in with self.haskell.lib;
+      super.haskellPackages.extend (hself: hsuper: {
+        gi-cairo-render = markUnbroken (overrideCabal (hsuper.gi-cairo-render)
+          (drv: {
+            src = gi-cairo-render-src;
             editedCabalFile = null;
             postUnpack = ''
               mv source all
               mv all/gi-cairo-render source
             '';
-          });
-          gi-dbusmenu = hself.gi-dbusmenu_0_4_8;
-          gi-dbusmenugtk3 = hself.gi-dbusmenugtk3_0_4_9;
-          gi-gdk = hself.gi-gdk_3_0_23;
-          gi-gdkx11 = overrideSrc hsuper.gi-gdkx11 {
-            src = self.fetchurl {
-              url =
-                "https://hackage.haskell.org/package/gi-gdkx11-3.0.10/gi-gdkx11-3.0.10.tar.gz";
-              sha256 = "0kfn4l5jqhllz514zw5cxf7181ybb5c11r680nwhr99b97yy0q9f";
-            };
-            version = "3.0.10";
+          }));
+        gi-cairo-connector = markUnbroken
+          (overrideCabal (hsuper.gi-cairo-connector) (drv: {
+            src = gi-cairo-render-src;
+            editedCabalFile = null;
+            postUnpack = ''
+              mv source all
+              mv all/gi-cairo-connector source
+            '';
+          }));
+        gi-dbusmenu = markUnbroken (hself.gi-dbusmenu_0_4_8);
+        gi-dbusmenugtk3 = markUnbroken (hself.gi-dbusmenugtk3_0_4_9);
+        gi-gdk = hself.gi-gdk_3_0_23;
+        gi-gdkx11 = markUnbroken (overrideSrc hsuper.gi-gdkx11 {
+          src = self.fetchurl {
+            url =
+              "https://hackage.haskell.org/package/gi-gdkx11-3.0.10/gi-gdkx11-3.0.10.tar.gz";
+            sha256 = "0kfn4l5jqhllz514zw5cxf7181ybb5c11r680nwhr99b97yy0q9f";
           };
-          gi-gtk-hs = hself.gi-gtk-hs_0_3_9;
-          gi-xlib = hself.gi-xlib_2_0_9;
-          gtk-sni-tray = markUnbroken (hsuper.gtk-sni-tray);
-          gtk-strut = markUnbroken (hsuper.gtk-strut);
-          taffybar = markUnbroken (appendPatch hsuper.taffybar
-            (self.fetchpatch {
-              url =
-                "https://github.com/taffybar/taffybar/pull/494/commits/a7443324a549617f04d49c6dfeaf53f945dc2b98.patch";
-              sha256 = "0prskimfpapgncwc8si51lf0zxkkdghn33y3ysjky9a82dsbhcqi";
-            }));
+          version = "3.0.10";
         });
+        gi-gtk-hs = markUnbroken (hself.gi-gtk-hs_0_3_9);
+        gi-xlib = markUnbroken (hself.gi-xlib_2_0_9);
+        gtk-sni-tray = markUnbroken (hsuper.gtk-sni-tray);
+        gtk-strut = markUnbroken (hsuper.gtk-strut);
+        taffybar = markUnbroken (appendPatch hsuper.taffybar (self.fetchpatch {
+          url =
+            "https://github.com/taffybar/taffybar/pull/494/commits/a7443324a549617f04d49c6dfeaf53f945dc2b98.patch";
+          sha256 = "0prskimfpapgncwc8si51lf0zxkkdghn33y3ysjky9a82dsbhcqi";
+        }));
+      });
     })
   ];
 }
