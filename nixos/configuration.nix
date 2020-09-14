@@ -154,6 +154,7 @@
       "systemd-journal"
       "adbusers"
       "video"
+      "power"
       "wheel" # Enable ‘sudo’ for the user.
       "docker"
     ];
