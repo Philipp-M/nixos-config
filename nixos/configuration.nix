@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, options, ... }:
+{ config, pkgs, options, lib, ... }:
 
 {
   nixpkgs.config.allowUnfree = true;
@@ -72,24 +72,33 @@
 
   networking.hosts = { "127.0.0.1" = [ "work" "www" "spa-test" ]; };
 
-  services.nginx.enable = true;
-  services.nginx.virtualHosts."work" = {
-    root = "/home/philm/dev/work/";
-    locations."/".extraConfig = "autoindex on;";
+  # nginx is sandboxed and doesn't allow reading of /home
+  systemd.services.nginx.serviceConfig = {
+    ProtectSystem = lib.mkForce false;
+    ProtectHome = lib.mkForce false;
   };
-  services.nginx.virtualHosts."www" = {
-    default = true;
-    root = "/home/philm/dev/personal/www/";
-    locations."/".extraConfig = "autoindex on;";
-  };
-  services.nginx.virtualHosts."spa-test" =
-    { # simple test for SPAs, that need to use / with normal history routing
-      root = "/home/philm/dev/personal/www/spa-test";
-      locations."/".extraConfig = ''
-        try_files $uri $uri/ /index.html;
-        autoindex on;
-      '';
+  services.nginx = {
+    enable = true;
+    virtualHosts = {
+      "work" = {
+        root = "/home/philm/dev/work/";
+        locations."/".extraConfig = "autoindex on;";
+      };
+      "www" = {
+        default = true;
+        root = "/home/philm/dev/personal/www/";
+        locations."/".extraConfig = "autoindex on;";
+      };
+      "spa-test" =
+        { # simple test for SPAs, that need to use / with normal history routing
+          root = "/home/philm/dev/personal/www/spa-test";
+          locations."/".extraConfig = ''
+            try_files $uri $uri/ /index.html;
+            autoindex on;
+          '';
+        };
     };
+  };
 
   # List of systemwide services
 
