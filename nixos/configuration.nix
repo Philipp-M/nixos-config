@@ -334,6 +334,8 @@
         };
       });
 
+      alacritty = super.callPackage ./alacritty.nix { };
+
       haskellPackages = let
         gi-cairo-render-src = self.fetchFromGitHub {
           owner = "cohomology";
