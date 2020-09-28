@@ -9,20 +9,20 @@
   imports = [
     # custom home-manager
     (import "${
-        (builtins.fetchTarball {
-          url =
-            "https://github.com/Philipp-M/home-manager/archive/2d0fca0e3a6ee6d126a8658646e8851f9d3f7c14.tar.gz";
-          sha256 = "15dqgcwrhyz1jnsi1hhk9h831dxn9zz2j4gn3s11daylbxq4jvd9";
+        (builtins.fetchGit {
+          url = "https://github.com/Philipp-M/home-manager/";
+          ref = "personal";
+          rev = "a43cb388fdb502722a631db1c95336bfaad85da3";
         })
       }/nixos")
   ];
 
   # NUR and other custom packages
   nixpkgs.config.packageOverrides = pkgs: {
-    nur = import (builtins.fetchTarball {
-      url =
-        "https://github.com/nix-community/NUR/archive/5f70ea761d3a5d2eda6f2034f711f21c339a9931.tar.gz";
-      sha256 = "0p7fw3s2xwzgcxbk6qykv6r6rx730vlkzal22fyr7hc01ajc730a";
+    nur = import (builtins.fetchGit {
+      url = "https://github.com/nix-community/NUR/";
+      ref = "master";
+      rev = "5e6c5deca9fd7ef8c2151ec9b2c55c7fd3fa380f";
     }) { inherit pkgs; };
   };
 
@@ -318,19 +318,19 @@
     # add fancy dual kawase blur to picom
     (self: super: {
       picom = super.picom.overrideAttrs (old: {
-        src = builtins.fetchTarball {
-          url =
-            "https://github.com/Philipp-M/picom/archive/2b1d9faf0bf5dfad04a5acf02b34a432368de805.tar.gz";
-          sha256 = "041zaq43f8n5lkmj7mfwl38gsrbqihx5vfgj8hkkx46x0biwjc4n";
+        src = builtins.fetchGit {
+          url = "https://github.com/Philipp-M/picom/";
+          ref = "customizable-rounded-corners";
+          rev = "2b1d9faf0bf5dfad04a5acf02b34a432368de805";
         };
       });
 
       neovim-unwrapped = super.neovim-unwrapped.overrideAttrs (old: rec {
         version = "0.5-dev";
-        src = builtins.fetchTarball {
-          url =
-            "https://github.com/neovim/neovim/archive/f34eeba2d85b4382d7504e1f3e12a7afb0788c1d.tar.gz";
-          sha256 = "1bx2i8fqid2qlp8lb9ih2bisp4bhjsw7vsixmsd8hh94qss4sxfl";
+        src = builtins.fetchGit {
+          url = "https://github.com/neovim/neovim/";
+          ref = "master";
+          rev = "c5ceefca793b8a78cc22a553b243d66042776d5f";
         };
       });
 

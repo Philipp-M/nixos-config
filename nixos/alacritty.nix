@@ -53,17 +53,17 @@ let
 in
 rustPlatform.buildRustPackage rec {
   pname = "alacritty";
-  version = "0.5.0-ligatures-mod-fix";
+  version = "0.5.0-dev-ligatures-mod-fix";
 
 
   src = fetchFromGitHub {
     owner = "Philipp-M";
     repo = pname;
-    rev = "15694461e87d38674b7e129a9362614d10fc3974";
-    sha256 = "0z6qmay59410z6i2hamgrlmwpk3qg7fzbdm1gdr8k6bwyq9bjbxa";
+    rev = "4b7ee5ae7c261967a11a139367d1958b157cc449";
+    sha256 = "0r62war208nl7jh5rrqaik19mxzvy2kki1b357pgqbbwc84salmq";
   };
 
-  cargoSha256 = "0jn1pwiyipjq7i0v2sfgaydf046zgkln46vqyaidsxf49wqvwnbk";
+  cargoSha256 = "0kajmhsia43j522523kb97gllr2f2kqm52r49jnm4zs86krn6kkf";
 
   nativeBuildInputs = [
     cmake
