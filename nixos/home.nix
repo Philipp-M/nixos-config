@@ -11,8 +11,8 @@
 
   themes.base16 = {
     enable = true;
-    scheme = "gruvbox";
-    variant = "gruvbox-dark-medium";
+    scheme = "tomorrow";
+    variant = "tomorrow-night";
     extraParams = {
       fontname = "FiraCode Nerd Font";
       xftfontextra = ":style=Regular";
@@ -291,6 +291,7 @@
       };
       custom_cursor_colors = false;
       background_opacity = builtins.fromJSON alpha;
+      font.size = 16;
       font.normal.family = fontname;
       colors = {
         primary = {
