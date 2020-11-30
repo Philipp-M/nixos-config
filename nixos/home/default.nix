@@ -48,14 +48,15 @@
       $DRY_RUN_CMD mkdir -p $VERBOSE_ARG $HOME/dev/work/frontend-libs/
     '';
 
-  home.activation.linkConfigs =
-    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      $DRY_RUN_CMD mkdir -p $VERBOSE_ARG $HOME/.config/nvim/
-      $DRY_RUN_CMD ln -fs $VERBOSE_ARG \
-        ${builtins.toPath ../config/nvim/init.vim} $HOME/.config/nvim/init.vim
-      $DRY_RUN_CMD ln -fs $VERBOSE_ARG \
-        ${builtins.toPath ../config/nvim/coc-settings.json} $HOME/.config/nvim/coc-settings.json
-    '';
+  home.activation.linkConfigs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    $DRY_RUN_CMD mkdir -p $VERBOSE_ARG $HOME/.config/nvim/
+    $DRY_RUN_CMD ln -fs $VERBOSE_ARG \
+      ${builtins.toPath ../../config/nvim/init.vim} $HOME/.config/nvim/init.vim
+    $DRY_RUN_CMD ln -fs $VERBOSE_ARG \
+      ${
+        builtins.toPath ../../config/nvim/coc-settings.json
+      } $HOME/.config/nvim/coc-settings.json
+  '';
 
   home.sessionVariables.EDITOR = "nvim";
 
@@ -91,7 +92,7 @@
         enableContribAndExtras = true;
         config = builtins.toPath (config.lib.base16.template {
           name = "xmonad";
-          src = ../xmonad/xmonad.hs;
+          src = ../../xmonad/xmonad.hs;
         });
       };
     };
@@ -167,7 +168,7 @@
   # gtk 2
   home.file.".themes/base16/gtk-2.0/gtkrc".source = config.lib.base16.template {
     name = "base16-gtk-2.0";
-    src = ../config/gtk-2.0/template.gtkrc;
+    src = ../../config/gtk-2.0/template.gtkrc;
   };
 
   # gtk 3
@@ -187,29 +188,29 @@
   home.file.".config/nvim/colors/base16.vim".source =
     config.lib.base16.template {
       name = "base16-vim";
-      src = ../config/nvim/colors/base16.template.vim;
+      src = ../../config/nvim/colors/base16.template.vim;
     };
 
   home.file.".config/nvim/autoload/airline/themes/base16.vim".source =
     config.lib.base16.template {
       name = "base16-vim-airline";
-      src = ../config/nvim/autoload/airline/themes/base16.template.vim;
+      src = ../../config/nvim/autoload/airline/themes/base16.template.vim;
     };
 
   home.file.".local/share/fonts/Fira Code Regular Nerd Font Complete.otf".source =
-    ./. + "/../local/share/fonts/Fira Code Regular Nerd Font Complete.otf";
+    ../. + "/../local/share/fonts/Fira Code Regular Nerd Font Complete.otf";
 
   # List of user services
 
   services.taffybar = {
     enable = true;
-    package = (import ../config/taffybar/default.nix) { inherit pkgs; };
+    package = (import ../../config/taffybar/default.nix) { inherit pkgs; };
   };
 
   home.file.".config/taffybar/taffybar.css".source =
     config.lib.base16.template {
       name = "taffybar.css";
-      src = ../config/taffybar/taffybar.template.css;
+      src = ../../config/taffybar/taffybar.template.css;
     };
 
   services.picom = {
@@ -340,7 +341,7 @@
     enable = true;
     theme = builtins.toPath (config.lib.base16.template {
       name = "rofi";
-      src = ../config/rofi/theme.template.rasi;
+      src = ../../config/rofi/theme.template.rasi;
     });
   };
 
@@ -421,7 +422,7 @@
     themes = {
       base16 = builtins.readFile (toString (config.lib.base16.template {
         name = "base16-bat";
-        src = ../config/bat-base16.template.tmTheme;
+        src = ../../config/bat-base16.template.tmTheme;
       }));
     };
   };
@@ -516,7 +517,7 @@
         x11-bypass-compositor = "yes";
         af = "acompressor";
         glsl-shader = ""
-          + builtins.path { path = ../config/mpv/FSRCNN_x2_r2_32-0-2.glsl; };
+          + builtins.path { path = ../../config/mpv/FSRCNN_x2_r2_32-0-2.glsl; };
         display-fps = "60";
       };
       opengl-low = {
@@ -525,7 +526,7 @@
         video-sync = "display-resample";
         ytdl-format = "bestvideo+bestaudio/best";
         glsl-shader = ""
-          + builtins.path { path = ../config/mpv/FSRCNNX_x2_8-0-4-1.glsl; };
+          + builtins.path { path = ../../config/mpv/FSRCNNX_x2_8-0-4-1.glsl; };
         x11-bypass-compositor = "yes";
         af = "acompressor";
       };

@@ -174,7 +174,7 @@
 
   home-manager.useUserPackages = true;
   home-manager.useGlobalPkgs = true;
-  home-manager.users.philm = (import ./home.nix);
+  home-manager.users.philm = (import ./home);
 
   # All system wide packages
 
