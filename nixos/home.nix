@@ -388,6 +388,7 @@
       cdgql = "cd $HOME/dev/GraphQL";
       cdnode = "cd $HOME/dev/nodeBased";
       cdml = "cd $HOME/dev/MachineLearning";
+      cdl = "cd $HOME/dev/personal/deep-learning/";
       cduni = "cd $HOME/Uni";
       cdrand = "cd $HOME/dev/randomStuff";
       cdrandrs = "cd $HOME/dev/randomStuff/rust";
