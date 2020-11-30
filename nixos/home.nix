@@ -416,6 +416,19 @@
     }];
   };
 
+  programs.bat = {
+    enable = true;
+    config = {
+      theme = "base16";
+    };
+    themes = {
+      base16 = builtins.readFile (toString (config.lib.base16.template {
+        name = "base16-bat";
+        src = ../config/bat-base16.template.tmTheme;
+      }));
+    };
+  };
+
   programs.autorandr = {
     enable = true;
     profiles = {
