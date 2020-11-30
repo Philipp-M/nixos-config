@@ -97,6 +97,18 @@
     };
   };
 
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "application/pdf" = "org.pwmt.zathura.desktop";
+      "image/png" = "feh.desktop";
+      "image/jpeg" = "feh.desktop";
+      "video/x-matroska" = "mpv.desktop";
+      "video/mp4" = "mpv.desktop";
+      "video/webm" = "mpv.desktop";
+    };
+  };
+
   xresources.properties = with config.lib.base16.theme; {
     "Xft.dpi" = dpi;
     "Xft.antialias" = true;
