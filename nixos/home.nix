@@ -118,7 +118,7 @@
     "Xft.hintstyle" = "hintslight";
     "Xft.lcdfilter" = "lcddefault";
     "Xft.font" = "xft:${fontname}${xftfontextra}:size=${fontsize}";
-    "Xcursor.size"  = xcursorSize;
+    "Xcursor.size" = xcursorSize;
 
     "*color0" = "#${base00-hex}";
     "*color1" = "#${base08-hex}";
@@ -157,7 +157,7 @@
 
   gtk = {
     enable = true;
-    theme.name = "base16";
+    theme.name = "adwaita-dark";
     # iconTheme = {
     #   name = "Numix-Circle";
     #   package = pkgs.numix-icon-theme-circle;
@@ -171,11 +171,11 @@
   };
 
   # gtk 3
-  home.file.".themes/base16/gtk-3.0/gtk.css".source =
-    config.lib.base16.template {
-      name = "base16-gtk-2.0";
-      src = ../config/gtk-3.0/gtk.template.css;
-    };
+  # home.file.".themes/base16/gtk-3.0/gtk.css".source =
+  #   config.lib.base16.template {
+  #     name = "base16-gtk-2.0";
+  #     src = ../../config/gtk-3.0/gtk.template.css;
+  #   };
 
   qt = {
     enable = true;
@@ -234,9 +234,7 @@
           corner-radius-top-right = 5;
           round-borders = 1;
         };
-        normal = {
-          round-borders = 1;
-        };
+        normal = { round-borders = 1; };
       };
       # rounded corners and alpha-transparency
       detect-rounded-corners = true;
@@ -418,9 +416,7 @@
 
   programs.bat = {
     enable = true;
-    config = {
-      theme = "base16";
-    };
+    config = { theme = "base16"; };
     themes = {
       base16 = builtins.readFile (toString (config.lib.base16.template {
         name = "base16-bat";
