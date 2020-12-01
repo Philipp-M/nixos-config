@@ -187,13 +187,15 @@
   environment.systemPackages = with pkgs; [
     # DEVELOPMENT
     ## compilers and dev environment
-    # clang_10 # conflicts with clang
+    # clang_10 # conflicts with gcc
     python3
     elixir
     gcc10
+    gdb
     meson
     cmake
     git
+    git-secret
     gitAndTools.diff-so-fancy
     gnumake
     jdk
@@ -205,14 +207,17 @@
     flatpak-builder
     rnix-lsp
     haskellPackages.ormolu # haskell formatter
-    haskell.compiler.ghc882
+    # haskell.compiler.ghc882
     carnix
+    php
     yarn
+    deno
     nodejs_latest
     nodePackages.node2nix
     pkg-config
     rustup
     vscode
+    glslang
     vulkan-tools
     vulkan-headers
     vulkan-loader
@@ -242,8 +247,15 @@
     ripgrep
     fd
     tokei
+    gitAndTools.gh
     du-dust
     bat
+    zoxide
+    bandwhich
+    # grex, TODO implement support
+    hyperfine
+    tealdeer
+    procs
     wget
     unzip
     youtube-dl
@@ -257,6 +269,9 @@
 
     # AUDIO
     cantata
+    pavucontrol
+    ffmpeg
+    flacon
     bitwig-studio
 
     # COMMUNICATION
@@ -275,6 +290,8 @@
     # XORG/DESKTOP ENVIRONMENT
     awf
     dolphin
+    dzen2
+    gnome3.file-roller
     dmenu
     wmctrl
     xorg.xev
@@ -286,17 +303,21 @@
     lutris
     minecraft
     steam
+    wineWowPackages.staging
+    winetricks
 
     # MISC
     mprime
     patchelf
     qdirstat
+    borgbackup
+    electrum
     ecryptfs
     ecryptfs-helper
     keepassxc
     memtester
     docker-compose
-    arion
+    # arion
     filezilla
     scrot
     feh # to view images in terminal
