@@ -12,7 +12,7 @@
         (builtins.fetchGit {
           url = "https://github.com/Philipp-M/home-manager/";
           ref = "personal";
-          rev = "a43cb388fdb502722a631db1c95336bfaad85da3";
+          rev = "5f93d57927e2226858848a86e698f5e05118f560";
         })
       }/nixos")
   ];
