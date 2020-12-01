@@ -383,6 +383,7 @@ nmap <leader>w :w<cr>
 nmap <leader>z :wq<cr>
 nmap <leader>q :q<cr>
 nmap <leader>x :bd<cr>
+nmap <leader>rr :e<cr>
 
 map Y y$
 
