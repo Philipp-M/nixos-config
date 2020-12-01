@@ -126,31 +126,35 @@ Plug 'junegunn/fzf.vim'
 """" COMPLETION / LANGUAGE FEATURES """"""""""""""""""""""""""""""""""""""""""""
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" COC
+
 Plug 'neoclide/coc.nvim',             {'do': 'yarn install --frozen-lockfile'}
-Plug 'Philipp-M/coc-omnisharp',       {'do': 'npm ci', 'branch': 'personal'}
-Plug 'coc-extensions/coc-svelte',     {'do': 'yarn install --frozen-lockfile'}
-Plug 'fannheyward/coc-markdownlint',  {'do': 'yarn install --frozen-lockfile'}
-Plug 'fannheyward/coc-marketplace',   {'do': 'yarn install --frozen-lockfile'}
-Plug 'fannheyward/coc-rust-analyzer', {'do': 'yarn install --frozen-lockfile'}
-Plug 'iamcco/coc-vimlsp',             {'do': 'yarn install --frozen-lockfile'}
-Plug 'josa42/coc-sh',                 {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-css',              {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-emmet',            {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-eslint',           {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-git',              {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-highlight',        {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-html',             {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-java',             {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-json',             {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-lists',            {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-pairs',            {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-python',           {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-snippets',         {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-tsserver',         {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-vetur',            {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-yaml',             {'do': 'yarn install --frozen-lockfile'}
-Plug 'weirongxu/coc-calc',            {'do': 'yarn install --frozen-lockfile'}
 "{
+"
+    let g:coc_global_extensions = [
+        \'coc-omnisharp',
+        \'coc-svelte',
+        \'coc-markdownlint',
+        \'coc-marketplace',
+        \'coc-rust-analyzer',
+        \'coc-vimlsp',
+        \'coc-sh',
+        \'coc-css',
+        \'coc-emmet',
+        \'coc-eslint',
+        \'coc-git',
+        \'coc-highlight',
+        \'coc-html',
+        \'coc-java',
+        \'coc-json',
+        \'coc-lists',
+        \'coc-pairs',
+        \'coc-python',
+        \'coc-snippets',
+        \'coc-tsserver',
+        \'coc-vetur',
+        \'coc-yaml',
+        \'coc-calc',
+    \]
     " Better display for messages
     set cmdheight=2
 
@@ -258,6 +262,7 @@ Plug 'weirongxu/coc-calc',            {'do': 'yarn install --frozen-lockfile'}
     " without this markdownlint isn't working
     let g:coc_filetype_map = { 'pandoc': 'markdown' }
 "}
+Plug 'antoinemadec/coc-fzf'
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
