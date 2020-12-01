@@ -346,13 +346,15 @@
         };
       });
 
-      neovim-unwrapped = super.neovim-unwrapped.overrideAttrs (old: rec {
+      neovim-unwrapped = super.neovim-unwrapped.overrideAttrs (old: {
         version = "0.5-dev";
         src = builtins.fetchGit {
           url = "https://github.com/neovim/neovim/";
           ref = "master";
-          rev = "c5ceefca793b8a78cc22a553b243d66042776d5f";
+          rev = "a1a4dd34ea26d397f7222afe943f67bbdb889d3f";
         };
+
+        buildInputs = old.buildInputs ++ ([ pkgs.tree-sitter ]);
       });
 
       alacritty = super.callPackage ./alacritty.nix { };
