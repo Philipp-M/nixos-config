@@ -27,6 +27,7 @@
   };
 
   # Use the systemd-boot EFI boot loader.
+  boot.supportedFilesystems = [ "ecryptfs" ];
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
@@ -36,13 +37,6 @@
   boot.tmpOnTmpfs = true;
 
   system.stateVersion = "20.09";
-
-  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
-  # Per-interface useDHCP will be mandatory in the future, so this generated config
-  # replicates the default behaviour.
-  networking.useDHCP = false;
-
-  networking.networkmanager.enable = true;
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_IE.UTF-8";
@@ -66,6 +60,10 @@
   hardware.pulseaudio.package =
     pkgs.pulseaudio.override { jackaudioSupport = true; };
 
+  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
+  # Per-interface useDHCP will be mandatory in the future, so this generated config
+  # replicates the default behaviour.
+  networking.useDHCP = false;
   # debugging of local webservices from external devices like smartphones
   networking.firewall.allowedTCPPorts = [ 80 443 8080 8081 8000 8001 3000 ];
   networking.firewall.allowedUDPPorts = [ 80 443 8080 8081 8000 8001 3000 ];
@@ -181,6 +179,12 @@
   programs.fish.enable = true;
 
   programs.adb.enable = true;
+
+  programs.gnupg.agent = {
+    enable = true;
+    enableSSHSupport = true;
+    pinentryFlavor = "curses";
+  };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
