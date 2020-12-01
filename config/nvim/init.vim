@@ -70,7 +70,7 @@ endif
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""'''''''' INDENT_LINE
 Plug 'Yggdroot/indentLine'
 "{
-  let g:indentLine_char = '▏'
+    let g:indentLine_char = '▏'
 "}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" AIRLINE
@@ -83,7 +83,7 @@ Plug 'bling/vim-airline'
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""" RAINBOW_PARENTHESES
 Plug 'luochen1990/rainbow'
 "{
-  let g:rainbow_active = 1
+    let g:rainbow_active = 1
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -315,7 +315,7 @@ Plug 'vim-pandoc/vim-pandoc'
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install --frozen-lockfile'  }
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
 "{
     nmap <silent> <leader>mt <Plug>MarkdownPreviewToggle
     let g:mkdp_auto_close = 0
@@ -341,7 +341,7 @@ Plug 'jparise/vim-graphql'
 Plug 'vim-scripts/ShaderHighLight'
 Plug 'ron-rs/ron.vim'
 Plug 'elixir-editors/vim-elixir'
-Plug 'arzg/vim-rust-syntax-ext', { 'for': ['rust'] }
+" Plug 'arzg/vim-rust-syntax-ext', { 'for': ['rust'] }
 Plug 'udalov/kotlin-vim', { 'for': ['kotlin'] }
 Plug 'dart-lang/dart-vim-plugin', { 'for': 'dart'}
 Plug 'LnL7/vim-nix'

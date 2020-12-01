@@ -32,6 +32,12 @@
       "filetypes": ["nix"]
     }
   },
+  "markdownlint.config": {
+    "no-inline-html": {
+      "allowed_elements": ["a", "hr", "p", "img"]
+    }
+  },
+  "eslint.autoFixOnSave": true,
   "rust-analyzer.serverPath": "~/.cargo/bin/rust-analyzer",
   "git.enableGutters": true,
   "omnisharp.path": "/run/current-system/sw/bin/omnisharp"
