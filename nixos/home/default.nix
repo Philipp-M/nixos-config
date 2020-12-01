@@ -1,10 +1,10 @@
 { pkgs, lib, config, ... }: {
   imports = [
     (import "${
-        (builtins.fetchTarball {
-          url =
-            "https://github.com/atpotts/base16-nix/archive/4f192afaa0852fefb4ce3bde87392a0b28d6ddc8.tar.gz";
-          sha256 = "1yf59vpd1i8lb2ml7ha8v6i4mv1b0xwss8ngzw08s39j838gyx6h";
+        (builtins.fetchGit {
+          url = "https://github.com/atpotts/base16-nix/";
+          ref = "master";
+          rev = "4f192afaa0852fefb4ce3bde87392a0b28d6ddc8";
         })
       }/base16.nix")
   ];
