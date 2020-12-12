@@ -355,7 +355,7 @@
         src = builtins.fetchGit {
           url = "https://github.com/neovim/neovim/";
           ref = "master";
-          rev = "a1a4dd34ea26d397f7222afe943f67bbdb889d3f";
+          rev = "b6723e1ea065a818e6cda4c917c9c11d7cb67652";
         };
 
         buildInputs = old.buildInputs ++ ([ pkgs.tree-sitter ]);
