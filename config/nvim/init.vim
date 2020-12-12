@@ -101,7 +101,6 @@ Plug 'tomtom/tcomment_vim'
 Plug 'tpope/vim-fugitive'
 "{
     nnoremap <leader>gdd :Gdiff<cr>
-    nnoremap <leader>gs :Gstatus<cr>
     nnoremap <leader>gcc :Gcommit -v -q<CR>
     nnoremap <leader>gca :Gcommit --amend<CR>
 "}
@@ -111,11 +110,12 @@ Plug 'tpope/vim-fugitive'
 Plug 'junegunn/fzf', { 'dir': '$HOME/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 "{
-    nnoremap <leader><space> :FZF<CR>
+    nnoremap <leader><space> :Files<CR>
     nnoremap <leader>h :History<CR>
     nnoremap <leader>gcl :Commits<CR>
-    nnoremap <leader>n :Find 
-    nnoremap <leader>s *:Find <C-r>/<BS><BS><C-Left><Del><Del><CR>
+    nnoremap <leader>gs :GFiles?<cr>
+    nnoremap <leader>n :Rg 
+    nnoremap <leader>s *:Rg <C-r>/<BS><BS><C-Left><Del><Del><CR>
     " let $FZF_DEFAULT_COMMAND = 'ag -g "" --ignore=\*.o'
     let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow -g "!.git/*" -g "!*.o" --no-ignore-parent'
     command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --hidden --follow -g "!.git/*" --color "always" '.shellescape(<q-args>), 1, <bang>0)
