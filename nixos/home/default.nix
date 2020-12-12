@@ -292,6 +292,11 @@
 
   programs.home-manager.enable = true;
 
+  programs.ssh = {
+    enable = true;
+    serverAliveInterval = 240;
+  };
+
   programs.alacritty = with config.lib.base16.theme; {
     enable = true;
     settings = {
