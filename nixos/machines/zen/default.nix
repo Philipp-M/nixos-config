@@ -76,6 +76,27 @@
 
   users.users.philm.extraGroups = [ "jackaudio" ];
 
+  services.borgbackup.jobs.home = {
+    paths = "/home";
+    encryption.mode = "none";
+    repo = "/tank/backup/zen/home";
+    compression = "none";
+    startAt = "00/1:00";
+    exclude = [
+      "/home/philm/dev/*/rust/*/target"
+      "/home/philm/dev/**/node_modules"
+      "/home/philm/Downloads"
+      "/home/philm/.cache"
+    ];
+
+    prune.keep = {
+      within = "1d"; # Keep all archives from the last day
+      daily = 7;
+      weekly = 4;
+      monthly = -1; # Keep at least one archive for each month
+    };
+  };
+
   home-manager.users.philm.systemd.user.services.jackdbus = {
     Unit = {
       Description = "JACK 2 with pulseeffects support";
