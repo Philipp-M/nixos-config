@@ -97,6 +97,11 @@
     };
   };
 
+  home-manager.users.philm.services.mpd = {
+    enable = true;
+    musicDirectory = "~/Music";
+  };
+
   home-manager.users.philm.systemd.user.services.jackdbus = {
     Unit = {
       Description = "JACK 2 with pulseeffects support";
