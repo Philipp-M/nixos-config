@@ -28,7 +28,7 @@
       Option "TripleBuffer" "True"
       Option "Stereo" "0"
       Option "nvidiaXineramaInfoOrder" "DP-0, DP-2"
-      Option "metamodes" "DP-0: nvidia-auto-select +0+0 {ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}, DP-2: nvidia-auto-select +3840+0 {ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}"
+      Option "metamodes" "DP-0: nvidia-auto-select +0+0 { ForceFullCompositionPipeline=On }, DP-2: nvidia-auto-select +3840+0 { ForceFullCompositionPipeline=On }"
       Option "SLI" "Off"
       Option "MultiGPU" "Off"
       Option "BaseMosaic" "off"
