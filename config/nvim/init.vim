@@ -147,7 +147,6 @@ Plug 'neoclide/coc.nvim',             {'do': 'yarn install --frozen-lockfile'}
         \'coc-java',
         \'coc-json',
         \'coc-lists',
-        \'coc-pairs',
         \'coc-python',
         \'coc-snippets',
         \'coc-tsserver',
