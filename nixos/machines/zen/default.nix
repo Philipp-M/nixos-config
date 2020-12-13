@@ -14,6 +14,10 @@
   networking.hostId = "80e43ffd";
   networking.hostName = "zen";
 
+  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
+  networking.networkmanager.enable = true;
+  networking.networkmanager.dns = "none";
+
   hardware.enableRedistributableFirmware = true;
 
   networking.interfaces.enp38s0.useDHCP = true;
