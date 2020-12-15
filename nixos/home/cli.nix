@@ -98,15 +98,6 @@
       tree = "tree -C";
       gdiff = "git diff --no-index";
     };
-    plugins = [{
-      name = "fasd";
-
-      src = builtins.fetchGit {
-        url = "https://github.com/oh-my-fish/plugin-fasd/";
-        ref = "master";
-        rev = "38a5b6b6011106092009549e52249c6d6f501fba";
-      };
-    }];
   };
 
   programs.bat = {
