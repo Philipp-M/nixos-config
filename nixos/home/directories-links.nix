@@ -32,9 +32,5 @@
       ${
         builtins.toPath ../../config/nvim/coc-settings.json
       } $HOME/.config/nvim/coc-settings.json
-
-    # temporary for xmonad debugging/testing/prototyping
-    $DRY_RUN_CMD ln -fs $VERBOSE_ARG \
-      ${builtins.toPath ../../xmonad/xmonad.hs} $HOME/.xmonad/xmonad.hs
   '';
 }
