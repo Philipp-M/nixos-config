@@ -458,12 +458,7 @@ syntax on
 set fillchars+=vert:│
 
 " airline settings need to be set here because of an undefined function
-let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
-
-" rounded separators (extra-powerline-symbols):
-let g:airline_left_sep = "\uE0B4"
-let g:airline_right_sep = "\uE0B6"
 
 " set the CN (column number) symbol:
 let g:airline_section_z = airline#section#create(["\uE0A1" . '%{line(".")}' . "\uE0A3" . '%{col(".")}'])
