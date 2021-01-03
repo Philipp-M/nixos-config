@@ -265,6 +265,8 @@
     procs
     wget
     unzip
+    b3sum
+    jq
     youtube-dl
     zip
 
@@ -314,7 +316,11 @@
     winetricks
 
     # MISC
+    acpi
+    powertop
+    usbutils
     mprime
+    cabextract
     patchelf
     qdirstat
     borgbackup
