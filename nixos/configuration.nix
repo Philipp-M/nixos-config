@@ -108,7 +108,10 @@
   };
 
   # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    permitRootLogin = "yes";
+  };
 
   # Enable the X11 windowing system.
 
