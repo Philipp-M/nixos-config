@@ -70,7 +70,7 @@
 
   networking.hosts = { "127.0.0.1" = [ "work" "www" "spa-test" ]; };
 
-  # nginx is sandboxed and doesn't allow reading of /home
+  # nginx is sandboxed and doesn't allow reading from /home
   systemd.services.nginx.serviceConfig = {
     ProtectSystem = lib.mkForce false;
     ProtectHome = lib.mkForce false;
