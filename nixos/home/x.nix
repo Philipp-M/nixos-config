@@ -253,8 +253,9 @@
       };
       custom_cursor_colors = false;
       background_opacity = builtins.fromJSON alpha;
-      font.size = 16;
+      font.size = 18;
       font.normal.family = fontname;
+      font.ligatures = true;
       colors = {
         primary = {
           background = "#${base00-hex}";
