@@ -38,9 +38,6 @@
     };
   };
 
-  home.file.".local/share/fonts/Fira Code Regular Nerd Font Complete.otf".source =
-    ../. + "/../local/share/fonts/Fira Code Regular Nerd Font Complete.otf";
-
   services.taffybar = {
     enable = true;
     package = (import ../../config/taffybar/default.nix) { inherit pkgs; };

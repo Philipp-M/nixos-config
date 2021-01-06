@@ -14,9 +14,9 @@
     scheme = "tomorrow";
     variant = "tomorrow-night";
     extraParams = {
-      fontname = "FiraCode Nerd Font";
+      fontname = "Iosevka";
       xftfontextra = ":style=Regular";
-      fontsize = "14";
+      fontsize = "16";
       xcursorSize = "32";
       dpi = "100";
       alpha = "0.85"; # background alpha for applications that support it

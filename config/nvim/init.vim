@@ -468,7 +468,7 @@ set listchars=tab:▸\ ,trail:·
 set list
 
 " neovide
-set guifont=Fira\ Code\ Regular\ Nerd\ Font\ Complete:h10
+set guifont=Iosevka:h10
 
 " some extensions which are not recognized by default
 autocmd BufNewFile,BufRead *.html5   set syntax=php
