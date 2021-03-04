@@ -8,7 +8,7 @@
 , installShellFiles
 , makeWrapper
 , ncurses
-, pkgconfig
+, pkg-config
 , python3
 
 , expat
@@ -23,7 +23,7 @@
 , libxcb
 , libxkbcommon
 , wayland
-, xdg_utils
+, xdg-utils
 
   # Darwin Frameworks
 , AppKit ? null
@@ -53,17 +53,16 @@ let
 in
 rustPlatform.buildRustPackage rec {
   pname = "alacritty";
-  version = "0.7.0-dev-ligatures-mod-fix";
-
+  version = "0.7.2-dev-ligatures-mod-fix";
 
   src = fetchFromGitHub {
     owner = "Philipp-M";
     repo = pname;
-    rev = "12c298958db66311f72a711b7ea2d3e277c20600";
+    rev = "0d999b855826964523adcfb21b098e8299c622cf";
     sha256 = "19nq1wh5ayc5gpyxwq3m10978r2s3h1pzw1v51zz48x5c009amsz";
   };
 
-  cargoSha256 = "1890mddv0rdrh752a5ywmp043nbxfv78vanx5hs8gzvypqqpz6kz";
+  cargoSha256 = "sha256-z58MT/nGz1EFncInCsG6j2lroyU9L3HgnbSEvSUMeN4=";
 
   nativeBuildInputs = [
     cmake
@@ -71,12 +70,12 @@ rustPlatform.buildRustPackage rec {
     installShellFiles
     makeWrapper
     ncurses
-    pkgconfig
+    pkg-config
     python3
   ];
 
   buildInputs = rpathLibs
-  ++ lib.optionals stdenv.isDarwin [
+    ++ lib.optionals stdenv.isDarwin [
     AppKit
     CoreGraphics
     CoreServices
@@ -89,15 +88,10 @@ rustPlatform.buildRustPackage rec {
 
   postPatch = ''
     substituteInPlace alacritty/src/config/mouse.rs \
-      --replace xdg-open ${xdg_utils}/bin/xdg-open
+      --replace xdg-open ${xdg-utils}/bin/xdg-open
   '';
 
-  installPhase = ''
-    runHook preInstall
-
-    install -D $releaseDir/alacritty $out/bin/alacritty
-
-  '' + (
+  postInstall = (
     if stdenv.isDarwin then ''
       mkdir $out/Applications
       cp -r extra/osx/Alacritty.app $out/Applications
@@ -128,8 +122,6 @@ rustPlatform.buildRustPackage rec {
     tic -xe alacritty,alacritty-direct -o "$terminfo/share/terminfo" extra/alacritty.info
     mkdir -p $out/nix-support
     echo "$terminfo" >> $out/nix-support/propagated-user-env-packages
-
-    runHook postInstall
   '';
 
   dontPatchELF = true;
@@ -138,8 +130,7 @@ rustPlatform.buildRustPackage rec {
     description = "A cross-platform, GPU-accelerated terminal emulator";
     homepage = "https://github.com/alacritty/alacritty";
     license = licenses.asl20;
-    maintainers = with maintainers; [ filalex77 mic92 cole-h ma27 ];
+    maintainers = with maintainers; [ Br1ght0ne mic92 cole-h ma27 ];
     platforms = platforms.unix;
   };
 }
-

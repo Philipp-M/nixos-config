@@ -12,7 +12,7 @@
         (builtins.fetchGit {
           url = "https://github.com/Philipp-M/home-manager/";
           ref = "personal";
-          rev = "e7a83aa23163380e87a64e53c1e025b0378acb53";
+          rev = "1dbd3d56c817d7f6646514a906e16c3237e4a5be";
         })
       }/nixos")
   ];
@@ -364,7 +364,7 @@
         src = builtins.fetchGit {
           url = "https://github.com/neovim/neovim/";
           ref = "master";
-          rev = "2ea3127697692b0b2c480d585ef6529e90a72b0e";
+          rev = "c50b737d6f953e1c4240c2e24693ce49932cdaf6";
         };
 
         buildInputs = old.buildInputs ++ ([ pkgs.tree-sitter ]);
