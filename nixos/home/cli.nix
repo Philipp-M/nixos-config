@@ -126,7 +126,7 @@
   programs.git = {
     enable = true;
     userName = "Philipp Mildenberger";
-    userEmail = "philipp.mildenberger@koeln.de";
+    userEmail = "philipp@mildenberger.me";
     lfs.enable = true;
     delta.enable = true;
     extraConfig.pull.rebase = true;
