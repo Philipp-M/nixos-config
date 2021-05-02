@@ -4,7 +4,6 @@ filetype off                  " required
 set shell=bash
 
 set path+=**
-
 let g:python_host_prog = 'python'
 
 " Set tabs and shifts to 2 spaces
@@ -22,16 +21,24 @@ if !has('nvim')
     set ttymouse=xterm2
 endif
 
-" Persistent Undo
-if has('persistent_undo')
-    let undodir = "$HOME/.local/share/nvim/undo"   " where to save undo histories
-    call system('mkdir ' . undodir)    " create undodir if not existing
-    set undofile                       " Save undo's after file closes
-    set undodir=$HOME/.local/share/nvim/undo   " where to save undo histories
-    set undolevels=100000              " How many undos
-    set undoreload=1000000             " number of lines to save for undo
+if !exists('g:vscode') " rst
+  " Persistent Undo
+  if has('persistent_undo')
+      let undodir = "$HOME/.local/share/nvim/undo"   " where to save undo histories
+      call system('mkdir ' . undodir)    " create undodir if not existing
+      set undofile                       " Save undo's after file closes
+      set undodir=$HOME/.local/share/nvim/undo   " where to save undo histories
+      set undolevels=100000              " How many undos
+      set undoreload=1000000             " number of lines to save for undo
+  endif
+  autocmd BufNewFile,BufReadPre *
+        \ if expand('%:p') =~ "/tank/private" |
+        \   setl noswapfile noundofile |
+        \   setl undodir=. directory=. |
+        \ endif |
 endif
 
+" set backupcopy=yes
 
 let mapleader = "\<Space>"
 let g:mapleader = "\<Space>"
@@ -98,170 +105,172 @@ Plug 'tpope/vim-repeat'
 Plug 'tomtom/tcomment_vim'
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" FUGITIVE
-Plug 'tpope/vim-fugitive'
-"{
-    nnoremap <leader>gdd :Gdiff<cr>
-    nnoremap <leader>gcc :Gcommit -v -q<CR>
-    nnoremap <leader>gca :Gcommit --amend<CR>
-"}
+" Plug 'tpope/vim-fugitive'
+" "{
+"     nnoremap <leader>gdd :Gdiff<cr>
+"     nnoremap <leader>gcc :Gcommit -v -q<CR>
+"     nnoremap <leader>gca :Gcommit --amend<CR>
+" "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" FZF
-Plug 'junegunn/fzf', { 'dir': '$HOME/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
-"{
-    nnoremap <leader><space> :Files<CR>
-    nnoremap <leader>h :History<CR>
-    nnoremap <leader>gcl :Commits<CR>
-    nnoremap <leader>gs :GFiles?<cr>
-    nnoremap <leader>n :Rg 
-    nnoremap <leader>s *:Rg <C-r>/<BS><BS><C-Left><Del><Del><CR>
-    " let $FZF_DEFAULT_COMMAND = 'ag -g "" --ignore=\*.o'
-    let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow -g "!.git/*" -g "!*.o" --no-ignore-parent'
-    command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --hidden --follow -g "!.git/*" --color "always" '.shellescape(<q-args>), 1, <bang>0)
-"}
+" Plug 'junegunn/fzf' ", { 'dir': '$HOME/.fzf', 'do': './install --all' }
+" Plug 'junegunn/fzf.vim'
+" "{
+"     nnoremap <leader><space> :Files<CR>
+"     nnoremap <leader>h :History<CR>
+"     nnoremap <leader>gcl :Commits<CR>
+"     nnoremap <leader>gs :GFiles?<cr>
+"     nnoremap <leader>n :Rg 
+"     nnoremap <leader>s *:Rg <C-r>/<BS><BS><C-Left><Del><Del><CR>
+"     " let $FZF_DEFAULT_COMMAND = 'ag -g "" --ignore=\*.o'
+"     let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow -g "!.git/*" -g "!*.o" --no-ignore-parent'
+"     command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --hidden --follow -g "!.git/*" --color "always" '.shellescape(<q-args>), 1, <bang>0)
+" "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 
 """" COMPLETION / LANGUAGE FEATURES """"""""""""""""""""""""""""""""""""""""""""
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" COC
-
-Plug 'neoclide/coc.nvim',             {'do': 'yarn install --frozen-lockfile'}
-"{
-"
-    let g:coc_global_extensions = [
-        \'coc-omnisharp',
-        \'coc-svelte',
-        \'coc-markdownlint',
-        \'coc-marketplace',
-        \'coc-rust-analyzer',
-        \'coc-vimlsp',
-        \'coc-sh',
-        \'coc-css',
-        \'coc-emmet',
-        \'coc-eslint',
-        \'coc-git',
-        \'coc-highlight',
-        \'coc-html',
-        \'coc-java',
-        \'coc-json',
-        \'coc-lists',
-        \'coc-python',
-        \'coc-snippets',
-        \'coc-tsserver',
-        \'coc-vetur',
-        \'coc-yaml',
-        \'coc-calc',
-    \]
-    " Better display for messages
-    set cmdheight=2
-
-    " Smaller updatetime for CursorHold & CursorHoldI
-    set updatetime=300
-
-    " don't give |ins-completion-menu| messages.
-    set shortmess+=c
-
-    " always show signcolumns
-    set signcolumn=yes
-
-    " Use tab for trigger completion with characters ahead and navigate.
-    " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-    inoremap <silent><expr> <TAB>
-        \ pumvisible() ? "\<C-n>" :
-        \ <SID>check_back_space() ? "\<TAB>" :
-        \ coc#refresh()
-    inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-    function! s:check_back_space() abort
-        let col = col('.') - 1
-        return !col || getline('.')[col - 1]  =~# '\s'
-    endfunction
-
-    " Use <c-space> to trigger completion.
-    inoremap <silent><expr> <C-space> coc#refresh()
-
-    " Use <cr> for confirm completion, `<C-g>u` means break undo chain at current position.
-    " Coc only does snippet and additional edit on confirm.
-    inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-
-    " Use `[c` and `]c` for navigate diagnostics
-    nmap <silent> [c <Plug>(coc-diagnostic-prev)
-    nmap <silent> ]c <Plug>(coc-diagnostic-next)
-
-    " Remap keys for gotos
-    nmap <silent> <leader>tt <Plug>(coc-definition)
-    nmap <silent> <leader>td <Plug>(coc-type-definition)
-    nmap <silent> <leader>ti <Plug>(coc-implementation)
-    nmap <silent> <leader>tr <Plug>(coc-references)
-
-    " Use K for show documentation in preview window
-    nnoremap <silent> <leader>d :call <SID>show_documentation()<CR>
-
-    function! s:show_documentation()
-        if &filetype == 'vim'
-            execute 'h '.expand('<cword>')
-        else
-            call CocAction('doHover')
-        endif
-    endfunction
-
-    " Highlight symbol under cursor on CursorHold
-    autocmd CursorHold * silent call CocActionAsync('highlight')
-
-    " Remap for rename current word
-    nmap <leader>rn <Plug>(coc-rename)
-    " Fix autofix problem of current line
-    nmap <leader>cf  <Plug>(coc-fix-current)
-
-    nnoremap <silent> <leader>cd  :<C-u>CocList diagnostics<cr>
-    nnoremap <silent> <leader>co  :<C-u>CocList outline<cr>
-    nnoremap <silent> <leader>cs  :<C-u>CocList -I symbols<cr>
-    nnoremap <silent> <leader>cn  :<C-u>CocNext<cr>
-    nnoremap <silent> <leader>cp  :<C-u>CocPrev<cr>
-
-    " Remap for format selected region
-    " use vim-autoformat for this still (probably change in the future)
-    " vmap <leader>f  <Plug>(coc-format-selected)
-    " nmap <leader>f  <Plug>(coc-format-selected)
-
-    " mappings for coc-snippets
-
-    " Use <C-l> for trigger snippet expand.
-    imap <C-l> <Plug>(coc-snippets-expand)
-
-    " Use <C-j> for select text for visual placeholder of snippet.
-    vmap <C-j> <Plug>(coc-snippets-select)
-
-    " Use <C-j> for jump to next placeholder, it's default of coc.nvim
-    let g:coc_snippet_next = '<c-j>'
-
-    " Use <C-k> for jump to previous placeholder, it's default of coc.nvim
-    let g:coc_snippet_prev = '<c-k>'
-
-    " Use <C-j> for both expand and jump (make expand higher priority.)
-    imap <C-j> <Plug>(coc-snippets-expand-jump)
-
-    " mappings for coc-git
-
-    nnoremap <leader>ghs :CocCommand git.chunkStage<CR>
-    vnoremap <leader>ghs :CocCommand git.chunkStage<CR>
-    nnoremap <leader>ghu :CocCommand git.chunkUndo<CR>
-    vnoremap <leader>ghu :CocCommand git.chunkUndo<CR>
-    nnoremap <leader>ghc :CocCommand git.showCommit<CR>
-    vnoremap <leader>ghc :CocCommand git.showCommit<CR>
-    vnoremap <leader>ghc :CocCommand git.showCommit<CR>
-    vnoremap <leader>ghc :CocCommand git.showCommit<CR>
-    nnoremap <leader>gds :CocCommand git.diffCached<CR>
-    nmap [h <Plug>(coc-git-prevchunk)
-    nmap ]h <Plug>(coc-git-nextchunk)
-    nnoremap <leader>gf :CocCommand git.foldUnchanged<CR>
-
-    " without this markdownlint isn't working
-    let g:coc_filetype_map = { 'pandoc': 'markdown' }
-"}
-Plug 'antoinemadec/coc-fzf'
+" if !exists('g:vscode')
+  Plug 'neoclide/coc.nvim',             {'do': 'yarn install --frozen-lockfile'}
+  "{
+  "
+      let g:coc_global_extensions = [
+          \'coc-omnisharp',
+          \'coc-svelte',
+          \'coc-markdownlint',
+          \'coc-marketplace',
+          \'coc-rust-analyzer',
+          \'coc-vimlsp',
+          \'coc-lua',
+          \'coc-sh',
+          \'coc-css',
+          \'coc-emmet',
+          \'coc-git',
+          \'coc-highlight',
+          \'coc-html',
+          \'coc-java',
+          \'coc-json',
+          \'coc-lists',
+          \'coc-python',
+          \'coc-snippets',
+          \'coc-tsserver',
+          \'coc-vetur',
+          \'coc-yaml',
+          \'coc-calc',
+      \]
+      " \'coc-eslint',
+      " Better display for messages
+      set cmdheight=2
+  
+      " Smaller updatetime for CursorHold & CursorHoldI
+      set updatetime=300
+  
+      " don't give |ins-completion-menu| messages.
+      set shortmess+=c
+  
+      " always show signcolumns
+      set signcolumn=yes
+  
+      " Use tab for trigger completion with characters ahead and navigate.
+      " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+      inoremap <silent><expr> <TAB>
+          \ pumvisible() ? "\<C-n>" :
+          \ <SID>check_back_space() ? "\<TAB>" :
+          \ coc#refresh()
+      inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+  
+      function! s:check_back_space() abort
+          let col = col('.') - 1
+          return !col || getline('.')[col - 1]  =~# '\s'
+      endfunction
+  
+      " Use <c-space> to trigger completion.
+      inoremap <silent><expr> <C-space> coc#refresh()
+  
+      " Use <cr> for confirm completion, `<C-g>u` means break undo chain at current position.
+      " Coc only does snippet and additional edit on confirm.
+      inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+  
+      " Use `[c` and `]c` for navigate diagnostics
+      nmap <silent> [c <Plug>(coc-diagnostic-prev)
+      nmap <silent> ]c <Plug>(coc-diagnostic-next)
+  
+      " Remap keys for gotos
+      nmap <silent> <leader>tt <Plug>(coc-definition)
+      nmap <silent> <leader>td <Plug>(coc-type-definition)
+      nmap <silent> <leader>ti <Plug>(coc-implementation)
+      nmap <silent> <leader>tr <Plug>(coc-references)
+  
+      " Use K for show documentation in preview window
+      nnoremap <silent> <leader>d :call <SID>show_documentation()<CR>
+  
+      function! s:show_documentation()
+          if &filetype == 'vim'
+              execute 'h '.expand('<cword>')
+          else
+              call CocAction('doHover')
+          endif
+      endfunction
+  
+      " Highlight symbol under cursor on CursorHold
+      autocmd CursorHold * silent call CocActionAsync('highlight')
+  
+      " Remap for rename current word
+      nmap <leader>rn <Plug>(coc-rename)
+      " Fix autofix problem of current line
+      nmap <leader>cf  <Plug>(coc-fix-current)
+  
+      nnoremap <silent> <leader>cd  :<C-u>CocList diagnostics<cr>
+      nnoremap <silent> <leader>co  :<C-u>CocList outline<cr>
+      nnoremap <silent> <leader>cs  :<C-u>CocList -I symbols<cr>
+      nnoremap <silent> <leader>cn  :<C-u>CocNext<cr>
+      nnoremap <silent> <leader>cp  :<C-u>CocPrev<cr>
+  
+      " Remap for format selected region
+      " use vim-autoformat for this still (probably change in the future)
+      " vmap <leader>f  <Plug>(coc-format-selected)
+      " nmap <leader>f  <Plug>(coc-format-selected)
+  
+      " mappings for coc-snippets
+  
+      " Use <C-l> for trigger snippet expand.
+      imap <C-l> <Plug>(coc-snippets-expand)
+  
+      " Use <C-j> for select text for visual placeholder of snippet.
+      vmap <C-j> <Plug>(coc-snippets-select)
+  
+      " Use <C-j> for jump to next placeholder, it's default of coc.nvim
+      let g:coc_snippet_next = '<c-j>'
+  
+      " Use <C-k> for jump to previous placeholder, it's default of coc.nvim
+      let g:coc_snippet_prev = '<c-k>'
+  
+      " Use <C-j> for both expand and jump (make expand higher priority.)
+      imap <C-j> <Plug>(coc-snippets-expand-jump)
+  
+      " mappings for coc-git
+  
+      nnoremap <leader>ghs :CocCommand git.chunkStage<CR>
+      vnoremap <leader>ghs :CocCommand git.chunkStage<CR>
+      nnoremap <leader>ghu :CocCommand git.chunkUndo<CR>
+      vnoremap <leader>ghu :CocCommand git.chunkUndo<CR>
+      nnoremap <leader>ghc :CocCommand git.showCommit<CR>
+      vnoremap <leader>ghc :CocCommand git.showCommit<CR>
+      vnoremap <leader>ghc :CocCommand git.showCommit<CR>
+      vnoremap <leader>ghc :CocCommand git.showCommit<CR>
+      nnoremap <leader>gds :CocCommand git.diffCached<CR>
+      nmap [h <Plug>(coc-git-prevchunk)
+      nmap ]h <Plug>(coc-git-nextchunk)
+      nnoremap <leader>gf :CocCommand git.foldUnchanged<CR>
+  
+      " without this markdownlint isn't working
+      let g:coc_filetype_map = { 'pandoc': 'markdown' }
+  "}
+  Plug 'antoinemadec/coc-fzf'
+" endif
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -280,10 +289,12 @@ Plug 'antoinemadec/coc-fzf'
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" AUTOFORMAT
 Plug 'sbdchd/neoformat'
 "{
+    let g:neoformat_enabled_typescript = ['prettier', 'prettier-eslint', 'tslint', 'eslint_d', 'clang-format']
     vmap <leader>f :Neoformat<CR>
     nmap <leader>f :Neoformat<CR>
 "}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Plug 'editorconfig/editorconfig-vim'
 
 Plug 'honza/vim-snippets'
 
@@ -461,7 +472,7 @@ set fillchars+=vert:│
 let g:airline#extensions#tabline#enabled = 1
 
 " set the CN (column number) symbol:
-let g:airline_section_z = airline#section#create(["\uE0A1" . '%{line(".")}' . "\uE0A3" . '%{col(".")}'])
+let g:airline_section_z = '%3p%% %#__accent_bold#%{g:airline_symbols.linenr}%4l%#__restore__#%#__accent_bold#/%L%{g:airline_symbols.maxlinenr}%#__restore__# :%3v/%03{col("$")-1}'
 
 " trailing spaces are shown with a ·
 set listchars=tab:▸\ ,trail:·
@@ -507,6 +518,9 @@ require'nvim-treesitter.configs'.setup {
     custom_captures = {                                -- mapping of user defined captures to highlight groups
       -- ["foo.bar"] = "Identifier"                    -- highlight own capture @foo.bar with highlight group "Identifier", see :h nvim-treesitter-query-extensions
     },
+  },
+  indent = {
+    enable = true
   },
   incremental_selection = {
     enable = { "rust", "typescript" },
@@ -571,8 +585,6 @@ require'nvim-treesitter.configs'.setup {
 }
 EOF
 "}
-
-
 " Remapping for Colemak
 " ----------------------
 
@@ -636,7 +648,9 @@ function! ToggleColemak()
         noremap j h
         noremap k j
 
+if !exists('g:vscode')
         noremap gh gk
+endif
         noremap gj gh
         noremap gk gj
 
@@ -670,3 +684,25 @@ function! ToggleColemak()
 endfunction
 
 call ToggleColemak()
+
+" key-bindings specific for VSCODE
+
+if exists('g:vscode')
+  " Remap keys for gotos
+  nmap <silent> <leader>tt gd
+  nmap <silent> <leader>d gh
+  nmap <silent> <leader>td gf
+  nmap <silent> <leader>ti gD
+  nmap <silent> <leader>tr gH
+
+  " commenting
+  xmap gc  <Plug>VSCodeCommentary
+  nmap gc  <Plug>VSCodeCommentary
+  omap gc  <Plug>VSCodeCommentary
+  nmap gcc <Plug>VSCodeCommentaryLine
+  " 'window' management
+  nmap <leader>x :bd<cr>
+
+  nnoremap <leader><space> <C-p>
+  nnoremap <silent> <leader><space> <Cmd>call VSCodeCall("workbench.action.quickOpen")<CR>
+endif

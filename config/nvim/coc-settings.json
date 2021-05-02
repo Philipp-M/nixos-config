@@ -37,10 +37,17 @@
       "allowed_elements": ["a", "hr", "p", "img"]
     }
   },
-  "eslint.autoFixOnSave": true,
-  "rust-analyzer.serverPath": "~/.cargo/bin/rust-analyzer",
+  "eslint.autoFixOnSave": false,
+  "rust-analyzer.server.path": "~/.cargo/bin/rust-analyzer",
   "rust-analyzer.cargo.loadOutDirsFromCheck": true,
   "rust-analyzer.procMacro.enable": true,
+  "lua.serverPath": "/run/current-system/sw/bin/lua-language-server",
+  "Lua.workspace.library": [
+    "/nix/store/i4dgldx0y4kdkfqdrplm859074mfjk4i-neovim-unwrapped-0.5-dev/share/nvim/runtime/lua",
+    "/nix/store/i4dgldx0y4kdkfqdrplm859074mfjk4i-neovim-unwrapped-0.5-dev/share/nvim/runtime/lua/vim",
+    "/nix/store/i4dgldx0y4kdkfqdrplm859074mfjk4i-neovim-unwrapped-0.5-dev/share/nvim/runtime/lua/vim/lsp"
+  ],
+  "Lua.diagnostics.globals": ["vim"],
   "omnisharp.path": "/run/current-system/sw/bin/omnisharp",
   "vetur.experimental.templateInterpolationService": true,
   "git.enableGutters": true
