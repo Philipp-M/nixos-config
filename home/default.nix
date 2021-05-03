@@ -1,7 +1,7 @@
 { pkgs, lib, config, ... }: {
   imports = [
     (import ./theme.nix)
-    (import ./directories-links.nix)
+    (import ./create-directories.nix)
     (import ./cli.nix)
     (import ./x.nix)
   ];

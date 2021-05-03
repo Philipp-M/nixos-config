@@ -3,7 +3,7 @@
 {
   nix.nixPath = [
     "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos"
-    "nixos-config=/home/philm/dev/personal/dotfiles/nixos/machines/shadow"
+    "nixos-config=/home/philm/dev/personal/dotfiles/machines/shadow"
     "/nix/var/nix/profiles/per-user/root/channels"
   ];
 

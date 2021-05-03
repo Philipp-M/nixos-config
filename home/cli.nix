@@ -94,7 +94,7 @@
     themes = {
       base16 = builtins.readFile (toString (config.lib.base16.template {
         name = "base16-bat";
-        src = ../../config/bat-base16.template.tmTheme;
+        src = ./bat-base16.template.tmTheme;
       }));
     };
   };

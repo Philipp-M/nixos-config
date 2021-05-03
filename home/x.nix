@@ -31,23 +31,25 @@
           hpkgs.taffybar
         ];
         enableContribAndExtras = true;
-        config = builtins.toPath (config.lib.base16.template {
-          name = "xmonad";
-          src = ../../xmonad/xmonad.hs;
-        });
+        config = builtins.toPath (
+          config.lib.base16.template {
+            name = "xmonad";
+            src = ./xmonad/xmonad.hs;
+          }
+        );
       };
     };
   };
 
   services.taffybar = {
     enable = true;
-    package = (import ../../config/taffybar/default.nix) { inherit pkgs; };
+    package = (import ./taffybar) { inherit pkgs; };
   };
 
   home.file.".config/taffybar/taffybar.css".source =
     config.lib.base16.template {
       name = "taffybar.css";
-      src = ../../config/taffybar/taffybar.template.css;
+      src = ./taffybar/taffybar.template.css;
     };
 
   xdg.mimeApps = {
@@ -128,14 +130,14 @@
   # gtk 2
   home.file.".themes/base16/gtk-2.0/gtkrc".source = config.lib.base16.template {
     name = "base16-gtk-2.0";
-    src = ../../config/gtk-2.0/template.gtkrc;
+    src = ./gtk-2.0/template.gtkrc;
   };
 
   # gtk 3
   # home.file.".themes/base16/gtk-3.0/gtk.css".source =
   #   config.lib.base16.template {
   #     name = "base16-gtk-2.0";
-  #     src = ../../config/gtk-3.0/gtk.template.css;
+  #     src = ./gtk-3.0/gtk.template.css;
   #   };
 
   qt = {
@@ -145,10 +147,12 @@
 
   programs.rofi = {
     enable = true;
-    theme = builtins.toPath (config.lib.base16.template {
-      name = "rofi";
-      src = ../../config/rofi/theme.template.rasi;
-    });
+    theme = builtins.toPath (
+      config.lib.base16.template {
+        name = "rofi";
+        src = ./rofi/theme.template.rasi;
+      }
+    );
   };
 
   programs.autorandr = {
@@ -179,6 +183,16 @@
 
   services.picom = {
     enable = true;
+    # add fancy dual kawase blur to picom
+    package = pkgs.picom.overrideAttrs (
+      old: {
+        src = builtins.fetchGit {
+          url = "https://github.com/Philipp-M/picom/";
+          ref = "customizable-rounded-corners";
+          rev = "2b1d9faf0bf5dfad04a5acf02b34a432368de805";
+        };
+      }
+    );
     experimentalBackends = true;
     settings = {
       # general
@@ -188,7 +202,7 @@
       unredir-if-possible = false;
       # blur
       blur-background = true;
-      blur-background-exclude = [ ];
+      blur-background-exclude = [];
       blur-method = "dual_kawase";
       blur-strength = 10;
       wintypes = {
@@ -259,6 +273,7 @@
 
   programs.alacritty = with config.lib.base16.theme; {
     enable = true;
+    package = pkgs.callPackage ./alacritty.nix {};
     settings = {
       live_config_reload = true;
       scrolling = {

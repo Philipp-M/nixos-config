@@ -3,7 +3,7 @@
 {
   nix.nixPath = [
     "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos"
-    "nixos-config=/home/philm/dev/personal/dotfiles/nixos/machines/zen"
+    "nixos-config=/home/philm/dev/personal/dotfiles/machines/zen"
     "/nix/var/nix/profiles/per-user/root/channels"
   ];
   nix = {
@@ -17,11 +17,15 @@
     ./hardware-configuration.nix
     ../../configuration.nix
 
-    (import (builtins.fetchGit {
-      url = "https://github.com/musnix/musnix.git";
-      ref = "master";
-      rev = "f5053e85b0a578a335a78fa45517a8843154f46b";
-    }))
+    (
+      import (
+        builtins.fetchGit {
+          url = "https://github.com/musnix/musnix.git";
+          ref = "master";
+          rev = "f5053e85b0a578a335a78fa45517a8843154f46b";
+        }
+      )
+    )
   ];
 
   fileSystems."/windows" = {

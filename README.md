@@ -1,17 +1,9 @@
 # Overview
 
-These are my personal dotfiles, which represent my current setup with *NixOS*.
-
-## *NixOS* Configuration
-
-The configuration for my machines are in `nixos/machines/`.
+My NixOS configuration for different desktops. Entrypoints are in `machines/*/default.nix`.
 
 Following machines are configured:
 
 * zen
 * shadow (notebook)
 * office
-
-Most (user) applications are configured in `nixos/home.nix`.
-
-The main system configuration for all machines is in `nixos/configuration.nix`.

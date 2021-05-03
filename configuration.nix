@@ -6,31 +6,17 @@
 
 {
   imports = [
-    # pinning nixpkgs
-    # (import "${
-    #     (builtins.fetchTarball {
-    #       url =
-    #         "https://github.com/NixOS/nixpkgs/archive/8855c3a1c728a16b4a9e5e4071d7fc63ef63973a.tar.gz";
-    #       sha256 = "07pfwr8cimd9cmiqxhwzaz5l4i0vdzkmjh742kylpqc1mzr2xx26";
-    #     })
-    #   }/nixos")
-    # (import ../../desktop-environment/nixpkgs/nixos/default.nix)
-    # import (builtins.fetchTarball {
-    #   # Descriptive name to make the store path easier to identify
-    #   name = "nixos-unstable-2020-06-17";
-    #   # Commit hash for nixos-unstable as of 2018-09-12
-    #   url = "https://github.com/nixos/nixpkgs/archive/ec13b27348f98e74e0fbb1ab5e5723ec3127b7a8.tar.gz";
-    #   # Hash obtained using `nix-prefetch-url --unpack <url>`
-    #   sha256 = "0c7lzhyl2fhfghdn6f7nrx69fk9v4pdaljzrkykxbdc18vza5i7w";
-    # }) {}
-    # custom home-manager
-    (import "${
-        (builtins.fetchGit {
+    (
+      import "${
+      (
+        builtins.fetchGit {
           url = "https://github.com/Philipp-M/home-manager/";
           ref = "personal";
           rev = "b25e767899063b3f109680cc64dacd73228e796a";
-        })
-      }/nixos")
+        }
+      )
+      }/nixos"
+    )
   ];
 
   nixpkgs.config.allowUnfree = true;
@@ -104,14 +90,14 @@
         root = "/home/philm/dev/personal/www/";
         locations."/".extraConfig = "autoindex on;";
       };
-      "spa-test" =
-        { # simple test for SPAs, that need to use / with normal history routing
-          root = "/home/philm/dev/personal/www/spa-test";
-          locations."/".extraConfig = ''
-            try_files $uri $uri/ /index.html;
-            autoindex on;
-          '';
-        };
+      "spa-test" = {
+        # simple test for SPAs, that need to use / with normal history routing
+        root = "/home/philm/dev/personal/www/spa-test";
+        locations."/".extraConfig = ''
+          try_files $uri $uri/ /index.html;
+          autoindex on;
+        '';
+      };
     };
   };
 
@@ -143,14 +129,16 @@
     libinput.enable = true;
     # Use session defined in home.nix
     windowManager = {
-      session = [{
-        name = "xmonad";
-        bgSupport = true;
-        start = ''
-          ${pkgs.runtimeShell} $HOME/.xsession &
-          waitPID=$!
-        '';
-      }];
+      session = [
+        {
+          name = "xmonad";
+          bgSupport = true;
+          start = ''
+            ${pkgs.runtimeShell} $HOME/.xsession &
+            waitPID=$!
+          '';
+        }
+      ];
     };
     displayManager = {
       defaultSession = "none+xmonad";
@@ -258,8 +246,6 @@
     zathura
 
     # TERMINAL/CLI
-    alacritty
-    kitty
     fasd
     fzf
     file
@@ -385,30 +371,19 @@
   fonts.fonts = with pkgs; [ nerdfonts google-fonts ];
 
   nixpkgs.overlays = [
-    # add fancy dual kawase blur to picom
-    (self: super: {
-      picom = super.picom.overrideAttrs (old: {
-        src = builtins.fetchGit {
-          url = "https://github.com/Philipp-M/picom/";
-          ref = "customizable-rounded-corners";
-          rev = "2b1d9faf0bf5dfad04a5acf02b34a432368de805";
-        };
-      });
-
-      freecad = super.freecad.overrideAttrs (old: {
-        version = "0.19.2-git";
-        src = builtins.fetchGit {
-          url = "https://github.com/FreeCAD/FreeCAD";
-          ref = "master";
-          rev = "ccc4151b3020969450325466e385850783795325";
-        };
-      });
-
-      alacritty = super.callPackage ./alacritty.nix { };
-
-      haskellPackages = with self.haskell.lib;
-        super.haskellPackages.extend
-        (hself: hsuper: { taffybar = markUnbroken hsuper.taffybar; });
-    })
+    (
+      self: super: {
+        freecad = super.freecad.overrideAttrs (
+          old: {
+            version = "0.19.2-git";
+            src = builtins.fetchGit {
+              url = "https://github.com/FreeCAD/FreeCAD";
+              ref = "master";
+              rev = "ccc4151b3020969450325466e385850783795325";
+            };
+          }
+        );
+      }
+    )
   ];
 }

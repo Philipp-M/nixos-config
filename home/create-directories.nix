@@ -23,9 +23,4 @@
       $DRY_RUN_CMD mkdir -p $VERBOSE_ARG $HOME/dev/work/playground/
       $DRY_RUN_CMD mkdir -p $VERBOSE_ARG $HOME/dev/work/frontend-libs/
     '';
-
-  home.activation.linkConfigs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD mkdir -p $VERBOSE_ARG $HOME/.config/nvim/
-    $DRY_RUN_CMD ln -fs $VERBOSE_ARG \
-  '';
 }

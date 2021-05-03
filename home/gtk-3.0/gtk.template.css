@@ -30,10 +30,10 @@ insensitive text widgets and the like base background color */
 @define-color insensitive_base_color #{{base00-hex}};
 /*
 widget text/foreground color on backdrop windows */
-@define-color theme_unfocused_fg_color {{base07-hex}};
+@define-color theme_unfocused_fg_color #{{base07-hex}};
 /*
 text color for entries, views and content in general on backdrop windows */
-@define-color theme_unfocused_text_color {{base07-hex}};
+@define-color theme_unfocused_text_color #{{base07-hex}};
 /*
 widget base background color on backdrop windows */
 @define-color theme_unfocused_bg_color #{{base00-hex}};

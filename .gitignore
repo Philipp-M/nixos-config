@@ -1,6 +1,0 @@
-wallpaper/*
-!wallpaper/.gitkeep
-screenshots/*
-!screenshots/.gitkeep
-nixos/tmp.nix
-nixos/configuration_new_generated.nix
