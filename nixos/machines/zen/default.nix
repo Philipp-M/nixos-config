@@ -11,11 +11,11 @@
     ./hardware-configuration.nix
     ../../configuration.nix
 
-    (import "${(builtins.fetchTarball {
-      url =
-        "https://github.com/musnix/musnix/archive/6c3f31772c639f50f893c25fb4ee75bb0cd92c98.tar.gz";
-      sha256 = "07wwaxcilj2xi0j0a0kra1q65vb3ynddhxk72rvvnr9x144vqzvr";
-    })}")
+    (import (builtins.fetchGit {
+      url = "https://github.com/musnix/musnix.git";
+      ref = "master";
+      rev = "f5053e85b0a578a335a78fa45517a8843154f46b";
+    }))
   ];
 
   boot.supportedFilesystems = [ "zfs" ];
