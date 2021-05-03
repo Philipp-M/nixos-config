@@ -6,6 +6,12 @@
     "nixos-config=/home/philm/dev/personal/dotfiles/nixos/machines/zen"
     "/nix/var/nix/profiles/per-user/root/channels"
   ];
+  nix = {
+    package = pkgs.nixFlakes;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+  };
 
   imports = [
     ./hardware-configuration.nix
