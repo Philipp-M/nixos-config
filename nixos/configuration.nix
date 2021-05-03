@@ -45,13 +45,20 @@
     # Enable 32-bit dri support for steam
     driSupport32Bit = true;
     extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
+    setLdLibraryPath = true;
   };
 
   # Enable audio
-  hardware.pulseaudio.enable = true;
-  hardware.pulseaudio.support32Bit = true;
-  hardware.pulseaudio.package =
-    pkgs.pulseaudio.override { jackaudioSupport = true; };
+  # Not strictly required but pipewire will use rtkit if it is present
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    # Compatibility shims, adjust according to your needs
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    jack.enable = true;
+  };
 
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
   # Per-interface useDHCP will be mandatory in the future, so this generated config
