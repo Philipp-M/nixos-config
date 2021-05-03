@@ -395,15 +395,13 @@
         };
       });
 
-      neovim-unwrapped = super.neovim-unwrapped.overrideAttrs (old: {
-        version = "0.5-dev";
+      freecad = super.freecad.overrideAttrs (old: {
+        version = "0.19.2-git";
         src = builtins.fetchGit {
-          url = "https://github.com/neovim/neovim/";
+          url = "https://github.com/FreeCAD/FreeCAD";
           ref = "master";
-          rev = "c50b737d6f953e1c4240c2e24693ce49932cdaf6";
+          rev = "ccc4151b3020969450325466e385850783795325";
         };
-
-        buildInputs = old.buildInputs ++ ([ pkgs.tree-sitter ]);
       });
 
       alacritty = super.callPackage ./alacritty.nix { };
