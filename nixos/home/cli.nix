@@ -1,21 +1,9 @@
 # This contains most CLI related stuff
 { pkgs, lib, config, ... }: {
+  imports = [ ./neovim ];
   home.sessionVariables.EDITOR = "nvim";
 
   # custom home files, currently mostly base16 templates
-
-  # neovim base16 themes with transparency support
-  home.file.".config/nvim/colors/base16.vim".source =
-    config.lib.base16.template {
-      name = "base16-vim";
-      src = ../../config/nvim/colors/base16.template.vim;
-    };
-
-  home.file.".config/nvim/autoload/airline/themes/base16.vim".source =
-    config.lib.base16.template {
-      name = "base16-vim-airline";
-      src = ../../config/nvim/autoload/airline/themes/base16.template.vim;
-    };
 
   programs.ssh = {
     enable = true;

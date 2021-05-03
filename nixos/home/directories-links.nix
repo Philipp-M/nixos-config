@@ -27,10 +27,5 @@
   home.activation.linkConfigs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD mkdir -p $VERBOSE_ARG $HOME/.config/nvim/
     $DRY_RUN_CMD ln -fs $VERBOSE_ARG \
-      ${builtins.toPath ../../config/nvim/init.vim} $HOME/.config/nvim/init.vim
-    $DRY_RUN_CMD ln -fs $VERBOSE_ARG \
-      ${
-        builtins.toPath ../../config/nvim/coc-settings.json
-      } $HOME/.config/nvim/coc-settings.json
   '';
 }
