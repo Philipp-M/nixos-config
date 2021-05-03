@@ -141,54 +141,6 @@
     '';
   };
 
-  home-manager.users.philm.systemd.user.services.jackdbus = {
-    Unit = {
-      Description = "JACK 2 with pulseeffects support";
-      Requires = [ "dbus.socket" "pulseaudio.service" ];
-      After = [ "pulseaudio.service" ];
-    };
-
-    Install = { WantedBy = [ "graphical-session.target" ]; };
-
-    Service = with pkgs; {
-      Type = "dbus";
-      BusName = "org.jackaudio.service";
-
-      ExecStartPre = "-${killall}/bin/killall -9 jackdbus";
-
-      ExecStart = "${jack2}/bin/jackdbus auto";
-
-      # ExecStartPost = ''
-      ExecStartPost = [
-        "${coreutils}/bin/sleep 1"
-        "${jack2}/bin/jack_control ds alsa"
-        "${jack2}/bin/jack_control dps device hw:USB"
-        "${jack2}/bin/jack_control dps period 256"
-        "${jack2}/bin/jack_control dps nperiods 2"
-        "${jack2}/bin/jack_control dps rate 96000"
-        "${jack2}/bin/jack_control dps midi-driver alsarawmidi"
-        "${jack2}/bin/jack_control eps driver alsa"
-        "${jack2}/bin/jack_control eps realtime True"
-        "${jack2}/bin/jack_control eps realtime-priority 95"
-        "${jack2}/bin/jack_control start"
-        "-${pulseaudio}/bin/pacmd set-default-sink jack_out"
-        "-${pulseaudio}/bin/pacmd set-default-source jack_in"
-        "-${pulseaudio}/bin/pacmd suspend-sink jack_out 0"
-        "-${pulseaudio}/bin/pacmd suspend-source jack_in 0"
-      ];
-
-      ExecStop = "${jack2}/bin/jack_control exit";
-
-      ExecStopPost = [
-        "-${killall}/bin/pacmd set-default-sink alsa_output.usb-Focusrite_Scarlett_2i4_USB-00.analog-surround-40"
-        "-${killall}/bin/pacmd set-default-source alsa_input.usb-Focusrite_Scarlett_2i4_USB-00.analog-stereo"
-      ];
-
-      SuccessExitStatus = 0;
-      RemainAfterExit = "yes";
-    };
-  };
-
   nix.maxJobs = lib.mkDefault 16;
   # High-DPI console
   console.font =
