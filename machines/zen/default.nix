@@ -34,6 +34,11 @@
     options = [ "rw" "uid=1000" ];
   };
 
+  # use blender from flatpak for Optix support
+  nixpkgs.config.packageOverrides = pkgs: {
+    blender = pkgs.blender.override { cudaSupport = true; };
+  };
+
   boot.supportedFilesystems = [ "ntfs" "zfs" ];
   boot.extraModulePackages = [ config.boot.kernelPackages.zenpower ];
   boot.kernelModules = [ "snd-seq" "snd-rawmidi" ];
