@@ -250,7 +250,10 @@
 
   # audio services
 
-  services.pulseeffects.enable = true;
+  services.pulseeffects = {
+    enable = true;
+    package = pkgs.pulseeffects-pw;
+  };
   # services.pulseeffects.preset = "HD800S";
 
   programs.alacritty = with config.lib.base16.theme; {
