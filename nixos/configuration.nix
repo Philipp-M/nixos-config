@@ -195,12 +195,15 @@
     # DEVELOPMENT
     ## compilers and dev environment
     # clang_10 # conflicts with gcc
-    python3
+    python38Full
+    python38Packages.pip
+    python38Packages.setuptools
     elixir
     gcc10
     gdb
     meson
     cmake
+    dart
     git
     git-secret
     gitAndTools.diff-so-fancy
@@ -208,12 +211,9 @@
     jdk
     llvmPackages.bintools
     neovim
-    ccls
-    omnisharp-roslyn
-    nixfmt
+    android-studio
+    droidcam
     flatpak-builder
-    rnix-lsp
-    haskellPackages.ormolu # haskell formatter
     # haskell.compiler.ghc882
     carnix
     php
@@ -223,6 +223,7 @@
     nodePackages.node2nix
     pkg-config
     rustup
+    wasm-pack
     vscode
     glslang
     vulkan-tools
@@ -243,8 +244,8 @@
     alacritty
     kitty
     fasd
+    fzf
     file
-    fish-foreign-env
     htop
     killall
     lm_sensors
@@ -269,9 +270,12 @@
     jq
     youtube-dl
     zip
+    unrar
+    p7zip
+    brotli
 
     # GRAPHICS
-    blender
+    # blender # flatpak version is used due to Optix support
     krita
     gimp
     inkscape
@@ -279,11 +283,14 @@
     # AUDIO
     cantata
     pavucontrol
-    ffmpeg
+    ffmpeg-full
     flacon
     bitwig-studio
 
     # COMMUNICATION
+    thunderbird
+    signal-desktop
+    element-desktop
     discord
     v4l-utils
     zoom-us
@@ -304,9 +311,11 @@
     dmenu
     wmctrl
     xorg.xev
+    xorg.xinit
     xorg.xmessage
     xorg.xkill
     xorg.xwininfo
+    deadd-notification-center
 
     # GAMES
     lutris
@@ -316,15 +325,24 @@
     winetricks
 
     # MISC
+    sanoid
+    gsettings-desktop-schemas
+    appimage-run
+    ntfs3g
+    woeusb
+    ipfs
     acpi
+    freecad
+    appimage-run
+    openvpn
     powertop
     usbutils
-    mprime
     cabextract
     patchelf
     qdirstat
     borgbackup
     electrum
+    monero-gui
     ecryptfs
     ecryptfs-helper
     keepassxc
@@ -344,6 +362,7 @@
     xclip
     nvtop
     adb-sync
+    tree-sitter
   ];
 
   fonts.fonts = with pkgs; [ nerdfonts google-fonts ];
