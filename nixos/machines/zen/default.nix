@@ -18,7 +18,13 @@
     }))
   ];
 
-  boot.supportedFilesystems = [ "zfs" ];
+  fileSystems."/windows" = {
+    device = "/dev/disk/by-uuid/D4D094EAD094D458";
+    fsType = "ntfs";
+    options = [ "rw" "uid=1000" ];
+  };
+
+  boot.supportedFilesystems = [ "ntfs" "zfs" ];
   boot.extraModulePackages = [ config.boot.kernelPackages.zenpower ];
   boot.kernelModules = [ "snd-seq" "snd-rawmidi" ];
 

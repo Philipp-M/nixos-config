@@ -27,18 +27,23 @@
     fsType = "zfs";
   };
 
-  fileSystems."/tank/media" = {
-    device = "tank/media";
-    fsType = "zfs";
-  };
-
   fileSystems."/tank/backup" = {
     device = "tank/backup";
     fsType = "zfs";
   };
 
+  fileSystems."/tank/media" = {
+    device = "tank/media";
+    fsType = "zfs";
+  };
+
   fileSystems."/tank/games" = {
     device = "tank/games";
+    fsType = "zfs";
+  };
+
+  fileSystems."/tank/backup/yasnix" = {
+    device = "tank/backup/yasnix";
     fsType = "zfs";
   };
 
