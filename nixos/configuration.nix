@@ -5,7 +5,6 @@
 { config, pkgs, options, lib, ... }:
 
 {
-  nixpkgs.config.allowUnfree = true;
   imports = [
     # custom home-manager
     (import "${
@@ -17,14 +16,8 @@
       }/nixos")
   ];
 
-  # NUR and other custom packages
-  nixpkgs.config.packageOverrides = pkgs: {
-    nur = import (builtins.fetchGit {
-      url = "https://github.com/nix-community/NUR/";
-      ref = "master";
-      rev = "5e6c5deca9fd7ef8c2151ec9b2c55c7fd3fa380f";
-    }) { inherit pkgs; };
-  };
+  nixpkgs.config.allowUnfree = true;
+  nix.autoOptimiseStore = true;
 
   # Use the systemd-boot EFI boot loader.
   boot.supportedFilesystems = [ "ecryptfs" ];
