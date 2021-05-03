@@ -6,12 +6,29 @@
 
 {
   imports = [
+    # pinning nixpkgs
+    # (import "${
+    #     (builtins.fetchTarball {
+    #       url =
+    #         "https://github.com/NixOS/nixpkgs/archive/8855c3a1c728a16b4a9e5e4071d7fc63ef63973a.tar.gz";
+    #       sha256 = "07pfwr8cimd9cmiqxhwzaz5l4i0vdzkmjh742kylpqc1mzr2xx26";
+    #     })
+    #   }/nixos")
+    # (import ../../desktop-environment/nixpkgs/nixos/default.nix)
+    # import (builtins.fetchTarball {
+    #   # Descriptive name to make the store path easier to identify
+    #   name = "nixos-unstable-2020-06-17";
+    #   # Commit hash for nixos-unstable as of 2018-09-12
+    #   url = "https://github.com/nixos/nixpkgs/archive/ec13b27348f98e74e0fbb1ab5e5723ec3127b7a8.tar.gz";
+    #   # Hash obtained using `nix-prefetch-url --unpack <url>`
+    #   sha256 = "0c7lzhyl2fhfghdn6f7nrx69fk9v4pdaljzrkykxbdc18vza5i7w";
+    # }) {}
     # custom home-manager
     (import "${
         (builtins.fetchGit {
           url = "https://github.com/Philipp-M/home-manager/";
           ref = "personal";
-          rev = "1dbd3d56c817d7f6646514a906e16c3237e4a5be";
+          rev = "b25e767899063b3f109680cc64dacd73228e796a";
         })
       }/nixos")
   ];
