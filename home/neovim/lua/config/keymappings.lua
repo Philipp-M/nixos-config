@@ -122,8 +122,8 @@ wk.register({
     c = {
       name = "Git commit",
       l = {"<cmd>Commits<cr>", "Show all commits"},
-      c = {"<cmd>Gcommit -v -q", "git commit"},
-      a = {"<cmd>Gcommit --amend", "git commit --amend"}
+      c = {"<cmd>Git commit -v -q<cr>", "git commit"},
+      a = {"<cmd>Git commit --amend<cr>", "git commit --amend"}
     },
     d = {name = "Git diff", d = {"<cmd>Gdiff<cr>", "git diff"}, s = {"<cmd>Gdiff --staged<cr>", "git diff --staged"}},
     h = {
