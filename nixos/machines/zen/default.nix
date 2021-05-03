@@ -48,6 +48,29 @@
 
   virtualisation.docker.enableNvidia = true;
 
+  # ZFS related
+  services.zfs.autoScrub.enable = true;
+  services.sanoid = let
+    # templates not working correctly because of kinda broken sanoid config
+    # (default values, which aren't overwritten by templates)
+    default = {
+      daily = 7;
+      hourly = 48;
+      monthly = 5;
+      yearly = 0;
+      settings = {
+        frequent_period = 15;
+        frequently = 8;
+      };
+    };
+  in {
+    enable = true;
+    interval = "*:0/15";
+    datasets."tank/private" = default;
+    datasets."tank/backup" = default;
+    datasets."tank/games" = default;
+  };
+
   musnix = {
     enable = true;
 
