@@ -221,10 +221,12 @@
 
   services.redshift = {
     enable = true;
-    latitude = "47.267";
-    longitude = "11.383";
-    brightness.day = "1";
-    brightness.night = "0.8";
+    settings = {
+      manual = {
+        lat = "47.267";
+        lon = "11.383";
+      };
+    };
     temperature.day = 6500;
     temperature.night = 3200;
   };
