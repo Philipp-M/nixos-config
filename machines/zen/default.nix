@@ -78,12 +78,22 @@
         frequently = 8;
       };
     };
-  in {
-    enable = true;
-    interval = "*:0/15";
-    datasets."tank/private" = default;
-    datasets."tank/backup" = default;
-    datasets."tank/games" = default;
+  in
+    {
+      enable = true;
+      interval = "*:0/15";
+      datasets."tank/private" = default;
+      datasets."tank/backup" = default;
+      datasets."tank/games" = default;
+    };
+
+  services = {
+    syncthing = {
+      enable = true;
+      user = "philm";
+      dataDir = "/home/philm/";
+      configDir = "/home/philm/.config/syncthing";
+    };
   };
 
   musnix = {
