@@ -59,10 +59,10 @@ rustPlatform.buildRustPackage rec {
     owner = "Philipp-M";
     repo = pname;
     rev = "0d999b855826964523adcfb21b098e8299c622cf";
-    sha256 = "19nq1wh5ayc5gpyxwq3m10978r2s3h1pzw1v51zz48x5c009amsz";
+    sha256 = "sha256-uVCT8aBiiBG33OUJCSM3bSAL02W6Qs13swZcgKJdUHM=";
   };
 
-  cargoSha256 = "sha256-z58MT/nGz1EFncInCsG6j2lroyU9L3HgnbSEvSUMeN4=";
+  cargoSha256 = "sha256:1z9pdsb13q0vlmx4wcbmsgd3mqdjgaxbvwc1xhjakcnlylq7aw5m";
 
   nativeBuildInputs = [
     cmake
