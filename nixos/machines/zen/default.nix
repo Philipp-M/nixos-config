@@ -129,6 +129,16 @@
   home-manager.users.philm.services.mpd = {
     enable = true;
     musicDirectory = "~/Music";
+    extraConfig = ''
+      audio_output {
+              type            "pulse"
+              name            "pulse audio"
+      }
+      playlist_plugin {
+          name "cue"
+          enabled "false"
+      }
+    '';
   };
 
   home-manager.users.philm.systemd.user.services.jackdbus = {
