@@ -58,8 +58,16 @@
       "video/x-matroska" = "mpv.desktop";
       "video/mp4" = "mpv.desktop";
       "video/webm" = "mpv.desktop";
+      "text/html" = "firefox.desktop";
+      "x-scheme-handler/http" = "firefox.desktop";
+      "x-scheme-handler/https" = "firefox.desktop";
+      "x-scheme-handler/about" = "firefox.desktop";
+      "x-scheme-handler/unknown" = "firefox.desktop";
     };
   };
+
+  # some app overwrites mimeapps all the time...
+  xdg.configFile."mimeapps.list".force = true;
 
   xresources.properties = with config.lib.base16.theme; {
     "Xft.dpi" = dpi;
