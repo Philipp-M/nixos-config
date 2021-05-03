@@ -182,7 +182,7 @@
     settings = {
       # general
       backend = "glx";
-      vsync = false;
+      vsync = true;
       refresh-rate = 0;
       unredir-if-possible = false;
       # blur
