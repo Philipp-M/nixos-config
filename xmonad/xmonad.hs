@@ -63,7 +63,8 @@ myLayouts = smartBorders $ mkToggle (single NBFULL)
     delta = 3 / 100
 
 myKeybindings =
-  [ ("M-c", spawn "chromium"),
+  -- [ ("M-w", spawn "chromium"),
+  [ ("M-w", spawn "firefox"),
     ("M-<Backspace>", kill),
     ("M-<Return>", spawn myTerminal),
     ("M-<Space>", spawn myLauncher),

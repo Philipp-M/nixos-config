@@ -14,7 +14,7 @@ Most of the following keybindings are still the default bindings, with optimized
 |---------------------------------------------------------|-------------------------------------------------------------------------------|
 | <kbd>mod</kbd> - <kbd>shift</kbd>   - <kbd>slash</kbd>  | Run xmessage with a summary of the default keybindings (useful for beginners) |
 | <kbd>mod</kbd> - <kbd>return</kbd>                      | Launch terminal                                                               |
-| <kbd>mod</kbd> - <kbd>c</kbd>                           | Launch chromium                                                               |
+| <kbd>mod</kbd> - <kbd>w</kbd>                           | Launch browser (firefox)                                                      |
 | <kbd>mod</kbd> - <kbd>space</kbd>                       | Launch rofi                                                                   |
 | <kbd>mod</kbd> - <kbd>shift</kbd>   - <kbd>p</kbd>      | Launch gmrun                                                                  |
 | <kbd>mod</kbd> - <kbd>backspace</kbd>                   | Close the focused window                                                      |
@@ -65,5 +65,5 @@ Most of the following keybindings are still the default bindings, with optimized
 |---------------------------------------------------------|-------------------------------------------------------------------------------|
 | <kbd>mod</kbd> - <kbd>=</kbd>                           | Switch to the next screen                                                     |
 | <kbd>mod</kbd> - <kbd>shift</kbd> - <kbd>=</kbd>        | Move client to the next screen                                                |
-| <kbd>mod</kbd> - <kbd>{w,e,r}</kbd>                     | Switch to physical/Xinerama screens 1, 2, or 3                                |
+| <kbd>mod</kbd> - <kbd>{e,r}</kbd>                     | Switch to physical/Xinerama screens 2, or 3                                     |
 | <kbd>mod</kbd> - <kbd>shift</kbd>   - <kbd>{w,e,r}</kbd>| Move client to screen 1, 2, or 3                                              |
