@@ -4,6 +4,15 @@ local saga = require('lspsaga')
 local lspkind = require('lspkind')
 local lsp = vim.lsp
 
+vim.fn.sign_define("LspDiagnosticsSignError",
+                   {texthl = "LspDiagnosticsSignError", text = "", numhl = "LspDiagnosticsSignError"})
+vim.fn.sign_define("LspDiagnosticsSignWarning",
+                   {texthl = "LspDiagnosticsSignWarning", text = "", numhl = "LspDiagnosticsSignWarning"})
+vim.fn.sign_define("LspDiagnosticsSignHint",
+                   {texthl = "LspDiagnosticsSignHint", text = "", numhl = "LspDiagnosticsSignHint"})
+vim.fn.sign_define("LspDiagnosticsSignInformation",
+                   {texthl = "LspDiagnosticsSignInformation", text = "", numhl = "LspDiagnosticsSignInformation"})
+
 local kind_symbols = {
   Text = '',
   Method = 'Ƒ',
