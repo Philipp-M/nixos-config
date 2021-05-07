@@ -1,14 +1,24 @@
-{ pkgs, lib, config, ... }: {
+let
+  unstableNixpkgs = (
+    builtins.fetchGit {
+      url = "https://github.com/Philipp-M/nixpkgs/";
+      ref = "refs/heads/init-efm-langserver";
+      rev = "5acfc40588582d3b7df6407f21a6513d69e20414";
+    }
+  );
+  unstablePkgs = import unstableNixpkgs {};
+in
+{ lib, config, ... }: {
   programs.neovim = {
     enable = true;
-    extraPackages = with pkgs; [
+    extraPackages = with unstablePkgs; [
       clang-tools
       cmake-language-server
       dart
       efm-langserver
       fzf
       haskellPackages.ormolu # haskell formatter
-      julia
+      # julia
       luaformatter
       nixfmt
       nodePackages.bash-language-server
@@ -42,7 +52,7 @@
             url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
           }
         )
-      ) {} pkgs
+      ) {} unstablePkgs
     ).neovim-nightly;
   };
 
