@@ -60,7 +60,7 @@ return require("packer").startup(function(use)
 
   -- Git
   use {
-    {'tpope/vim-fugitive', cmd = {'Gstatus', 'Gblame', 'Gpush', 'Gpull', 'Gcommit', 'Gdiff'}}, {
+    {'tpope/vim-fugitive', cmd = {'Git', 'Gstatus', 'Gblame', 'Gpush', 'Gpull', 'Gcommit', 'Gdiff'}}, {
       'lewis6991/gitsigns.nvim',
       requires = {'nvim-lua/plenary.nvim'},
       config = function()
@@ -70,7 +70,7 @@ return require("packer").startup(function(use)
             change = {hl = 'GitSignsChange', text = '▊', numhl = 'GitSignsChangeNr', linehl = 'GitSignsChangeLn'},
             delete = {hl = 'GitSignsDelete', text = '▊', numhl = 'GitSignsDeleteNr', linehl = 'GitSignsDeleteLn'},
             topdelete = {hl = 'GitSignsDelete', text = '▊', numhl = 'GitSignsDeleteNr', linehl = 'GitSignsDeleteLn'},
-            changedelete = {hl = 'GitSignsChange', text = '~', numhl = 'GitSignsChangeNr', linehl = 'GitSignsChangeLn'}
+            changedelete = {hl = 'GitSignsChange', text = '▊', numhl = 'GitSignsChangeNr', linehl = 'GitSignsChangeLn'}
           },
           keymaps = {}
         })
@@ -86,22 +86,11 @@ return require("packer").startup(function(use)
   -- TODO refactor this when https://github.com/wbthomason/packer.nvim/issues/256 is fixed
   use {
     'glepnir/lspsaga.nvim',
-    requires = {'onsails/lspkind-nvim', 'neovim/nvim-lspconfig', 'nvim-lua/lsp-status.nvim'},
+    requires = {
+      'onsails/lspkind-nvim', 'neovim/nvim-lspconfig', 'nvim-lua/lsp-status.nvim', 'ray-x/lsp_signature.nvim',
+      'nvim-lua/lsp_extensions.nvim'
+    },
     config = [[require('config.lsp')]]
-  }
-
-  use {
-    'nvim-lua/lsp_extensions.nvim',
-    config = function()
-      require'lsp_extensions'.inlay_hints {
-        highlight = "Comment",
-        prefix = " > ",
-        aligned = false,
-        only_current_line = false,
-        enabled = {"ChainingHint"}
-      }
-    end
-
   }
 
   use {

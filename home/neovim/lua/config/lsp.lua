@@ -109,6 +109,15 @@ local function on_attach(client, bufnr)
       augroup END
     ]], false)
   end
+
+  require"lsp_signature".on_attach()
+  require'lsp_extensions'.inlay_hints {
+    highlight = "Comment",
+    prefix = " > ",
+    aligned = false,
+    only_current_line = false,
+    enabled = {"ChainingHint"}
+  }
 end
 
 local js_jsx_ts_tsx_vue_args = {
@@ -154,7 +163,8 @@ local servers = {
         javascript = js_jsx_ts_tsx_vue_args,
         javascriptreact = js_jsx_ts_tsx_vue_args,
         typescript = js_jsx_ts_tsx_vue_args,
-        typescriptreact = js_jsx_ts_tsx_vue_args
+        typescriptreact = js_jsx_ts_tsx_vue_args,
+        vue = js_jsx_ts_tsx_vue_args
       }
     }
   },
@@ -201,15 +211,7 @@ local servers = {
   tsserver = {
     filetypes = {"javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx"},
     root_dir = require('lspconfig/util').root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git"),
-    settings = {documentFormatting = false},
-    handlers = {
-      ["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-        virtual_text = true,
-        signs = true,
-        underline = true,
-        update_in_insert = true
-      })
-    }
+    settings = {documentFormatting = false}
   },
   vimls = {},
   vuels = {},
@@ -221,6 +223,13 @@ local snippet_capabilities = {textDocument = {completion = {completionItem = {sn
 
 for server, config in pairs(servers) do
   config.on_attach = on_attach
+  config.handlers = (config.handlers or {})
+  config.handlers["textDocument/publishDiagnostics"] = lsp.with(lsp.diagnostic.on_publish_diagnostics, {
+    virtual_text = true,
+    signs = true,
+    underline = true,
+    update_in_insert = true
+  })
   config.capabilities = vim.tbl_deep_extend('keep', config.capabilities or {}, lsp_status.capabilities,
                                             snippet_capabilities)
   lspconfig[server].setup(config)
