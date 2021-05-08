@@ -41,17 +41,6 @@ return require("packer").startup(function(use)
   }
 
   use {"rafcamlet/nvim-luapad", opt = true, cmd = {"Lua", "LuaRun", "Luapad"}}
-  use {
-    "junegunn/fzf.vim",
-    opt = true,
-    requires = {"junegunn/fzf"},
-    cmd = {"Files", "History", "Commits", "GFiles", "Rg"},
-    config = function()
-      vim.cmd("let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow -g \"!.git/*\" -g \"!*.o\" --no-ignore-parent'")
-      vim.cmd(
-          "command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --hidden --follow -g \"!.git/*\" --color \"always\" '.shellescape(<q-args>), 1, <bang>0)")
-    end
-  }
 
   use 'tomtom/tcomment_vim'
   use 'tpope/vim-surround'
@@ -70,7 +59,12 @@ return require("packer").startup(function(use)
             change = {hl = 'GitSignsChange', text = '▊', numhl = 'GitSignsChangeNr', linehl = 'GitSignsChangeLn'},
             delete = {hl = 'GitSignsDelete', text = '▊', numhl = 'GitSignsDeleteNr', linehl = 'GitSignsDeleteLn'},
             topdelete = {hl = 'GitSignsDelete', text = '▊', numhl = 'GitSignsDeleteNr', linehl = 'GitSignsDeleteLn'},
-            changedelete = {hl = 'GitSignsChange', text = '▊', numhl = 'GitSignsChangeNr', linehl = 'GitSignsChangeLn'}
+            changedelete = {
+              hl = 'GitSignsChange',
+              text = '▊',
+              numhl = 'GitSignsChangeNr',
+              linehl = 'GitSignsChangeLn'
+            }
           },
           keymaps = {}
         })
@@ -98,6 +92,18 @@ return require("packer").startup(function(use)
     event = 'InsertEnter *',
     requires = {"hrsh7th/vim-vsnip"},
     config = [[require('config.compe-vsnip')]]
+  }
+
+  -- FZF and related
+  use {
+    'ojroques/nvim-lspfuzzy',
+    requires = {{"junegunn/fzf.vim"}, {"junegunn/fzf"}},
+    config = function()
+      vim.cmd("let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow -g \"!.git/*\" -g \"!*.o\" --no-ignore-parent'")
+      vim.cmd(
+          "command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --hidden --follow -g \"!.git/*\" --color \"always\" '.shellescape(<q-args>), 1, <bang>0)")
+      require('lspfuzzy').setup {}
+    end
   }
 
   use "rafamadriz/friendly-snippets"

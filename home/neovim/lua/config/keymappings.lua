@@ -134,7 +134,8 @@ wk.register({
       R = {"<cmd>lua require'gitsigns'.reset_buffer()<cr>", "Reset buffer"},
       p = {"<cmd>lua require'gitsigns'.preview_hunk()<cr>", "Preview hunk"},
       b = {"<cmd>lua require'gitsigns'.blame_line()<cr>", "Blame line"}
-    }
+    },
+    s = {"<cmd>Git<cr>", "Git fugitive (status)"},
   },
   -- LSP Keybindings are defined in lsp.lua
   t = {
@@ -164,8 +165,14 @@ wk.register({
   s = {"*:Rg <c-r>/<bs><bs><c-left><del><del><cr>", "Find word under cursor in Workdirectory"},
   n = {":Rg ", "Rg in Workdirectory"}
 }, {prefix = "<leader>"})
-wk.register({d = "Jump to next diagnostic"}, {prefix = "["})
-wk.register({d = "Jump to previous diagnostic"}, {prefix = "]"})
+wk.register({
+  d = "Jump to next diagnostic",
+  h = {'<cmd>lua require\"gitsigns\".next_hunk()<CR>', "Jump to next git hunk"}
+}, {prefix = "["})
+wk.register({
+  d = "Jump to previous diagnostic",
+  h = {'<cmd>lua require\"gitsigns\".prev_hunk()<CR>', "Jump to previous git hunk"}
+}, {prefix = "]"})
 wk.register({a = "Range Code action", f = "Range format"}, {prefix = "<leader>", mode = "v"})
 wk.register({i = {h = {':<C-U>lua require"gitsigns".select_hunk()<cr>', 'Git hunk'}}}, {mode = "o"})
 wk.register({i = {h = {':<C-U>lua require"gitsigns".select_hunk()<cr>', 'Git hunk'}}}, {mode = "x"})
