@@ -18,8 +18,8 @@ map('n', 'Y', 'y$')
 
 -- barbar mappings
 
-map('n', '<TAB>', ':BufferNext<cr>', {noremap = true, silent = true})
-map('n', '<S-TAB>', ':BufferPrevious<cr>', {noremap = true, silent = true})
+-- map('n', '<TAB>', ':BufferNext<cr>', {noremap = true, silent = true})
+-- map('n', '<S-TAB>', ':BufferPrevious<cr>', {noremap = true, silent = true})
 map('n', '<S-x>', ':BufferClose<cr>', {noremap = true, silent = true})
 map('', '<A-h>', ':BufferPrevious<cr>', {noremap = true})
 map('i', '<A-h>', '<Esc>:BufferPrevious<cr>', {noremap = true})
