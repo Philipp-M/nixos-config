@@ -110,7 +110,8 @@ local function on_attach(client, bufnr)
     ]], false)
   end
 
-  require"lsp_signature".on_attach()
+  lsp_status.on_attach(client, bufnr);
+  require"lsp_signature".on_attach(client, bufnr)
   require'lsp_extensions'.inlay_hints {
     highlight = "Comment",
     prefix = " > ",
