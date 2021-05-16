@@ -32,7 +32,7 @@
         ];
         enableContribAndExtras = true;
         config = builtins.toPath (
-          config.lib.base16.template {
+          config.lib.theme.template {
             name = "xmonad";
             src = ./xmonad/xmonad.hs;
           }
@@ -46,11 +46,10 @@
     package = (import ./taffybar) { inherit pkgs; };
   };
 
-  home.file.".config/taffybar/taffybar.css".source =
-    config.lib.base16.template {
-      name = "taffybar.css";
-      src = ./taffybar/taffybar.template.css;
-    };
+  home.file.".config/taffybar/taffybar.css".source = config.lib.theme.template {
+    name = "taffybar.css";
+    src = ./taffybar/taffybar.template.css;
+  };
 
   xdg.mimeApps = {
     enable = true;
@@ -72,73 +71,54 @@
   # some app overwrites mimeapps all the time...
   xdg.configFile."mimeapps.list".force = true;
 
-  xresources.properties = with config.lib.base16.theme; {
-    "Xft.dpi" = dpi;
-    "Xft.antialias" = true;
-    "Xft.rgba" = "rgb";
-    "Xft.hinting" = true;
-    "Xft.autohint" = false;
-    "Xft.hintstyle" = "hintslight";
-    "Xft.lcdfilter" = "lcddefault";
-    "Xft.font" = "xft:${fontname}${xftfontextra}:size=${fontsize}";
-    "Xcursor.size" = xcursorSize;
+  xresources.properties = with config.theme.base16.colors;
+    with config.theme.extraParams; {
+      "Xft.dpi" = dpi;
+      "Xft.antialias" = true;
+      "Xft.rgba" = "rgb";
+      "Xft.hinting" = true;
+      "Xft.autohint" = false;
+      "Xft.hintstyle" = "hintslight";
+      "Xft.lcdfilter" = "lcddefault";
+      "Xft.font" = "xft:${fontname}${xftfontextra}:size=${fontsize}";
+      "Xcursor.size" = xcursorSize;
 
-    "*color0" = "#${base00-hex}";
-    "*color1" = "#${base08-hex}";
-    "*color2" = "#${base0B-hex}";
-    "*color3" = "#${base0A-hex}";
-    "*color4" = "#${base0D-hex}";
-    "*color5" = "#${base0E-hex}";
-    "*color6" = "#${base0C-hex}";
-    "*color7" = "#${base05-hex}";
-    "*color8" = "#${base03-hex}";
+      "*color0" = "#${base00.hex.rgb}";
+      "*color1" = "#${base08.hex.rgb}";
+      "*color2" = "#${base0B.hex.rgb}";
+      "*color3" = "#${base0A.hex.rgb}";
+      "*color4" = "#${base0D.hex.rgb}";
+      "*color5" = "#${base0E.hex.rgb}";
+      "*color6" = "#${base0C.hex.rgb}";
+      "*color7" = "#${base05.hex.rgb}";
+      "*color8" = "#${base03.hex.rgb}";
 
-    "*color9" = "#${base08-hex}";
-    "*color10" = "#${base0B-hex}";
-    "*color11" = "#${base0A-hex}";
-    "*color12" = "#${base0D-hex}";
-    "*color13" = "#${base0E-hex}";
-    "*color14" = "#${base0C-hex}";
+      "*color9" = "#${base08.hex.rgb}";
+      "*color10" = "#${base0B.hex.rgb}";
+      "*color11" = "#${base0A.hex.rgb}";
+      "*color12" = "#${base0D.hex.rgb}";
+      "*color13" = "#${base0E.hex.rgb}";
+      "*color14" = "#${base0C.hex.rgb}";
 
-    "*color15" = "#${base07-hex}";
-    "*color16" = "#${base09-hex}";
-    "*color17" = "#${base0F-hex}";
-    "*color18" = "#${base01-hex}";
-    "*color19" = "#${base02-hex}";
-    "*color20" = "#${base04-hex}";
-    "*color21" = "#${base06-hex}";
+      "*color15" = "#${base07.hex.rgb}";
+      "*color16" = "#${base09.hex.rgb}";
+      "*color17" = "#${base0F.hex.rgb}";
+      "*color18" = "#${base01.hex.rgb}";
+      "*color19" = "#${base02.hex.rgb}";
+      "*color20" = "#${base04.hex.rgb}";
+      "*color21" = "#${base06.hex.rgb}";
 
-    "*foreground" = "#${base05-hex}";
-    "*background" = "#${base00-hex}";
-    "*fadeColor" = "#${base07-hex}";
-    "*cursorColor" = "#${base01-hex}";
-    "*pointerColorBackground" = "#${base01-hex}";
-    "*pointerColorForeground" = "#${base06-hex}";
-  };
+      "*foreground" = "#${base05.hex.rgb}";
+      "*background" = "#${base00.hex.rgb}";
+      "*fadeColor" = "#${base07.hex.rgb}";
+      "*cursorColor" = "#${base01.hex.rgb}";
+      "*pointerColorBackground" = "#${base01.hex.rgb}";
+      "*pointerColorForeground" = "#${base06.hex.rgb}";
+    };
 
   # KDE/GTK specific
 
-  gtk = {
-    enable = true;
-    theme.name = "adwaita-dark";
-    # iconTheme = {
-    #   name = "Numix-Circle";
-    #   package = pkgs.numix-icon-theme-circle;
-    # };
-  };
-
-  # gtk 2
-  home.file.".themes/base16/gtk-2.0/gtkrc".source = config.lib.base16.template {
-    name = "base16-gtk-2.0";
-    src = ./gtk-2.0/template.gtkrc;
-  };
-
-  # gtk 3
-  # home.file.".themes/base16/gtk-3.0/gtk.css".source =
-  #   config.lib.base16.template {
-  #     name = "base16-gtk-2.0";
-  #     src = ./gtk-3.0/gtk.template.css;
-  #   };
+  gtk.enable = true;
 
   qt = {
     enable = true;
@@ -147,8 +127,9 @@
 
   programs.rofi = {
     enable = true;
+    enableBase16Theme = false;
     theme = builtins.toPath (
-      config.lib.base16.template {
+      config.lib.theme.template {
         name = "rofi";
         src = ./rofi/theme.template.rasi;
       }
@@ -207,7 +188,7 @@
       blur-strength = 10;
       wintypes = {
         desktop = {
-          opacity = builtins.fromJSON config.lib.base16.theme.alpha;
+          opacity = builtins.fromJSON config.theme.extraParams.alpha;
           corner-radius = 0;
           corner-radius-top-left = 5;
           corner-radius-top-right = 5;
@@ -230,7 +211,7 @@
         "class_g = 'Rofi'"
         "class_g = 'Dunst'"
       ];
-      frame-opacity = builtins.fromJSON config.lib.base16.theme.alpha;
+      frame-opacity = builtins.fromJSON config.theme.extraParams.alpha;
     };
   };
 
@@ -271,7 +252,7 @@
   };
   # services.pulseeffects.preset = "HD800S";
 
-  programs.alacritty = with config.lib.base16.theme; {
+  programs.alacritty = with config.theme.extraParams; {
     enable = true;
     package = pkgs.callPackage ./alacritty.nix {};
     settings = {
@@ -285,20 +266,20 @@
       font.size = 18;
       font.normal.family = fontname;
       font.ligatures = true;
-      colors = {
+      colors = with config.theme.base16.colors; {
         primary = {
-          background = "#${base00-hex}";
-          foreground = "#${base06-hex}";
+          background = "#${base00.hex.rgb}";
+          foreground = "#${base06.hex.rgb}";
         };
         normal = {
-          black = "#${base00-hex}";
-          red = "#${base08-hex}";
-          green = "#${base0B-hex}";
-          yellow = "#${base0A-hex}";
-          blue = "#${base0D-hex}";
-          magenta = "#${base0E-hex}";
-          cyan = "#${base0C-hex}";
-          white = "#${base05-hex}";
+          black = "#${base00.hex.rgb}";
+          red = "#${base08.hex.rgb}";
+          green = "#${base0B.hex.rgb}";
+          yellow = "#${base0A.hex.rgb}";
+          blue = "#${base0D.hex.rgb}";
+          magenta = "#${base0E.hex.rgb}";
+          cyan = "#${base0C.hex.rgb}";
+          white = "#${base05.hex.rgb}";
         };
       };
     };

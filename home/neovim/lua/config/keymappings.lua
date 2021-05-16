@@ -135,7 +135,7 @@ wk.register({
       p = {"<cmd>lua require'gitsigns'.preview_hunk()<cr>", "Preview hunk"},
       b = {"<cmd>lua require'gitsigns'.blame_line()<cr>", "Blame line"}
     },
-    s = {"<cmd>Git<cr>", "Git fugitive (status)"},
+    s = {"<cmd>Git<cr>", "Git fugitive (status)"}
   },
   -- LSP Keybindings are defined in lsp.lua
   t = {

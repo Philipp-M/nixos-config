@@ -16,7 +16,6 @@
     enable = true;
     settings = {
       add_newline = false;
-      character.symbol = "";
       directory.truncation_length = 8;
       cmd_duration = {
         min_time = 10;
@@ -88,16 +87,7 @@
     };
   };
 
-  programs.bat = {
-    enable = true;
-    config = { theme = "base16"; };
-    themes = {
-      base16 = builtins.readFile (toString (config.lib.base16.template {
-        name = "base16-bat";
-        src = ./bat-base16.template.tmTheme;
-      }));
-    };
-  };
+  programs.bat.enable = true;
 
   programs.tmux = {
     enable = true;

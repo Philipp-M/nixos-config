@@ -1,18 +1,35 @@
 { pkgs, lib, config, ... }: {
-  imports = [
-    (import "${
-        (builtins.fetchGit {
-          url = "https://github.com/atpotts/base16-nix/";
-          ref = "master";
-          rev = "4f192afaa0852fefb4ce3bde87392a0b28d6ddc8";
-        })
-      }/base16.nix")
+  imports = let
+    nurNoPkgs = import (builtins.fetchGit {
+      url = "https://github.com/nix-community/NUR/";
+      ref = "master";
+      rev = "cb545a12cf4a99ea546e4757ba01adecfd204b36";
+    }) { };
+  in [
+    nurNoPkgs.repos.rycee.hmModules.theme-base16
+    {
+      options.theme.extraParams = with lib;
+        mkOption {
+          type = types.attrsOf types.string;
+          default = { };
+        };
+      config.lib.theme.template = { name, src }:
+        with lib;
+        pkgs.runCommandLocal name { } ''
+          sed '${
+            concatStrings ((mapAttrsToList (n: v:
+              "s/\\(#\\?\\){{${n}\\(\\:\\?-hex\\)\\?}}/\\1${v.hex.rgb}/;")
+              config.theme.base16.colors)
+              ++ (mapAttrsToList (n: v: "s/{{${n}}}/${v}/;")
+                config.theme.extraParams))
+          }' ${src} > $out
+        '';
+    }
   ];
 
-  themes.base16 = {
-    enable = true;
-    scheme = "tomorrow";
-    variant = "tomorrow-night";
+  theme = {
+    base16 = config.lib.theme.base16.fromYamlFile (builtins.fetchurl
+      "https://raw.githubusercontent.com/chriskempson/base16-tomorrow-scheme/master/tomorrow-night.yaml");
     extraParams = {
       fontname = "Iosevka";
       xftfontextra = ":style=Regular";

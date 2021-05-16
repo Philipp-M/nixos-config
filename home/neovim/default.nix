@@ -57,9 +57,8 @@ in
   };
 
   # neovim base16 themes with transparency support
-  home.file.".config/nvim/colors/base16.vim".source =
-    config.lib.base16.template
-      { name = "base16-vim"; src = ./colorscheme-base16.template.vim; };
+  home.file.".config/nvim/colors/base16.vim".source = config.lib.theme.template
+    { name = "base16-vim"; src = ./colorscheme-base16.template.vim; };
 
   home.activation.linkNeovimConfs = ''
     $DRY_RUN_CMD mkdir -p $VERBOSE_ARG $HOME/.config/nvim
