@@ -12,7 +12,7 @@
         builtins.fetchGit {
           url = "https://github.com/Philipp-M/home-manager/";
           ref = "personal";
-          rev = "b25e767899063b3f109680cc64dacd73228e796a";
+          rev = "64bfa600c125a690452e6598baf80c048a551f4b";
         }
       )
       }/nixos"
@@ -384,7 +384,7 @@
             src = builtins.fetchGit {
               url = "https://github.com/FreeCAD/FreeCAD";
               ref = "master";
-              rev = "ccc4151b3020969450325466e385850783795325";
+              rev = "a378b6b66f8a5992fc1452567ff59bdb613abc80";
             };
           }
         );

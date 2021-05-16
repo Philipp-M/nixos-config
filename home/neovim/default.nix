@@ -3,7 +3,7 @@ let
     builtins.fetchGit {
       url = "https://github.com/Philipp-M/nixpkgs/";
       ref = "refs/heads/init-efm-langserver";
-      rev = "5acfc40588582d3b7df6407f21a6513d69e20414";
+      rev = "4af3a5f513b59505834feab2d29a507e311dcdbd";
     }
   );
   unstablePkgs = import unstableNixpkgs {};
