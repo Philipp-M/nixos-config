@@ -149,6 +149,7 @@
 
   # gtk themes (home-manager more specifically) seem to have problems without it
   services.dbus.packages = [ pkgs.gnome3.dconf ];
+  programs.dconf.enable = true;
 
   xdg.portal.enable = true;
   services.flatpak.enable = true;
@@ -193,6 +194,8 @@
     enableSSHSupport = true;
     pinentryFlavor = "curses";
   };
+
+  programs.steam.enable = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -323,11 +326,13 @@
     # GAMES
     lutris
     minecraft
-    steam
     wineWowPackages.staging
     winetricks
 
     # MISC
+    neovide
+    rdup
+    rdedup
     sanoid
     gsettings-desktop-schemas
     appimage-run
