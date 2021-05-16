@@ -156,6 +156,7 @@ wk.register({
   a = "Code action",
   r = "Rename",
   f = "Format",
+  u = {"<cmd>UndotreeToggle<cr>", "Toggle Undotree"},
   w = {"<cmd>w<cr>", ":write"},
   q = {"<cmd>q<cr>", ":q"},
   x = {"<cmd>:bd<cr>", ":bd"},

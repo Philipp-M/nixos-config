@@ -18,6 +18,8 @@ return require("packer").startup(function(use)
   -- Async building & commands
   use {'tpope/vim-dispatch', cmd = {'Dispatch', 'Make', 'Focus', 'Start'}}
 
+  use {"mbbill/undotree", cmd = {'UndotreeToggle'}, config = function() vim.g.undotree_SetFocusWhenToggle = true end}
+
   -- Indentation tracking
   use {
     'lukas-reineke/indent-blankline.nvim',
