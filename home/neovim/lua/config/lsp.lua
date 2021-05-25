@@ -171,13 +171,16 @@ local servers = {
   },
   ghcide = {},
   html = {},
-  jsonls = {cmd = {'json-languageserver', '--stdio'}},
+  jdtls = {cmd = {"jdt-ls"}},
+  jsonls = {},
   julials = {settings = {julia = {format = {indent = 2}}}},
   rnix = {},
   ocamllsp = {},
   omnisharp = {cmd = {'omnisharp', "--languageserver", "--hostPID", tostring(vim.fn.getpid())}},
   pyright = {settings = {python = {formatting = {provider = 'yapf'}}}},
-  rust_analyzer = {},
+  rust_analyzer = {
+    settings = {["rust-analyzer"] = {cargo = {loadOutDirsFromCheck = true}, procMacro = {enable = true}}}
+  },
   stylelint_lsp = {}, -- not yet working, needs stylelint-lsp in nixpkgs upstream
   sumneko_lua = {
     cmd = {'lua-language-server'},
