@@ -41,6 +41,8 @@
     };
   };
 
+  home.file.".xmonad/xmonad-x86_64-linux".force = true;
+
   services.taffybar = {
     enable = true;
     package = (import ./taffybar) { inherit pkgs; };
