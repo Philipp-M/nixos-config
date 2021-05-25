@@ -375,20 +375,4 @@
 
   fonts.fonts = with pkgs; [ nerdfonts google-fonts ];
 
-  nixpkgs.overlays = [
-    (
-      self: super: {
-        freecad = super.freecad.overrideAttrs (
-          old: {
-            version = "0.19.2-git";
-            src = builtins.fetchGit {
-              url = "https://github.com/FreeCAD/FreeCAD";
-              ref = "master";
-              rev = "a378b6b66f8a5992fc1452567ff59bdb613abc80";
-            };
-          }
-        );
-      }
-    )
-  ];
 }
