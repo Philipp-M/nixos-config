@@ -9,6 +9,7 @@ local o, wo, bo = vim.o, vim.wo, vim.bo
 require('plugins')
 
 g.base16_transparent_background = 1
+g.neovide_transparency=0.85
 
 local buffer = {o, bo}
 local window = {o, wo}
@@ -39,10 +40,9 @@ opt('mouse', 'a')
 opt('signcolumn', 'yes:1', window)
 opt('guicursor', [[n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50]])
 
-if vim.fn.has('unnamedplus') == 1 then
-  opt('clipboard', 'unnamedplus')
-end
+opt('guifont', 'Iosevka:h30')
 
+if vim.fn.has('unnamedplus') == 1 then opt('clipboard', 'unnamedplus') end
 
 -- detect nix files
 cmd('au BufRead,BufNewFile *.nix set filetype=nix')
