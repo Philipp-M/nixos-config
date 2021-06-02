@@ -44,41 +44,12 @@
       lls = "lsd -ArlS --total-size";
       l = "lsd -l";
       # package/dependency management
-      nx = "nix-shell --command fish";
-      upgrade =
-        "sudo nixos-rebuild switch --upgrade"; # dangerous use of sudo, don't do it at home (but it's comfortable)
-      update =
-        "sudo nixos-rebuild switch"; # dangerous use of sudo, don't do it at home (but it's comfortable)
+      nx = "NIXPKGS_ALLOW_UNFREE=1 nix-shell --command fish";
+      upgrade = "sudo nixos-rebuild switch --upgrade";
+      update = "sudo nixos-rebuild switch";
       # shortcuts for changing the directory
-      cdwork = "cd $HOME/dev/work";
-      cdev = "cd $HOME/dev/personal";
-      cdenv = "cd $HOME/dev/personal/desktop-environment";
-      cdot = "cd $HOME/dev/personal/dotfiles";
-      cdgo = "cd $HOME/dev/personal/go/src";
-      cdc = "cd $HOME/dev/personal/c";
-      cdelx = "cd $HOME/dev/personal/elixir";
-      cdrust = "cd $HOME/dev/personal/rust";
-      cdhs = "cd $HOME/dev/personal/haskell";
-      cdpy = "cd $HOME/dev/personal/python";
-      cddocker = "cd $HOME/dev/docker";
-      cdwww = "cd $HOME/dev/personal/www";
-      cdvue = "cd $HOME/dev/personal/www/vue";
-      cdpro = "cd $HOME/dev/projects";
-      cdvox = "cd $HOME/dev/projects/voxinfinity";
-      cdvul = "cd $HOME/dev/vulkan";
-      cdgql = "cd $HOME/dev/GraphQL";
-      cdnode = "cd $HOME/dev/nodeBased";
-      cdml = "cd $HOME/dev/MachineLearning";
-      cdl = "cd $HOME/dev/personal/deep-learning/";
-      cduni = "cd $HOME/Uni";
-      cdrand = "cd $HOME/dev/randomStuff";
-      cdrandrs = "cd $HOME/dev/randomStuff/rust";
-      cdsmall = "cd $HOME/dev/randomStuff/small";
-      cdray = "cd $HOME/dev/rayTracing";
-      cdandroid = "cd $HOME/dev/Android";
       cdate = "date +%Y%m%d%H%M";
       # useful shortcuts
-      dus = "du -h | sort -h";
       lsblka = "lsblk --output NAME,LABEL,UUID,SIZE,MODEL,MOUNTPOINT,FSTYPE";
       rsyncp = "rsync --info=progress2";
       sudoe = "sudo -E";
