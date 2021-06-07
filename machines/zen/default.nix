@@ -29,7 +29,7 @@
   ];
 
   fileSystems."/windows" = {
-    device = "/dev/disk/by-uuid/D4D094EAD094D458";
+    device = "/dev/disk/by-uuid/B8EEC319EEC2CF36";
     fsType = "ntfs";
     options = [ "rw" "uid=1000" ];
   };
