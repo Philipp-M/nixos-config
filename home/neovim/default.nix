@@ -1,16 +1,9 @@
 let
   unstableNixpkgs = builtins.fetchGit {
     url = "https://github.com/Philipp-M/nixpkgs/";
-    ref = "refs/heads/init-efm-langserver";
-    rev = "29cb084d24c11ed4f298e6de80beb675ad63c5d7";
+    ref = "refs/heads/personal";
+    rev = "a4c036c472c81743614c41795a910a4ca3947827";
   };
-  jdtPkgs = import (
-    builtins.fetchGit {
-      url = "https://github.com/jlesquembre/nixpkgs/";
-      ref = "refs/heads/jdt-ls";
-      rev = "3825eb534dc07214a3607493bc101494d1fb1d7e";
-    }
-  ) {};
   unstablePkgs = import unstableNixpkgs {};
 in
 { lib, config, ... }: {
@@ -43,7 +36,7 @@ in
       omnisharp-roslyn
       ripgrep
       rnix-lsp
-      jdtPkgs.jdt-ls
+      jdt-ls
       sumneko-lua-language-server
       tree-sitter
       yapf
