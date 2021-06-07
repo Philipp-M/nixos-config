@@ -7,20 +7,6 @@
 
   xsession = {
     enable = true;
-    initExtra = ''
-      # Remap Escape to 'Hyper_L' for an extra 'hybrid' modifier for xmonad and other applications that use Super
-      # Caps Lock is useless anyway, so remap it to 'Escape' to provide comfort in vim...
-      # Unfortunately Alacritty (or more precisely winit) has a bug with xmodmap modifier remappings...
-      ${pkgs.xorg.xmodmap}/bin/xmodmap  \
-              -e 'keycode 23 = Hyper_L'  \
-              -e 'clear Lock'           \
-              -e 'keycode 66 = Escape' \
-              -e 'keycode any = Tab' \
-      # Currently the service xcape in home-manager doesn't work correctly
-      # (my guess is because xcape is started before the script above)
-      # The following line is used for reenabling Escape if it is used on its own (single tap which takes under 500ms)
-      ${pkgs.xcape}/bin/xcape -e 'Hyper_L=Tab'
-    '';
     windowManager = {
       xmonad = {
         enable = true;

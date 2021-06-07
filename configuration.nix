@@ -147,6 +147,46 @@
     };
   };
 
+  systemd.user.services."setup-keyboard" = {
+    enable = true;
+    description = "Load my keyboard modifications";
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${pkgs.bash}/bin/bash ${
+      pkgs.writeScript "setup-keyboard.sh" ''
+
+            #!${pkgs.stdenv.shell}
+
+            sleep 0.2;
+
+            # Stop previous xcape processes, otherwise xcape is launched multiple times
+            # And buttons get implemented multiple times
+            ${pkgs.killall}/bin/killall xcape
+
+            # Remap Escape to 'Hyper_L' for an extra 'hybrid' modifier for xmonad and other applications that use Super
+            # Caps Lock is useless anyway, so remap it to 'Escape' to provide comfort in vim...
+            # Unfortunately Alacritty (or more precisely winit) has a bug with xmodmap modifier remappings...
+            ${pkgs.xorg.xmodmap}/bin/xmodmap  \
+                    -e 'keycode 23 = Hyper_L'  \
+                    -e 'clear Lock'           \
+                    -e 'keycode 66 = Escape' \
+                    -e 'keycode any = Tab' \
+            # Currently the service xcape in home-manager doesn't work correctly
+            # (my guess is because xcape is started before the script above)
+            # The following line is used for reenabling Escape if it is used on its own (single tap which takes under 500ms)
+            ${pkgs.xcape}/bin/xcape -d -e 'Hyper_L=Tab'
+          ''
+      }";
+    };
+  };
+
+  # aweful hack to enable the systemd service setup-keyboard, which maps super to tab if pressed
+  services.udev.extraRules = ''
+    SUBSYSTEM=="input", ENV{LED}!="", ENV{ID_INPUT_KEYBOARD}=="1", ACTION=="add", TAG+="systemd", ENV{SYSTEMD_USER_WANTS}+="setup-keyboard.service"
+    SUBSYSTEM=="input", ENV{LED}!="", ENV{ID_INPUT_KEYBOARD}=="1", ACTION=="remove", TAG+="systemd", RUN+="${pkgs.killall}/bin/killall -SIGKILL xcape"
+  '';
+
   # gtk themes (home-manager more specifically) seem to have problems without it
   services.dbus.packages = [ pkgs.gnome3.dconf ];
   programs.dconf.enable = true;
