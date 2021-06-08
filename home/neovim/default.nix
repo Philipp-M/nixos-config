@@ -15,6 +15,7 @@ in
       dart
       efm-langserver
       fzf
+      xsel
       haskellPackages.ormolu # haskell formatter
       # julia
       luaformatter
