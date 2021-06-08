@@ -20,6 +20,8 @@ return require("packer").startup(function(use)
 
   use {"mbbill/undotree", cmd = {'UndotreeToggle'}, config = function() vim.g.undotree_SetFocusWhenToggle = true end}
 
+  use {"rmagatti/auto-session", config = [[require('auto-session').setup()]]}
+
   -- Indentation tracking
   use {
     'lukas-reineke/indent-blankline.nvim',
