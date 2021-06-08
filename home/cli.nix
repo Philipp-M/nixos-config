@@ -8,6 +8,10 @@
   programs.ssh = {
     enable = true;
     serverAliveInterval = 240;
+    extraConfig = ''
+      ForwardX11 yes
+      ForwardX11Trusted yes
+    '';
   };
 
   programs.zoxide.enable = true;
