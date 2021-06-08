@@ -9,7 +9,13 @@ local o, wo, bo = vim.o, vim.wo, vim.bo
 require('plugins')
 
 g.base16_transparent_background = 1
-g.neovide_transparency=0.85
+g.neovide_transparency = 0.85
+g.clipboard = {
+  name = 'xsel (ssh X11 xclip STDOUT issue forwarding fixed)',
+  copy = {['+'] = {'xsel', '--input', '--clipboard'}, ['*'] = {'xsel', '--input', '--primary'}},
+  paste = {['+'] = {'xsel', '--output', '--clipboard'}, ['*'] = {'xsel', '--output', '--primary'}},
+  cache_enabled = 1
+}
 
 local buffer = {o, bo}
 local window = {o, wo}
