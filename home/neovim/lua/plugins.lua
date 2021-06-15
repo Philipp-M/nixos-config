@@ -51,6 +51,8 @@ return require("packer").startup(function(use)
   use 'tpope/vim-sleuth'
   use 'tpope/vim-repeat'
 
+  use 'BenBergman/vsearch.vim'
+
   -- Git
   use {
     {'tpope/vim-fugitive', cmd = {'Git', 'Gstatus', 'Gblame', 'Gpush', 'Gpull', 'Gcommit', 'Gdiff'}}, {
