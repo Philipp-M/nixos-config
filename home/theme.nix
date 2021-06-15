@@ -3,7 +3,7 @@
     nurNoPkgs = import (builtins.fetchGit {
       url = "https://github.com/nix-community/NUR/";
       ref = "master";
-      rev = "cb545a12cf4a99ea546e4757ba01adecfd204b36";
+      rev = "a7878103fd7f758e22d1deae4746fd001d3848cc";
     }) { };
   in [
     nurNoPkgs.repos.rycee.hmModules.theme-base16
