@@ -79,7 +79,9 @@
     ProtectHome = lib.mkForce false;
   };
   services.nginx = {
+    user = "philm"; # because all content is served locally in home for testing
     enable = true;
+    recommendedGzipSettings = true;
     virtualHosts = {
       "work" = {
         root = "/home/philm/dev/work/";
