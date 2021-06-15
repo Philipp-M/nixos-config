@@ -35,6 +35,7 @@ in
       nodePackages.vscode-json-languageserver
       nodePackages.yaml-language-server
       omnisharp-roslyn
+      msbuild
       ripgrep
       rnix-lsp
       jdt-ls
