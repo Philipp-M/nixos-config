@@ -156,6 +156,9 @@ local servers = {
   efm = {
     cmd = {"efm-langserver"},
     init_options = {documentFormatting = true},
+    filetypes = {
+      "lua", "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx"
+    },
     settings = {
       rootMarkers = {".git/"},
       languages = {
