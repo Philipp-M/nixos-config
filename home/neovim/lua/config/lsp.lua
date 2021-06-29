@@ -72,7 +72,7 @@ local function on_attach(client, bufnr)
 
   -- Mappings.
   local opts = {noremap = true, silent = true}
-  buf_keymap('n', '<leader>td', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
+  buf_keymap('n', '<leader>td', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
   buf_keymap('n', '<leader>tt', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
   buf_keymap('n', '<leader>ti', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
   buf_keymap('n', '<leader>tr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
