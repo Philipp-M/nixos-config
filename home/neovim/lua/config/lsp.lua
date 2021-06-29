@@ -182,7 +182,14 @@ local servers = {
   omnisharp = {cmd = {'omnisharp', "--languageserver", "--hostPID", tostring(vim.fn.getpid())}},
   pyright = {settings = {python = {formatting = {provider = 'yapf'}}}},
   rust_analyzer = {
-    settings = {["rust-analyzer"] = {cargo = {loadOutDirsFromCheck = true}, procMacro = {enable = true}}}
+    settings = {
+      ["rust-analyzer"] = {
+        cargo = {loadOutDirsFromCheck = true},
+        procMacro = {enable = true},
+        lens = {references = true, methodReferences = true},
+        experimental = {procAttrMacros = true}
+      }
+    }
   },
   stylelint_lsp = {}, -- not yet working, needs stylelint-lsp in nixpkgs upstream
   sumneko_lua = {
