@@ -2,7 +2,7 @@ let
   unstableNixpkgs = builtins.fetchGit {
     url = "https://github.com/Philipp-M/nixpkgs/";
     ref = "refs/heads/personal";
-    rev = "a4c036c472c81743614c41795a910a4ca3947827";
+    rev = "7085e73d6b37ea8f19eec2540719ca85d80825ff";
   };
   unstablePkgs = import unstableNixpkgs {};
 in
