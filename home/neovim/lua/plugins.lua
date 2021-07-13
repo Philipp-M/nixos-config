@@ -25,7 +25,6 @@ return require("packer").startup(function(use)
   -- Indentation tracking
   use {
     'lukas-reineke/indent-blankline.nvim',
-    branch = 'lua',
     setup = function()
       local g = vim.g
       g.indentLine_char = '▏'
