@@ -157,7 +157,7 @@ local servers = {
     cmd = {"efm-langserver"},
     init_options = {documentFormatting = true},
     filetypes = {
-      "lua", "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx"
+      "lua", "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx", "vue"
     },
     settings = {
       rootMarkers = {".git/"},
@@ -191,7 +191,7 @@ local servers = {
       }
     }
   },
-  stylelint_lsp = {}, -- not yet working, needs stylelint-lsp in nixpkgs upstream
+  stylelint_lsp = {cmd = {"stylelint"}}, -- not yet working, needs stylelint-lsp in nixpkgs upstream
   sumneko_lua = {
     cmd = {'lua-language-server'},
     settings = {
