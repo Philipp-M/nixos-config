@@ -206,9 +206,7 @@
 
   # allow no password for sudo (dangerous...)
   security.sudo.enable = true;
-  security.sudo.extraConfig = ''
-    %wheel ALL=(ALL) NOPASSWD: ALL
-  '';
+  security.sudo.wheelNeedsPassword = false;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.philm = {
