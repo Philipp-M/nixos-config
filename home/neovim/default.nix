@@ -1,5 +1,6 @@
 let
   unstableNixpkgs = builtins.fetchGit {
+    shallow = true;
     url = "https://github.com/Philipp-M/nixpkgs/";
     ref = "refs/heads/personal";
     rev = "7085e73d6b37ea8f19eec2540719ca85d80825ff";

@@ -10,6 +10,7 @@
       import "${
       (
         builtins.fetchGit {
+          shallow = true;
           url = "https://github.com/Philipp-M/home-manager/";
           ref = "personal";
           rev = "c4f021fe55147d452fc202795a51c949b97746e1";
@@ -20,7 +21,14 @@
   ];
 
   nixpkgs.config.allowUnfree = true;
-  nix.autoOptimiseStore = true;
+
+  nix = {
+    package = pkgs.nixUnstable;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+    autoOptimiseStore = true;
+  };
 
   # Use the systemd-boot EFI boot loader.
   boot.supportedFilesystems = [ "ecryptfs" ];

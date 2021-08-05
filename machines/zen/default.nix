@@ -6,12 +6,6 @@
     "nixos-config=/home/philm/dev/personal/dotfiles/machines/zen"
     "/nix/var/nix/profiles/per-user/root/channels"
   ];
-  nix = {
-    package = pkgs.nixFlakes;
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
-  };
 
   imports = [
     ./hardware-configuration.nix
@@ -20,6 +14,7 @@
     (
       import (
         builtins.fetchGit {
+          shallow = true;
           url = "https://github.com/musnix/musnix.git";
           ref = "master";
           rev = "f5053e85b0a578a335a78fa45517a8843154f46b";

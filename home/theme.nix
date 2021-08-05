@@ -1,6 +1,7 @@
 { pkgs, lib, config, ... }: {
   imports = let
     nurNoPkgs = import (builtins.fetchGit {
+      shallow = true;
       url = "https://github.com/nix-community/NUR/";
       ref = "master";
       rev = "a7878103fd7f758e22d1deae4746fd001d3848cc";

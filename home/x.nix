@@ -156,6 +156,7 @@
     package = pkgs.picom.overrideAttrs (
       old: {
         src = builtins.fetchGit {
+          shallow = true;
           url = "https://github.com/Philipp-M/picom/";
           ref = "customizable-rounded-corners";
           rev = "2b1d9faf0bf5dfad04a5acf02b34a432368de805";
