@@ -157,7 +157,8 @@ local servers = {
     cmd = {"efm-langserver"},
     init_options = {documentFormatting = true},
     filetypes = {
-      "lua", "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx", "vue"
+      "lua", "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx",
+      "vue", "json"
     },
     settings = {
       rootMarkers = {".git/"},
@@ -166,6 +167,7 @@ local servers = {
         nix = {{formatCommand = "nixfmt", formatStdin = true}},
         javascript = js_jsx_ts_tsx_vue_args,
         javascriptreact = js_jsx_ts_tsx_vue_args,
+        json = js_jsx_ts_tsx_vue_args,
         typescript = js_jsx_ts_tsx_vue_args,
         typescriptreact = js_jsx_ts_tsx_vue_args,
         vue = js_jsx_ts_tsx_vue_args
@@ -175,7 +177,7 @@ local servers = {
   ghcide = {},
   html = {},
   jdtls = {cmd = {"jdt-ls"}},
-  jsonls = {},
+  jsonls = {cmd = {'vscode-json-languageserver', '--stdio'}},
   julials = {settings = {julia = {format = {indent = 2}}}},
   rnix = {},
   ocamllsp = {},
