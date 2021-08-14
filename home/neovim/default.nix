@@ -3,7 +3,7 @@ let
     shallow = true;
     url = "https://github.com/Philipp-M/nixpkgs/";
     ref = "refs/heads/personal";
-    rev = "7085e73d6b37ea8f19eec2540719ca85d80825ff";
+    rev = "fcef96bb6404b5512d39c591493e38ff7c4b9361";
   };
   unstablePkgs = import unstableNixpkgs {};
 in
