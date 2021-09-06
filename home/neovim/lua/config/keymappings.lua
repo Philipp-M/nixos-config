@@ -175,5 +175,7 @@ wk.register({
   h = {'<cmd>lua require\"gitsigns\".prev_hunk()<CR>', "Jump to previous git hunk"}
 }, {prefix = "]"})
 wk.register({a = "Range Code action", f = "Range format"}, {prefix = "<leader>", mode = "v"})
+wk.register({s = {"*:Rg <c-r>/<bs><bs><c-left><del><del><cr>", "Find selection in Workdirectory"}},
+            {prefix = "<leader>", mode = "v", noremap = false})
 wk.register({i = {h = {':<C-U>lua require"gitsigns".select_hunk()<cr>', 'Git hunk'}}}, {mode = "o"})
 wk.register({i = {h = {':<C-U>lua require"gitsigns".select_hunk()<cr>', 'Git hunk'}}}, {mode = "x"})
