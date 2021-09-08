@@ -13,7 +13,7 @@
           shallow = true;
           url = "https://github.com/Philipp-M/home-manager/";
           ref = "personal";
-          rev = "c4f021fe55147d452fc202795a51c949b97746e1";
+          rev = "01d7b563703961b6f802d354e8bf0f5417bf2064";
         }
       )
       }/nixos"

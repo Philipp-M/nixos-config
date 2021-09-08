@@ -4,7 +4,7 @@
       shallow = true;
       url = "https://github.com/nix-community/NUR/";
       ref = "master";
-      rev = "a7878103fd7f758e22d1deae4746fd001d3848cc";
+      rev = "e068ada1360351894a2c040d0a0c6839b6117343";
     }) { };
   in [
     nurNoPkgs.repos.rycee.hmModules.theme-base16

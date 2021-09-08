@@ -3,7 +3,7 @@ let
     shallow = true;
     url = "https://github.com/Philipp-M/nixpkgs/";
     ref = "refs/heads/personal";
-    rev = "fcef96bb6404b5512d39c591493e38ff7c4b9361";
+    rev = "340183fd71ca70a78cb9a2a61d8df554d1a5684f";
   };
   unstablePkgs = import unstableNixpkgs {};
 in
@@ -47,11 +47,12 @@ in
       zls
     ];
 
+    # package = unstablePkgs.neovim;
     package = (
       (
         import (
           builtins.fetchTarball {
-            url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
+            url = https://github.com/nix-community/neovim-nightly-overlay/archive/3662fd0af0d5c86b0053e9cfb05bf9a54398507b.tar.gz;
           }
         )
       ) {} unstablePkgs
