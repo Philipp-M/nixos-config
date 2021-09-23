@@ -52,7 +52,7 @@ in
       (
         import (
           builtins.fetchTarball {
-            url = https://github.com/nix-community/neovim-nightly-overlay/archive/3662fd0af0d5c86b0053e9cfb05bf9a54398507b.tar.gz;
+            url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
           }
         )
       ) {} unstablePkgs
