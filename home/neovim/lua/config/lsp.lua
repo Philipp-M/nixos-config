@@ -104,7 +104,6 @@ local function on_attach(client, bufnr)
       augroup lsp_document_highlight
         autocmd! * <buffer>
         autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
-        autocmd CursorHold <buffer> lua require("lspsaga.diagnostic").show_cursor_diagnostics()
         autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
       augroup END
     ]], false)
@@ -175,7 +174,7 @@ local servers = {
     }
   },
   ghcide = {},
-  html = {},
+  html = {cmd = {"html-languageserver"}},
   jdtls = {cmd = {"jdt-ls"}},
   jsonls = {cmd = {'vscode-json-languageserver', '--stdio'}},
   julials = {settings = {julia = {format = {indent = 2}}}},
@@ -246,7 +245,8 @@ for server, config in pairs(servers) do
     underline = true,
     update_in_insert = true
   })
+  local cmp_capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
   config.capabilities = vim.tbl_deep_extend('keep', config.capabilities or {}, lsp_status.capabilities,
-                                            snippet_capabilities)
+                                            cmp_capabilities, snippet_capabilities)
   lspconfig[server].setup(config)
 end

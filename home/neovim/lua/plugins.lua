@@ -92,11 +92,12 @@ return require("packer").startup(function(use)
     config = [[require('config.lsp')]]
   }
 
+  use "L3MON4D3/LuaSnip"
+
   use {
-    "hrsh7th/nvim-compe",
-    event = 'InsertEnter *',
-    requires = {"hrsh7th/vim-vsnip"},
-    config = [[require('config.compe-vsnip')]]
+    "hrsh7th/nvim-cmp",
+    requires = {"hrsh7th/cmp-nvim-lsp", "hrsh7th/cmp-buffer", "hrsh7th/cmp-path", "saadparwaiz1/cmp_luasnip"},
+    config = [[require('config.cmp-luasnip')]]
   }
 
   -- FZF and related
