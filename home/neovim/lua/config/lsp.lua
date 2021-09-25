@@ -60,7 +60,8 @@ lsp.handlers['textDocument/publishDiagnostics'] = lsp.with(lsp.diagnostic.on_pub
   underline = true
 })
 saga.init_lsp_saga {
-  use_saga_diagnostic_sign = false,
+  use_saga_diagnostic_sign = true,
+  code_action_prompt = {enable = false},
   code_action_keys = {quit = '<esc>', exec = '<cr>'},
   rename_action_keys = {quit = '<esc>', exec = '<cr>'}
 }
@@ -103,6 +104,7 @@ local function on_attach(client, bufnr)
       hi LspReferenceWrite cterm=bold ctermbg=red guibg=gray20
       augroup lsp_document_highlight
         autocmd! * <buffer>
+        autocmd CursorMoved <buffer> lua require'nvim-lightbulb'.update_lightbulb()
         autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
         autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
       augroup END

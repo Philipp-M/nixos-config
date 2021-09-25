@@ -92,6 +92,8 @@ return require("packer").startup(function(use)
     config = [[require('config.lsp')]]
   }
 
+  use 'kosayoda/nvim-lightbulb'
+
   use "L3MON4D3/LuaSnip"
 
   use {
