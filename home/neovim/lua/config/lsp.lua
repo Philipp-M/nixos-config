@@ -84,7 +84,7 @@ local function on_attach(client, bufnr)
   buf_keymap('n', ']d', '<cmd>lua require("lspsaga.diagnostic").lsp_jump_diagnostic_prev()<cr>', opts)
   buf_keymap('n', '<leader>ds', '<cmd>lua require("lspsaga.signaturehelp").signature_help()<cr>', opts)
   buf_keymap('n', '<leader>dl', '<cmd>lua require("lspsaga.diagnostic").show_line_diagnostics()<cr>', opts)
-  buf_keymap('n', '<leader>a', '<cmd>lua require("lspsaga.codeaction").code_action()<CR>', opts)
+  -- buf_keymap('n', '<leader>a', '<cmd>lua require("lspsaga.codeaction").code_action()<CR>', opts)
   buf_keymap('v', '<leader>a', ':<C-U>lua require("lspsaga.codeaction").range_code_action()<CR>', opts)
   buf_keymap('n', '<leader>r', '<cmd>lua require("lspsaga.rename").rename()<CR>', opts)
 
