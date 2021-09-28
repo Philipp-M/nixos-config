@@ -35,6 +35,7 @@ in
       nodePackages.vscode-html-languageserver-bin
       nodePackages.vscode-json-languageserver
       nodePackages.yaml-language-server
+      ocamlPackages.ocaml-lsp
       omnisharp-roslyn
       msbuild
       ripgrep
