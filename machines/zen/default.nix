@@ -35,6 +35,7 @@
   };
 
   boot.supportedFilesystems = [ "ntfs" "zfs" ];
+  boot.zfs.requestEncryptionCredentials = false;
   boot.extraModulePackages = [ config.boot.kernelPackages.zenpower ];
   boot.kernelModules = [ "snd-seq" "snd-rawmidi" ];
 

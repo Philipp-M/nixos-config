@@ -10,6 +10,7 @@
   imports = [ ./hardware-configuration.nix ../../configuration.nix ];
 
   boot.supportedFilesystems = [ "zfs" ];
+  boot.zfs.requestEncryptionCredentials = false;
 
   networking.hostId = "4ae8e232";
   networking.hostName = "shadow";
