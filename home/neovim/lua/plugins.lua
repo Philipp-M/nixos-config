@@ -84,7 +84,7 @@ return require("packer").startup(function(use)
 
   -- TODO refactor this when https://github.com/wbthomason/packer.nvim/issues/256 is fixed
   use {
-    'rinx/lspsaga.nvim',
+    'tami5/lspsaga.nvim',
     requires = {
       'onsails/lspkind-nvim', 'neovim/nvim-lspconfig', 'nvim-lua/lsp-status.nvim', 'ray-x/lsp_signature.nvim',
       'nvim-lua/lsp_extensions.nvim'
