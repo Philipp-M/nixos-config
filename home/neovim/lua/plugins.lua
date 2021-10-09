@@ -23,16 +23,21 @@ return require("packer").startup(function(use)
   use {"rmagatti/auto-session", config = [[require('auto-session').setup()]]}
 
   -- Indentation tracking
-  use {
-    'lukas-reineke/indent-blankline.nvim',
-    config = [[require('config.indent-blankline')]]
-  }
+  use {'lukas-reineke/indent-blankline.nvim', config = [[require('config.indent-blankline')]]}
 
   -- Highlights
   use {
     'nvim-treesitter/nvim-treesitter',
-    requires = {'nvim-treesitter/nvim-treesitter-refactor', 'nvim-treesitter/nvim-treesitter-textobjects', 'p00f/nvim-ts-rainbow'},
+    requires = {
+      'nvim-treesitter/nvim-treesitter-refactor', 'nvim-treesitter/nvim-treesitter-textobjects', 'p00f/nvim-ts-rainbow'
+    },
     config = [[require('config.treesitter')]]
+  }
+
+  use {
+    'nvim-treesitter/playground',
+    cmd = {'TSPlaygroundToggle'},
+    config = function() require"nvim-treesitter.configs".setup {playground = {enable = true}} end
   }
 
   use {"rafcamlet/nvim-luapad", opt = true, cmd = {"Lua", "LuaRun", "Luapad"}}
@@ -92,7 +97,9 @@ return require("packer").startup(function(use)
 
   use {
     "hrsh7th/nvim-cmp",
-    requires = {"hrsh7th/cmp-nvim-lsp", "hrsh7th/cmp-buffer", "hrsh7th/cmp-path", "saadparwaiz1/cmp_luasnip"},
+    requires = {
+      "hrsh7th/cmp-nvim-lsp", "hrsh7th/cmp-buffer", "hrsh7th/cmp-path", "saadparwaiz1/cmp_luasnip", "hrsh7th/cmp-calc"
+    },
     config = [[require('config.cmp-luasnip')]]
   }
 

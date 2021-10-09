@@ -22,7 +22,7 @@ cmp.setup({
     --   fallback() -- The fallback function is treated as original mapped key. In this case, it might be `<Tab>`.
     -- end
   },
-  sources = {{name = 'nvim_lsp'}, {name = 'luasnip'}, {name = 'buffer'}, {name = 'path'}}
+  sources = {{name = 'nvim_lsp'}, {name = 'luasnip'}, {name = 'buffer'}, {name = 'path'}, {name = 'calc'}}
 })
 
 local check_back_space = function()
