@@ -193,6 +193,7 @@ local servers = {
     settings = {
       ["rust-analyzer"] = {
         cargo = {loadOutDirsFromCheck = true},
+        checkOnSave = { command = "clippy" },
         procMacro = {enable = true},
         lens = {references = true, methodReferences = true},
         experimental = {procAttrMacros = true}
