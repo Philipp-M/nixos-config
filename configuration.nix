@@ -2,24 +2,8 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, options, lib, ... }:
-
+{ config, pkgs, options, lib, rycee-nur-expressions, nixpkgs-unstable, nixpkgs-personal, ... }:
 {
-  imports = [
-    (
-      import "${
-      (
-        builtins.fetchGit {
-          shallow = true;
-          url = "https://github.com/Philipp-M/home-manager/";
-          ref = "personal";
-          rev = "01d7b563703961b6f802d354e8bf0f5417bf2064";
-        }
-      )
-      }/nixos"
-    )
-  ];
-
   nixpkgs.config.allowUnfree = true;
 
   nix = {
@@ -229,7 +213,8 @@
 
   home-manager.useUserPackages = true;
   home-manager.useGlobalPkgs = true;
-  home-manager.users.philm = (import ./home);
+  home-manager.extraSpecialArgs = { inherit rycee-nur-expressions nixpkgs-unstable nixpkgs-personal; };
+  home-manager.users.philm = import ./home;
 
   # All system wide packages
 
@@ -422,5 +407,4 @@
   ];
 
   fonts.fonts = with pkgs; [ nerdfonts google-fonts ];
-
 }

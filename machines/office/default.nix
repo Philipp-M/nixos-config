@@ -1,12 +1,6 @@
 { config, lib, pkgs, ... }:
 
 {
-  nix.nixPath = [
-    "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos"
-    "nixos-config=/home/philm/dev/personal/dotfiles/machines/office"
-    "/nix/var/nix/profiles/per-user/root/channels"
-  ];
-
   imports = [ ./hardware-configuration.nix ../../configuration.nix ];
 
   networking.hostName = "WS02";

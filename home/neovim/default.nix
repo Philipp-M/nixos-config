@@ -1,16 +1,7 @@
-let
-  unstableNixpkgs = builtins.fetchGit {
-    shallow = true;
-    url = "https://github.com/Philipp-M/nixpkgs/";
-    ref = "refs/heads/personal";
-    rev = "1f461f5d60ac6523499d8986188b0862caa42362";
-  };
-  unstablePkgs = import unstableNixpkgs {};
-in
-{ lib, config, ... }: {
+{ lib, config, nixpkgs-unstable, nixpkgs-personal, ... }: {
   programs.neovim = {
     enable = true;
-    extraPackages = with unstablePkgs; [
+    extraPackages = with nixpkgs-unstable.pkgs; [
       clang-tools
       cmake-language-server
       dart
@@ -38,7 +29,7 @@ in
       msbuild
       ripgrep
       rnix-lsp
-      jdt-ls
+      nixpkgs-personal.pkgs.jdt-ls
       sumneko-lua-language-server
       tree-sitter
       yapf
@@ -46,17 +37,8 @@ in
       zls
     ];
 
+    package = nixpkgs-unstable.pkgs.neovim-nightly;
     # package = unstablePkgs.neovim-unwrapped;
-    package = (
-      (
-        import (
-          builtins.fetchTarball {
-            # url = https://github.com/nix-community/neovim-nightly-overlay/archive/67f9deafd1949745eb1b35972746b07ec32f7778.tar.gz;
-            url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
-          }
-        )
-      ) {} unstablePkgs
-    ).neovim-nightly;
   };
 
   # neovim base16 themes with transparency support

@@ -1,13 +1,7 @@
-{ pkgs, lib, config, ... }: {
-  imports = let
-    nurNoPkgs = import (builtins.fetchGit {
-      shallow = true;
-      url = "https://github.com/nix-community/NUR/";
-      ref = "master";
-      rev = "e068ada1360351894a2c040d0a0c6839b6117343";
-    }) { };
-  in [
-    nurNoPkgs.repos.rycee.hmModules.theme-base16
+{ pkgs, lib, config, rycee-nur-expressions, ... }: {
+  imports = [
+    (import "${rycee-nur-expressions}/hm-modules/theme-base16" { inherit pkgs lib config; })
+    # (import rycee-nur-expressions { inherit config lib pkgs; })
     {
       options.theme.extraParams = with lib;
         mkOption {
@@ -29,8 +23,13 @@
   ];
 
   theme = {
-    base16 = config.lib.theme.base16.fromYamlFile (builtins.fetchurl
-      "https://raw.githubusercontent.com/chriskempson/base16-tomorrow-scheme/master/tomorrow-night.yaml");
+    base16 = config.lib.theme.base16.fromYamlFile (
+      builtins.fetchurl
+        {
+          url = "https://raw.githubusercontent.com/chriskempson/base16-tomorrow-scheme/master/tomorrow-night.yaml";
+          sha256 = "sha256:0mc699fps18lk9dl154vpcdh0in62215yfq9n4mwg4213j06488z";
+        }
+    );
     extraParams = {
       fontname = "Iosevka";
       xftfontextra = ":style=Regular";
