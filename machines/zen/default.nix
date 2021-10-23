@@ -10,17 +10,6 @@
   imports = [
     ./hardware-configuration.nix
     ../../configuration.nix
-
-    (
-      import (
-        builtins.fetchGit {
-          shallow = true;
-          url = "https://github.com/musnix/musnix.git";
-          ref = "master";
-          rev = "f5053e85b0a578a335a78fa45517a8843154f46b";
-        }
-      )
-    )
   ];
 
   fileSystems."/windows" = {
@@ -61,20 +50,21 @@
 
   # ZFS related
   services.zfs.autoScrub.enable = true;
-  services.sanoid = let
-    # templates not working correctly because of kinda broken sanoid config
-    # (default values, which aren't overwritten by templates)
-    default = {
-      daily = 7;
-      hourly = 48;
-      monthly = 5;
-      yearly = 0;
-      settings = {
-        frequent_period = 15;
-        frequently = 8;
+  services.sanoid =
+    let
+      # templates not working correctly because of kinda broken sanoid config
+      # (default values, which aren't overwritten by templates)
+      default = {
+        daily = 7;
+        hourly = 48;
+        monthly = 5;
+        yearly = 0;
+        settings = {
+          frequent_period = 15;
+          frequently = 8;
+        };
       };
-    };
-  in
+    in
     {
       enable = true;
       interval = "*:0/15";
@@ -92,20 +82,18 @@
     };
   };
 
-  musnix = {
+  services.cron = {
     enable = true;
-
-    kernel.optimize = true;
-
-    alsaSeq.enable = false;
-
-    rtirq = {
-      # highList = "snd_hrtimer";
-      resetAll = 1;
-      prioLow = 0;
-      enable = true;
-      nameList = "rtc0 snd";
-    };
+    systemCronJobs = [
+      # TODO use systemd service instead of cronjob?
+      "7 * * * *      root    ${pkgs.writeScript "backup-home" ''
+        #!/usr/bin/env bash
+        echo "" >> /var/log/home-backup.log
+        echo "" >> /var/log/home-backup.log
+        echo "Starting Backup at $(date)" >> /var/log/home-backup.log
+        rsync --delete -av --filter=':- .gitignore' --filter=':- .npmignore' --filter=':- .ignore' /home/ /tank/backup/zen/home/ 2>&1  >> /var/log/home-backup.log
+      '' }"
+    ];
   };
 
   services.xserver = {
@@ -124,28 +112,12 @@
     videoDrivers = [ "nvidia" ];
   };
 
-  users.users.philm.extraGroups = [ "jackaudio" ];
-
-  services.borgbackup.jobs.home = {
-    paths = "/home";
-    encryption.mode = "none";
-    repo = "/tank/backup/zen/home";
-    compression = "none";
-    startAt = "00/1:00";
-    exclude = [
-      "/home/philm/dev/*/rust/*/target"
-      "/home/philm/dev/**/node_modules"
-      "/home/philm/Downloads"
-      "/home/philm/.cache"
-    ];
-
-    prune.keep = {
-      within = "1d"; # Keep all archives from the last day
-      daily = 7;
-      weekly = 4;
-      monthly = -1; # Keep at least one archive for each month
-    };
+  hardware.nvidia = {
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
+    modesetting.enable = true;
   };
+
+  users.users.philm.extraGroups = [ "jackaudio" ];
 
   home-manager.users.philm.services.mpd = {
     enable = true;
