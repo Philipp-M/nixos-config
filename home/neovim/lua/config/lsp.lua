@@ -78,14 +78,16 @@ local function on_attach(client, bufnr)
   buf_keymap('n', '<leader>ti', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
   buf_keymap('n', '<leader>tr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
   buf_keymap('n', '<leader>dd', '<cmd>lua require("lspsaga.hover").render_hover_doc()<CR>', opts)
-  buf_keymap('n', '<leader>dn', '<cmd>lua require("lspsaga.diagnostic").lsp_jump_diagnostic_next()<cr>', opts)
-  buf_keymap('n', '<leader>dp', '<cmd>lua require("lspsaga.diagnostic").lsp_jump_diagnostic_prev()<cr>', opts)
-  buf_keymap('n', '[d', '<cmd>lua require("lspsaga.diagnostic").lsp_jump_diagnostic_next()<cr>', opts)
-  buf_keymap('n', ']d', '<cmd>lua require("lspsaga.diagnostic").lsp_jump_diagnostic_prev()<cr>', opts)
+  buf_keymap('n', '<leader>dn', '<cmd>lua vim.lsp.diagnostic.goto_next()<cr>', opts)
+  buf_keymap('n', '<leader>dp', '<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>', opts)
+  buf_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_next()<cr>', opts)
+  buf_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>', opts)
   buf_keymap('n', '<leader>ds', '<cmd>lua require("lspsaga.signaturehelp").signature_help()<cr>', opts)
   buf_keymap('n', '<leader>dl', '<cmd>lua require("lspsaga.diagnostic").show_line_diagnostics()<cr>', opts)
   -- buf_keymap('n', '<leader>a', '<cmd>lua require("lspsaga.codeaction").code_action()<CR>', opts)
-  buf_keymap('v', '<leader>a', ':<C-U>lua require("lspsaga.codeaction").range_code_action()<CR>', opts)
+  buf_keymap('n', '<leader>a', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
+  buf_keymap('v', '<leader>a', '<cmd>lua vim.lsp.buf.range_code_action()<cr>', opts)
+  -- buf_keymap('v', '<leader>a', ':<C-U>lua require("lspsaga.codeaction").range_code_action()<CR>', opts)
   buf_keymap('n', '<leader>r', '<cmd>lua require("lspsaga.rename").rename()<CR>', opts)
 
   -- scroll down hover doc or scroll in definition preview
@@ -155,7 +157,7 @@ local servers = {
     }
   },
   cmake = {},
-  cssls = {filetypes = {"css", "scss", "less", "sass"}, root_dir = lspconfig.util.root_pattern("package.json", ".git")},
+  cssls = {},
   dartls = {},
   dockerls = {},
   -- mostly for formatting
@@ -164,13 +166,16 @@ local servers = {
     init_options = {documentFormatting = true},
     filetypes = {
       "lua", "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx",
-      "vue", "json"
+      "vue", "json", "html", "css", "scss"
     },
     settings = {
       rootMarkers = {".git/"},
       languages = {
         lua = {{formatCommand = "lua-format -i --indent-width=2 --tab-width=2 --column-limit=120", formatStdin = true}},
         nix = {{formatCommand = "nixfmt", formatStdin = true}},
+        css = js_jsx_ts_tsx_vue_args,
+        scss = js_jsx_ts_tsx_vue_args,
+        html = js_jsx_ts_tsx_vue_args,
         javascript = js_jsx_ts_tsx_vue_args,
         javascriptreact = js_jsx_ts_tsx_vue_args,
         json = js_jsx_ts_tsx_vue_args,
@@ -181,9 +186,9 @@ local servers = {
     }
   },
   ghcide = {},
-  html = {cmd = {"html-languageserver"}},
+  html = {},
   jdtls = {cmd = {"jdt-ls"}},
-  jsonls = {cmd = {'vscode-json-languageserver', '--stdio'}},
+  jsonls = {},
   julials = {settings = {julia = {format = {indent = 2}}}},
   rnix = {},
   ocamllsp = {},

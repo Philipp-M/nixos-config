@@ -153,7 +153,7 @@ wk.register({
     l = "Show line diagnostics",
     s = "Show Signature Help"
   },
-  a = {"<cmd>CodeActionMenu<cr>", "Code action"},
+  a = "Code action",
   r = "Rename",
   f = "Format",
   u = {"<cmd>UndotreeToggle<cr>", "Toggle Undotree"},

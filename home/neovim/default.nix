@@ -31,9 +31,7 @@ in
       nodePackages.typescript-language-server
       nodePackages.vim-language-server
       nodePackages.vls
-      nodePackages.vscode-css-languageserver-bin
-      nodePackages.vscode-html-languageserver-bin
-      nodePackages.vscode-json-languageserver
+      nodePackages.vscode-langservers-extracted
       nodePackages.yaml-language-server
       ocamlPackages.ocaml-lsp
       omnisharp-roslyn
@@ -48,11 +46,12 @@ in
       zls
     ];
 
-    # package = unstablePkgs.neovim;
+    # package = unstablePkgs.neovim-unwrapped;
     package = (
       (
         import (
           builtins.fetchTarball {
+            # url = https://github.com/nix-community/neovim-nightly-overlay/archive/67f9deafd1949745eb1b35972746b07ec32f7778.tar.gz;
             url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
           }
         )
