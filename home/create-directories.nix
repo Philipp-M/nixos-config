@@ -1,3 +1,4 @@
+{ ... }:
 { lib, ... }: {
   home.activation.createDirectories =
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''

@@ -209,13 +209,6 @@
   };
   users.extraGroups.vboxusers.members = [ "philm" ];
 
-  ### manage most stuff via home-manager
-
-  home-manager.useUserPackages = true;
-  home-manager.useGlobalPkgs = true;
-  home-manager.extraSpecialArgs = { inherit rycee-nur-expressions nixpkgs-unstable nixpkgs-personal; };
-  home-manager.users.philm = import ./home;
-
   # All system wide packages
 
   programs.fish.enable = true;
