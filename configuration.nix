@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, options, lib, rycee-nur-expressions, nixpkgs-unstable, nixpkgs-personal, ... }:
+{ config, pkgs, options, lib, nixpkgs-unstable, ... }:
 {
   nixpkgs.config.allowUnfree = true;
 
@@ -241,15 +241,18 @@
     git
     git-secret
     gitAndTools.diff-so-fancy
+    pijul
     gnumake
     jdk
     llvmPackages.bintools
     neovim
+    kakoune
     android-studio
     droidcam
     flatpak-builder
     # haskell.compiler.ghc882
     carnix
+    nixpkgs-review
     php
     yarn
     deno
@@ -257,6 +260,8 @@
     nodePackages.node2nix
     pkg-config
     rustup
+    sqlitebrowser
+    zig
     wasm-pack
     vscode
     glslang
@@ -264,12 +269,14 @@
     vulkan-headers
     vulkan-loader
     vulkan-validation-layers
-    cudatoolkit
+    nixpkgs-unstable.pkgs.cudatoolkit_11_4
     steam-run
     rcm # manage dotfiles
 
     # OFFICE/DOCUMENTING
     pandoc
+    calibre
+    exiv2
     libreoffice
     texlive.combined.scheme-full
     zathura
@@ -323,6 +330,7 @@
     thunderbird
     signal-desktop
     element-desktop
+    qtox
     discord
     v4l-utils
     zoom-us
@@ -357,8 +365,8 @@
 
     # MISC
     neovide
+    exfat-utils
     rdup
-    rdedup
     sanoid
     gsettings-desktop-schemas
     appimage-run
@@ -393,8 +401,8 @@
     source-code-pro
     transmission-gtk
     deluge
+    qbittorrent
     xclip
-    nvtop
     adb-sync
     tree-sitter
   ];

@@ -120,5 +120,10 @@
   console.font =
     lib.mkDefault "${pkgs.terminus_font}/share/consolefonts/ter-u28n.psf.gz";
 
-  environment.systemPackages = with pkgs; [ qjackctl libjack2 jack2 ];
+  environment.systemPackages = with pkgs; [
+    qjackctl
+    libjack2
+    jack2
+    nvtop
+  ];
 }
