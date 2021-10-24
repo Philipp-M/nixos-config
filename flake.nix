@@ -1,7 +1,7 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.05";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs";
     nixpkgs-personal.url = "github:Philipp-M/nixpkgs/personal";
     rycee-nur-expressions = { url = "gitlab:rycee/nur-expressions"; flake = false; };
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
@@ -40,6 +40,7 @@
         desktop-environment = import ./home/modules/gui/desktop-environment { };
         mpv = import ./home/modules/gui/mpv { };
         theme = import ./home/modules/theme.nix { inherit rycee-nur-expressions; };
+        mpd = import ./home/modules/mpd.nix { inherit nixpkgs-unstable; };
       };
 
       mkHost = path: inputs.nixpkgs.lib.nixosSystem {

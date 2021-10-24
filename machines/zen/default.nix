@@ -113,20 +113,7 @@
 
   users.users.philm.extraGroups = [ "jackaudio" ];
 
-  home-manager.users.philm.services.mpd = {
-    enable = true;
-    musicDirectory = "~/Music";
-    extraConfig = ''
-      audio_output {
-              type            "pulse"
-              name            "pulse audio"
-      }
-      playlist_plugin {
-          name "cue"
-          enabled "false"
-      }
-    '';
-  };
+  home-manager.users.philm.modules.mpd.enable = true;
 
   nix.maxJobs = lib.mkDefault 16;
   # High-DPI console
