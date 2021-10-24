@@ -1,7 +1,11 @@
 # This contains most CLI related stuff
-{ pkgs, lib, config, ... }: {
-  imports = [ ./neovim ];
+{ pkgs, lib, config, nixpkgs-unstable, nixpkgs-personal, ... }: {
+  imports = [
+    (import ./neovim { inherit nixpkgs-unstable nixpkgs-personal; })
+  ];
   home.sessionVariables.EDITOR = "nvim";
+
+  modules.cli.neovim.enable = true;
 
   # custom home files, currently mostly base16 templates
 

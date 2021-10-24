@@ -1,26 +1,30 @@
 { pkgs, lib, config, rycee-nur-expressions, ... }: {
-  imports = [
-    (import "${rycee-nur-expressions}/hm-modules/theme-base16" { inherit pkgs lib config; })
-    # (import rycee-nur-expressions { inherit config lib pkgs; })
-    {
-      options.theme.extraParams = with lib;
-        mkOption {
-          type = types.attrsOf types.string;
-          default = { };
-        };
-      config.lib.theme.template = { name, src }:
-        with lib;
-        pkgs.runCommandLocal name { } ''
-          sed '${
-            concatStrings ((mapAttrsToList (n: v:
-              "s/\\(#\\?\\){{${n}\\(\\:\\?-hex\\)\\?}}/\\1${v.hex.rgb}/;")
-              config.theme.base16.colors)
-              ++ (mapAttrsToList (n: v: "s/{{${n}}}/${v}/;")
-                config.theme.extraParams))
-          }' ${src} > $out
-        '';
-    }
-  ];
+  imports =
+    let compile-template = { name, src }:
+      with lib;
+      pkgs.runCommandLocal name { } ''
+        sed '${
+          concatStrings ((mapAttrsToList (n: v:
+            "s/\\(#\\?\\){{${n}\\(\\:\\?-hex\\)\\?}}/\\1${v.hex.rgb}/;")
+            config.theme.base16.colors)
+            ++ (mapAttrsToList (n: v: "s/{{${n}}}/${v}/;")
+              config.theme.extraParams))
+        }' ${src} > $out
+      '';
+    in
+    [
+      (import "${rycee-nur-expressions}/hm-modules/theme-base16" { inherit pkgs lib config; })
+      # (import rycee-nur-expressions { inherit config lib pkgs; })
+      {
+        options.theme.extraParams = with lib;
+          mkOption {
+            type = types.attrsOf types.string;
+            default = { };
+          };
+        config.lib.theme.template = compile-template;
+        config.lib.theme.compile-template = compile-template;
+      }
+    ];
 
   theme = {
     base16 = config.lib.theme.base16.fromYamlFile (

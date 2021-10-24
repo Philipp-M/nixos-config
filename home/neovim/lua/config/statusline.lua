@@ -2,7 +2,7 @@ local gl = require('galaxyline')
 local lsp_status = require('lsp-status')
 -- get my theme in galaxyline repo
 -- local colors = require('galaxyline.theme').default
-local colors = {
+local colors = vim.g.colors_name == 'base16' and {
   -- bg = '#2E2E2E',
   bg = "#" .. vim.g.base16_gui01,
   yellow = "#" .. vim.g.base16_gui0A,
@@ -13,7 +13,6 @@ local colors = {
   -- string_orange = '#CE9178',
   orange = "#" .. vim.g.base16_gui09,
   purple = "#" .. vim.g.base16_gui0E,
-  magenta = '#D16D9E',
   grey = "#" .. vim.g.base16_gui04, -- '#858585',
   blue = "#" .. vim.g.base16_gui0D, -- '#569CD6',
   vivid_blue = "#" .. vim.g.base16_gui0D, -- '#4FC1FF',
@@ -21,7 +20,26 @@ local colors = {
   red = "#" .. vim.g.base16_gui08, -- '#D16969',
   error_red = "#" .. vim.g.base16_gui08, -- '#F44747',
   info_yellow = "#" .. vim.g.base16_gui0A -- '#FFCC66'
+} or {
+  -- bg = '#2E2E2E',
+  bg = vim.g.terminal_color_0,
+  yellow = vim.g.terminal_color_11,
+  -- dark_yellow = '#D7BA7D',
+  cyan = vim.g.terminal_color_14,
+  green = vim.g.terminal_color_10,
+  -- light_green = '#B5CEA8',
+  -- string_orange = '#CE9178',
+  orange = vim.g.terminal_color_1,
+  purple = vim.g.terminal_color_13,
+  grey = vim.g.terminal_color_7, -- '#858585',
+  blue = vim.g.terminal_color_12, -- '#569CD6',
+  vivid_blue = vim.g.terminal_color_4, -- '#4FC1FF',
+  -- light_blue = '#9CDCFE',
+  red = vim.g.terminal_color_9, -- '#D16969',
+  error_red = vim.g.terminal_color_1, -- '#F44747',
+  info_yellow = vim.g.terminal_color_11 -- '#FFCC66'
 }
+
 local condition = require('galaxyline.condition')
 local gls = gl.section
 gl.short_line_list = {'NvimTree', 'vista', 'dbui', 'packer'}
@@ -39,7 +57,7 @@ gls.left = {
           v = colors.purple,
           [''] = colors.purple,
           V = colors.purple,
-          c = colors.magenta,
+          c = colors.grey,
           no = colors.blue,
           s = colors.orange,
           S = colors.orange,

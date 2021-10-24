@@ -25,6 +25,8 @@ return require("packer").startup(function(use)
   -- Indentation tracking
   use {'lukas-reineke/indent-blankline.nvim', config = [[require('config.indent-blankline')]]}
 
+  use 'joshdick/onedark.vim' -- Theme inspired by Atom
+
   -- Highlights
   use {
     'nvim-treesitter/nvim-treesitter',

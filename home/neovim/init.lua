@@ -52,4 +52,6 @@ if vim.fn.has('unnamedplus') == 1 then opt('clipboard', 'unnamedplus') end
 
 -- detect nix files
 cmd('au BufRead,BufNewFile *.nix set filetype=nix')
-cmd('colorscheme base16')
+-- fallback theme onedark, if base16 is not defined
+cmd('colorscheme onedark')
+cmd('silent! colorscheme base16')
