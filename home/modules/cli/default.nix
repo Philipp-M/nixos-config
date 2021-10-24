@@ -1,15 +1,10 @@
 # This module enables all personal CLI related stuff for home-manager
 { ... }:
 { lib, config, ... }:
-let
-  inherit (lib) mkEnableOption mkIf hasAttrByPath;
-  inherit (builtins) isAttrs isFunction;
-  cfg = config.modules.cli;
-in
 {
-  options.modules.cli.enable = mkEnableOption "Enable all personal cli configurations";
+  options.modules.cli.enable = lib.mkEnableOption "Enable all personal cli configurations";
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf config.modules.cli.enable {
     home.sessionVariables.EDITOR = "nvim";
 
     modules.cli = {

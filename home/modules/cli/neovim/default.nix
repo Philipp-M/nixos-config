@@ -50,12 +50,10 @@ in
     };
 
     # neovim base16 themes with transparency support
-    home.file.".config/nvim/colors/base16.vim" = mkIf
-      (hasAttrByPath [ "lib" "theme" "compile-template" ] config)
-      {
-        source = (config.lib.theme.compile-template
-          { name = "base16-vim"; src = ./colorscheme-base16.template.vim; });
-      };
+    home.file.".config/nvim/colors/base16.vim" = {
+      source = (config.lib.theme.compileTemplate
+        { name = "base16-vim"; src = ./colorscheme-base16.template.vim; });
+    };
 
     home.activation.linkNeovimConfs = ''
       $DRY_RUN_CMD mkdir -p $VERBOSE_ARG $HOME/.config/nvim
