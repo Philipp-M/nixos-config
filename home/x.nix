@@ -1,7 +1,7 @@
 # This contains most X.org desktop environment related stuff
 
 { pkgs, lib, config, ... }: {
-  imports = [ ./mpv ];
+  imports = [ ./firefox ./mpv ];
   home.keyboard.variant = "colemak";
   home.keyboard.layout = "us";
 
