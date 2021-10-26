@@ -240,6 +240,7 @@
     dart
     git
     git-secret
+    git-crypt
     gitAndTools.diff-so-fancy
     pijul
     gnumake

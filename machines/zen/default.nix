@@ -125,5 +125,6 @@
     libjack2
     jack2
     nvtop
+    factorio
   ];
 }
