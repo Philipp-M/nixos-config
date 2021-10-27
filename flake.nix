@@ -51,7 +51,7 @@
         pkgs = pkgImport inputs.nixpkgs overlays;
         modules = [
           inputs.home-manager.nixosModules.home-manager
-          ./machines/zen/default.nix
+          path
           {
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
