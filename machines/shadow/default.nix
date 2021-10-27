@@ -1,6 +1,4 @@
-{ config, lib, pkgs, ... }:
-
-{
+{ config, lib, pkgs, ... }: {
   imports = [ ./hardware-configuration.nix ../../configuration.nix ];
 
   boot.supportedFilesystems = [ "zfs" ];

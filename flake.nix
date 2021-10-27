@@ -14,7 +14,7 @@
     };
   };
 
-  outputs = inputs@{ self, rycee-nur-expressions, ... }:
+  outputs = inputs@{ self, rycee-nur-expressions, home-manager, ... }:
     let
       system = "x86_64-linux";
       pkgImport = pkgs: overlays:
@@ -50,8 +50,7 @@
         inherit system;
         pkgs = pkgImport inputs.nixpkgs overlays;
         modules = [
-          inputs.home-manager.nixosModules.home-manager
-          path
+          home-manager.nixosModules.home-manager
           {
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
@@ -62,8 +61,9 @@
               modules.gui.enable = true;
             };
           }
+          path
         ];
-        specialArgs = { inherit inputs nixpkgs-unstable nixpkgs-personal rycee-nur-expressions; };
+        specialArgs = { inherit inputs nixpkgs-unstable; };
       };
     in
     {

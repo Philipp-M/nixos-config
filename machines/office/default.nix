@@ -1,7 +1,5 @@
-{ config, lib, pkgs, ... }:
-
-{
-  imports = [ ./hardware-configuration.nix ../../configuration.nix ];
+{ config, lib, pkgs, ... }: {
+  imports = [ ./hardware-configuration.nix ../../configuration.nix ../../secrets/nix-expressions/office.nix ];
 
   networking.hostName = "WS02";
 
@@ -32,6 +30,5 @@
 
   nix.maxJobs = lib.mkDefault 12;
   # High-DPI console
-  console.font =
-    lib.mkDefault "${pkgs.terminus_font}/share/consolefonts/ter-u28n.psf.gz";
+  console.font = lib.mkDefault "${pkgs.terminus_font}/share/consolefonts/ter-u28n.psf.gz";
 }
