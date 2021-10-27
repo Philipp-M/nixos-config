@@ -24,8 +24,8 @@
         l = "lsd -l";
         # package/dependency management
         nx = "NIXPKGS_ALLOW_UNFREE=1 nix-shell --command fish";
-        upgrade = "sudo nixos-rebuild switch --upgrade";
-        update = "sudo nixos-rebuild switch";
+        upgrade = "nix flake update /home/philm/dev/personal/dotfiles/ && sudo nixos-rebuild switch --flake /home/philm/dev/personal/dotfiles/";
+        update = "sudo nixos-rebuild switch --flake /home/philm/dev/personal/dotfiles/";
         # shortcuts for changing the directory
         cdate = "date +%Y%m%d%H%M";
         # useful shortcuts
