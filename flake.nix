@@ -74,7 +74,9 @@
       nixosConfigurations = {
         zen = mkHost {
           path = ./machines/zen;
-          overlays = import ./secrets/nix-expressions/zen-overlays.nix { inherit nixpkgs-unstable; };
+          overlays = [ ] ++
+            (import ./machines/zen/overlays.nix { inherit nixpkgs-unstable; }) ++
+            (import ./secrets/nix-expressions/zen-overlays.nix { inherit nixpkgs-unstable; });
         };
         shadow = mkHost { path = ./machines/shadow; };
         office = mkHost { path = ./machines/office; };

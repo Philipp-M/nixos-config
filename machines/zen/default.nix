@@ -124,6 +124,7 @@
     qjackctl
     libjack2
     jack2
+    blender
     nvtop
     factorio
   ];
