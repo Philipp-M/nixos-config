@@ -342,7 +342,7 @@
     chromium
     google-chrome
     firefox
-    torbrowser
+    nixpkgs-unstable.pkgs.torbrowser
 
     # XORG/DESKTOP ENVIRONMENT
     awf
