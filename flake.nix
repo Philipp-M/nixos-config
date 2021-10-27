@@ -3,6 +3,10 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs";
     nixpkgs-personal.url = "github:Philipp-M/nixpkgs/personal";
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     rycee-nur-expressions = { url = "gitlab:rycee/nur-expressions"; flake = false; };
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
@@ -14,7 +18,7 @@
     };
   };
 
-  outputs = inputs@{ self, rycee-nur-expressions, home-manager, ... }:
+  outputs = inputs@{ self, rycee-nur-expressions, home-manager, agenix, ... }:
     let
       system = "x86_64-linux";
       pkgImport = pkgs: overlays:
@@ -46,7 +50,7 @@
         mpd = import ./home/modules/mpd.nix { inherit nixpkgs-unstable; };
       };
 
-      mkHost = { path, overlays ? [ ] }: inputs.nixpkgs.lib.nixosSystem {
+      mkHost = { path, extraConfig ? { }, overlays ? [ ] }: inputs.nixpkgs.lib.nixosSystem {
         inherit system;
         pkgs = pkgImport inputs.nixpkgs overlays;
         modules = [
@@ -61,6 +65,7 @@
               modules.gui.enable = true;
             };
           }
+          extraConfig
           path
         ];
         specialArgs = { inherit inputs nixpkgs-unstable; };
@@ -79,7 +84,7 @@
             (import ./secrets/nix-expressions/zen-overlays.nix { inherit nixpkgs-unstable; });
         };
         shadow = mkHost { path = ./machines/shadow; };
-        office = mkHost { path = ./machines/office; };
+        office = mkHost { path = ./machines/office; extraConfig = agenix.nixosModules.age; };
       };
     };
 }

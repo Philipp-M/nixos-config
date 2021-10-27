@@ -11,6 +11,7 @@ mkShell {
     git
     nix-zsh-completions
     git-crypt
+    inputs.agenix.defaultPackage.x86_64-linux
   ];
   shellHook = ''
     export FLAKE="$(pwd)"
