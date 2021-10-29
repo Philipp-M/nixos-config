@@ -74,7 +74,7 @@
     in
     {
       devShell."${system}" =
-        import ./shell.nix { pkgs = nixpkgs-stable; inherit inputs; };
+        import ./shell.nix { pkgs = nixpkgs-stable; agenix = inputs.agenix.defaultPackage.x86_64-linux; };
 
       inherit homeManagerModules;
       nixosConfigurations = {
