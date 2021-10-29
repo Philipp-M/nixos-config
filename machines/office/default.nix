@@ -31,4 +31,10 @@
   nix.maxJobs = lib.mkDefault 12;
   # High-DPI console
   console.font = lib.mkDefault "${pkgs.terminus_font}/share/consolefonts/ter-u28n.psf.gz";
+
+  # overwrite update/upgrade, since the hostname is different
+  home-manager.users.philm.programs.fish.shellAliases = {
+    upgrade = lib.mkForce "nix flake update /home/philm/dev/personal/dotfiles/ && sudo nixos-rebuild switch --flake /home/philm/dev/personal/dotfiles/#office";
+    update = lib.mkForce "sudo nixos-rebuild switch --flake /home/philm/dev/personal/dotfiles/#office";
+  };
 }
