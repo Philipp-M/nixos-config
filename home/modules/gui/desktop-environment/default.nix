@@ -20,12 +20,10 @@
             hpkgs.taffybar
           ];
           enableContribAndExtras = true;
-          config = builtins.toPath (
-            config.lib.theme.compileTemplate {
-              name = "xmonad";
-              src = ./xmonad/xmonad.hs;
-            }
-          );
+          config = builtins.toPath (config.lib.theme.compileTemplate {
+            name = "xmonad";
+            src = ./xmonad/xmonad.hs;
+          });
         };
       };
     };

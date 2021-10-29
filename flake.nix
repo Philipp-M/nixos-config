@@ -32,7 +32,7 @@
       nixpkgs-personal = pkgImport inputs.nixpkgs-personal [ ];
 
       homeManagerModules = {
-        create-directories = import ./home/create-directories.nix { };
+        create-directories = import ./home/modules/create-directories.nix { };
         cli = import ./home/modules/cli { }; # enables all modules in the cli directory + small extra ones
         fish = import ./home/modules/cli/fish.nix { };
         git = import ./home/modules/cli/git.nix { };
@@ -63,6 +63,7 @@
               programs.home-manager.enable = true;
               modules.cli.enable = true;
               modules.gui.enable = true;
+              modules.create-directories.enable = true;
             };
           }
           extraConfig
