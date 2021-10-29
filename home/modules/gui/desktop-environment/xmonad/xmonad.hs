@@ -53,7 +53,7 @@ myLayouts = smartBorders $ mkToggle (single NBFULL)
     $ mySpacing
     $ tiled
       -- ||| (Mirror tiled)
-      ||| (Dwindle R CW 1.5 1.1)
+      ||| (Dwindle R CW 1 1.1)
       -- ||| Dwindle L CW 1.5 1.1
       -- currently only use 2 layouts: Dwindle and tiled
   where
