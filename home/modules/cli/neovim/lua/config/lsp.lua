@@ -129,6 +129,11 @@ local function on_attach(client, bufnr)
   }
 end
 
+local function on_attach_without_formatting(client, bufnr)
+  client.resolved_capabilities.document_formatting = false
+  on_attach(client, bufnr)
+end
+
 local js_jsx_ts_tsx_vue_args = {
   {formatCommand = "prettier --stdin-filepath ${INPUT}", formatStdin = true}, {
     lintCommand = "eslint -f unix --stdin --stdin-filename ${INPUT}",
@@ -188,7 +193,7 @@ local servers = {
   ghcide = {},
   html = {},
   jdtls = {cmd = {"jdt-ls"}},
-  jsonls = {},
+  jsonls = {on_attach = on_attach_without_formatting},
   julials = {settings = {julia = {format = {indent = 2}}}},
   rnix = {},
   ocamllsp = {},
@@ -198,7 +203,7 @@ local servers = {
     settings = {
       ["rust-analyzer"] = {
         cargo = {loadOutDirsFromCheck = true},
-        checkOnSave = { command = "clippy" },
+        checkOnSave = {command = "clippy"},
         procMacro = {enable = true},
         lens = {references = true, methodReferences = true},
         experimental = {procAttrMacros = true}
@@ -239,7 +244,7 @@ local servers = {
   tsserver = {
     filetypes = {"javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx"},
     root_dir = require('lspconfig/util').root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git"),
-    settings = {documentFormatting = false}
+    on_attach = on_attach_without_formatting
   },
   vimls = {},
   vuels = {},
@@ -250,7 +255,7 @@ local servers = {
 local snippet_capabilities = {textDocument = {completion = {completionItem = {snippetSupport = true}}}}
 
 for server, config in pairs(servers) do
-  config.on_attach = on_attach
+  config.on_attach = config.on_attach or on_attach
   config.handlers = (config.handlers or {})
   config.handlers["textDocument/publishDiagnostics"] = lsp.with(lsp.diagnostic.on_publish_diagnostics, {
     virtual_text = true,
