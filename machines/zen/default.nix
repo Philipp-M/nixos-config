@@ -68,13 +68,18 @@
       datasets."tank/games" = default;
     };
 
-  services = {
-    syncthing = {
-      enable = true;
-      user = "philm";
-      dataDir = "/home/philm/";
-      configDir = "/home/philm/.config/syncthing";
-    };
+  services.syncthing = {
+    enable = true;
+    user = "philm";
+    dataDir = "/home/philm/";
+    configDir = "/home/philm/.config/syncthing";
+  };
+
+  networking.hosts = { "127.0.0.1" = [ "syncthing" ]; };
+
+  services.nginx.virtualHosts."syncthing".locations."/" = {
+    proxyPass = "http://localhost:8384";
+    proxyWebsockets = true;
   };
 
   services.cron = {
