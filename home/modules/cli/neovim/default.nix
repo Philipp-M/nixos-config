@@ -36,6 +36,7 @@ in
         nodePackages.vscode-langservers-extracted
         nodePackages.yaml-language-server
         ocamlPackages.ocaml-lsp
+        ocamlPackages.reason
         omnisharp-roslyn
         msbuild
         ripgrep

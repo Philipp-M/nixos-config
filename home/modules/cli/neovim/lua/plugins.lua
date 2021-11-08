@@ -35,6 +35,7 @@ return require("packer").startup(function(use)
     },
     config = [[require('config.treesitter')]]
   }
+  use 'jordwalke/vim-reasonml'
 
   use {
     'nvim-treesitter/playground',
