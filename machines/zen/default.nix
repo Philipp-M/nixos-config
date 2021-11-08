@@ -41,7 +41,10 @@
   virtualisation.docker.enableNvidia = true;
 
   # ZFS related
-  services.zfs.autoScrub.enable = true;
+  services.zfs.autoScrub = {
+    interval = "Sun *-*-01..07 02:00:00";
+    enable = true;
+  };
   services.sanoid =
     let
       # templates not working correctly because of kinda broken sanoid config
@@ -78,12 +81,13 @@
     enable = true;
     systemCronJobs = [
       # TODO use systemd service instead of cronjob?
-      "7 * * * *      root    ${pkgs.writeScript "backup-home" ''
+      "7 12,18,23 * * *      root    ${pkgs.writeScript "backup-home" ''
         #!/usr/bin/env bash
         echo "" >> /var/log/home-backup.log
         echo "" >> /var/log/home-backup.log
         echo "Starting Backup at $(date)" >> /var/log/home-backup.log
-        rsync --delete -av --filter=':- .gitignore' --filter=':- .npmignore' --filter=':- .ignore' /home/ /tank/backup/zen/home/ 2>&1  >> /var/log/home-backup.log
+        rsync --delete -av --exclude .cache --filter=':- .gitignore' --filter=':- .npmignore' --filter=':- .ignore' /home/ /tank/backup/zen/home/ 2>&1  >> /var/log/home-backup.log
+        echo "Finished Backup at $(date)" >> /var/log/home-backup.log
       '' }"
     ];
   };
