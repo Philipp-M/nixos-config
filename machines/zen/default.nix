@@ -75,6 +75,14 @@
     configDir = "/home/philm/.config/syncthing";
   };
 
+  services.printing = {
+    enable = true;
+    drivers = with pkgs; [ hplip ];
+  };
+  services.avahi.enable = true;
+  services.avahi.nssmdns = true;
+  programs.system-config-printer.enable = true;
+
   networking.hosts = { "127.0.0.1" = [ "syncthing" ]; };
 
   services.nginx.virtualHosts."syncthing".locations."/" = {
