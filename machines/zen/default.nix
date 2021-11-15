@@ -82,19 +82,21 @@
     proxyWebsockets = true;
   };
 
-  services.cron = {
-    enable = true;
-    systemCronJobs = [
-      # TODO use systemd service instead of cronjob?
-      "7 12,18,23 * * *      root    ${pkgs.writeScript "backup-home" ''
-        #!/usr/bin/env bash
-        echo "" >> /var/log/home-backup.log
-        echo "" >> /var/log/home-backup.log
+  systemd.services.backup-home = {
+    description = "Backups home with rsync";
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${pkgs.writeScript "backup-home" ''
+        #!${pkgs.bash}/bin/bash
         echo "Starting Backup at $(date)" >> /var/log/home-backup.log
-        rsync --delete -av --exclude .cache --filter=':- .gitignore' --filter=':- .npmignore' --filter=':- .ignore' /home/ /tank/backup/zen/home/ 2>&1  >> /var/log/home-backup.log
+        ${pkgs.rsync}/bin/rsync --delete -av --exclude .cache --filter=':- .gitignore' --filter=':- .npmignore' --filter=':- .ignore' /home/ /tank/backup/zen/home/ 2>&1  >> /var/log/home-backup.log
         echo "Finished Backup at $(date)" >> /var/log/home-backup.log
-      '' }"
-    ];
+        echo "" >> /var/log/home-backup.log
+        echo "" >> /var/log/home-backup.log
+      '' }";
+    };
+    startAt = "*-*-* 12,18,23:07:00";
   };
 
   services.xserver = {
