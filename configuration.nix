@@ -198,6 +198,7 @@
     shell = pkgs.fish;
     extraGroups = [
       "audio"
+      "dialout"
       "networkmanager"
       "systemd-journal"
       "adbusers"
