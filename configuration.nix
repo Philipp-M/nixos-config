@@ -225,7 +225,8 @@
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = with pkgs; let unstable = nixpkgs-unstable.pkgs; in
+  [
     # DEVELOPMENT
     ## compilers and dev environment
     # clang_10 # conflicts with gcc
@@ -270,7 +271,7 @@
     vulkan-headers
     vulkan-loader
     vulkan-validation-layers
-    nixpkgs-unstable.pkgs.cudatoolkit_11_4
+    unstable.cudatoolkit_11_4
     steam-run
     rcm # manage dotfiles
 
@@ -323,9 +324,10 @@
     # AUDIO
     cantata
     pavucontrol
+    unstable.helvum
     ffmpeg-full
     flacon
-    bitwig-studio
+    unstable.bitwig-studio
 
     # COMMUNICATION
     thunderbird
@@ -336,13 +338,13 @@
     v4l-utils
     zoom-us
     skype
-    tdesktop
+    unstable.tdesktop
 
     # WEB
     chromium
     google-chrome
     firefox
-    nixpkgs-unstable.pkgs.torbrowser
+    unstable.torbrowser
 
     # XORG/DESKTOP ENVIRONMENT
     awf
@@ -359,10 +361,10 @@
     deadd-notification-center
 
     # GAMES
-    lutris
+    unstable.lutris
     minecraft
-    wineWowPackages.staging
-    winetricks
+    unstable.wineWowPackages.staging
+    unstable.winetricks
 
     # MISC
     neovide
@@ -395,6 +397,10 @@
     filezilla
     scrot
     feh # to view images in terminal
+    gwenview
+    smartmontools
+    rdfind
+    rage
     imagemagick
     # unityhub
     fira-code
@@ -405,6 +411,7 @@
     qbittorrent
     xclip
     adb-sync
+    udiskie
     tree-sitter
   ];
 

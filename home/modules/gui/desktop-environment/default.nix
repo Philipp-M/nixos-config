@@ -196,6 +196,8 @@
       temperature.night = 3200;
     };
 
+    services.udiskie.enable = true;
+
     services.status-notifier-watcher.enable = true;
 
     services.pasystray.enable = true;
