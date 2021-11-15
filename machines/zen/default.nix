@@ -99,6 +99,15 @@
     startAt = "*-*-* 12,18,23:07:00";
   };
 
+  systemd.services.hd-idle = {
+    description = "HD spin down daemon";
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${nixpkgs-unstable.pkgs.hd-idle}/bin/hd-idle -i 180 -c ata";
+    };
+  };
+
   services.xserver = {
     dpi = 110;
     screenSection = ''
