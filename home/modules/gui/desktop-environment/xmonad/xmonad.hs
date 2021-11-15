@@ -19,6 +19,7 @@ import XMonad.Layout.Dwindle
 import XMonad.Layout.StackTile
 import qualified XMonad.StackSet as W
 import XMonad.Util.EZConfig
+import XMonad.Hooks.SetWMName
 
 mySpacing = spacingRaw True (Border 5 5 5 5) True (Border 5 5 5 5) True
 
@@ -98,6 +99,7 @@ main =
           handleEventHook = handleEventHook def <+> fullscreenEventHook,
           manageHook = manageDocks <+> manageHook def,
           layoutHook = myLayouts,
+          startupHook = setWMName "LG3D",
           modMask = mod4Mask -- Use Super instead of Alt
         }
       `additionalKeysP` myKeybindings
