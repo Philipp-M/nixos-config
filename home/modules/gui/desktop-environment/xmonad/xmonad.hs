@@ -81,7 +81,8 @@ myKeybindings =
     ("M-j", sendMessage Shrink),
     ("M-l", sendMessage Expand),
     ("M-<Esc>", windows W.focusDown),
-    ("M-S-<Esc>", windows W.focusUp)
+    ("M-S-<Esc>", windows W.focusUp),
+    ("<XF86AudioPlay>", spawn "mpc toggle")
   ]
 
 myTerminal = "alacritty"

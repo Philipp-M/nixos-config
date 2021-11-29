@@ -149,6 +149,7 @@
   environment.systemPackages = with pkgs; [
     qjackctl
     libjack2
+    mpc_cli
     jack2
     blender
     nvtop
