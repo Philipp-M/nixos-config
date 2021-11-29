@@ -23,6 +23,7 @@ in
         # julia
         luaformatter
         nixfmt
+        taplo-lsp
         nodePackages.bash-language-server
         nodePackages.dockerfile-language-server-nodejs
         nodePackages.eslint

@@ -224,6 +224,7 @@ local servers = {
     }
   },
   svelte = {},
+  taplo = {},
   texlab = {
     settings = {latex = {forwardSearch = {executable = 'zathura', args = {'--synctex-forward', '%l:1:%f', '%p'}}}},
     commands = {
