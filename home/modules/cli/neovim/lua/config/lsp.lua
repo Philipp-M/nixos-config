@@ -197,7 +197,10 @@ local servers = {
   julials = {settings = {julia = {format = {indent = 2}}}},
   rnix = {},
   ocamllsp = {},
-  omnisharp = {cmd = {'omnisharp', "--languageserver", "--hostPID", tostring(vim.fn.getpid())}},
+  omnisharp = {
+    settings = {omnisharp = {useGlobalMono = "always"}},
+    cmd = {'omnisharp', "-l", "Error", "--languageserver", "--hostPID", tostring(vim.fn.getpid())}
+  },
   pyright = {settings = {python = {formatting = {provider = 'yapf'}}}},
   rust_analyzer = {
     settings = {

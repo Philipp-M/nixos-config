@@ -38,6 +38,7 @@ in
         nodePackages.yaml-language-server
         ocamlPackages.ocaml-lsp
         ocamlPackages.reason
+        dotnet-sdk
         omnisharp-roslyn
         msbuild
         ripgrep
