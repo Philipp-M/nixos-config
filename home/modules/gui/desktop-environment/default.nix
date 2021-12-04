@@ -212,10 +212,6 @@
 
     # audio services
 
-    services.pulseeffects = {
-      enable = true;
-      package = pkgs.pulseeffects-pw;
-    };
-    # services.pulseeffects.preset = "HD800S";
+    services.easyeffects.enable = true;
   };
 }

@@ -14,9 +14,6 @@
     };
 
     # too small for dedicated module
-    programs.obs-studio = {
-      enable = true;
-      plugins = with pkgs; [ obs-v4l2sink ];
-    };
+    programs.obs-studio.enable = true;
   };
 }
