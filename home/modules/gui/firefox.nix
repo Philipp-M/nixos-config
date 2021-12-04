@@ -33,6 +33,8 @@
             "network.http.referer.XOriginTrimmingPolicy" = 2;
             "network.http.referer.trimmingPolicy" = 1;
             "network.prefetch-next" = false;
+            "mousewheel.acceleration.factor" = 0;
+            "mousewheel.acceleration.start" = 0;
             "permissions.default.shortcuts" = 2; # Don't steal my shortcuts!
             "privacy.donottrackheader.enabled" = true;
             "privacy.donottrackheader.value" = 1;

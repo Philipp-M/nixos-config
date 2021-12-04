@@ -65,7 +65,7 @@ myLayouts = smartBorders $ mkToggle (single NBFULL)
 
 myKeybindings =
   -- [ ("M-w", spawn "chromium"),
-  [ ("M-w", spawn "firefox"),
+  [ ("M-w", spawn "env MOZ_USE_XINPUT2=1 firefox"),
     ("M-<Backspace>", kill),
     ("M-<Return>", spawn myTerminal),
     ("M-<Space>", spawn myLauncher),
