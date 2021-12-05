@@ -124,7 +124,7 @@
       Option "TripleBuffer" "True"
       Option "Stereo" "0"
       Option "nvidiaXineramaInfoOrder" "DP-4, DP-2"
-      Option "metamodes" "DP-2: nvidia-auto-select +0+0 { ForceFullCompositionPipeline=On }, DP-4: nvidia-auto-select +3840+0 { ForceFullCompositionPipeline=On }"
+      Option "metamodes" "DP-2: nvidia-auto-select +3840+0 { ForceFullCompositionPipeline=On }, DP-4: nvidia-auto-select +0+0 { ForceFullCompositionPipeline=On }"
       Option "SLI" "Off"
       Option "MultiGPU" "Off"
       Option "BaseMosaic" "off"
@@ -132,10 +132,7 @@
     videoDrivers = [ "nvidia" ];
   };
 
-  hardware.nvidia = {
-    package = config.boot.kernelPackages.nvidiaPackages.beta;
-    modesetting.enable = true;
-  };
+  hardware.nvidia.modesetting.enable = true;
 
   users.users.philm.extraGroups = [ "jackaudio" ];
 
