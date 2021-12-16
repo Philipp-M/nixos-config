@@ -126,8 +126,8 @@ return require("packer").startup(function(use)
 
   -- Status bars
   use {
-    "glepnir/galaxyline.nvim",
-    requires = {"kyazdani42/nvim-web-devicons", "nvim-lua/lsp-status.nvim"},
+    "nvim-lualine/lualine.nvim",
+    requires = {"kyazdani42/nvim-web-devicons"},
     config = [[require('config.statusline')]]
   }
   use {"romgrk/barbar.nvim", requires = {"kyazdani42/nvim-web-devicons"}}
