@@ -208,7 +208,9 @@
 
     services.dunst.enable = true;
 
-    services.unclutter.enable = true;
+    # services.unclutter.enable = true;
+
+    services.kdeconnect.enable = true;
 
     # audio services
 

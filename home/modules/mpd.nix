@@ -7,6 +7,7 @@
       enable = true;
       musicDirectory = "~/Music";
       package = nixpkgs-unstable.pkgs.mpd;
+      network.listenAddress = "any";
       extraConfig = ''
         audio_output {
           type            "pipewire"

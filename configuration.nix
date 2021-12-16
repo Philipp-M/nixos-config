@@ -60,8 +60,10 @@
   # replicates the default behaviour.
   networking.useDHCP = false;
   # debugging of local webservices from external devices like smartphones
-  networking.firewall.allowedTCPPorts = [ 80 443 8080 8081 8000 8001 3000 ];
-  networking.firewall.allowedUDPPorts = [ 80 443 8080 8081 8000 8001 3000 ];
+  networking.firewall.allowedTCPPorts = [ 80 443 8080 8081 8000 8001 3000 6600 7201 ];
+  networking.firewall.allowedUDPPorts = [ 80 443 8080 8081 8000 8001 3000 6600 7201 ];
+  networking.firewall.allowedTCPPortRanges = [{ from = 1714; to = 1764; }];
+  networking.firewall.allowedUDPPortRanges = [{ from = 1714; to = 1764; }];
 
   networking.hosts = { "127.0.0.1" = [ "work" "www" "spa-test" ]; };
 
