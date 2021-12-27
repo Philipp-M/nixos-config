@@ -19,6 +19,7 @@ mkShell {
     nix-zsh-completions
     git-crypt
     agenix
+    (nixos { nix.package = nixFlakes;}).nixos-rebuild
   ];
   shellHook = ''
     export FLAKE="$(pwd)"
