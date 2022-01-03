@@ -273,7 +273,6 @@
     vulkan-headers
     vulkan-loader
     vulkan-validation-layers
-    unstable.cudatoolkit_11_4
     steam-run
     rcm # manage dotfiles
 
