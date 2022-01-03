@@ -37,6 +37,7 @@
         fish = import ./home/modules/cli/fish.nix { };
         git = import ./home/modules/cli/git.nix { };
         neovim = import ./home/modules/cli/neovim { inherit nixpkgs-unstable nixpkgs-personal; };
+        helix = import ./home/modules/cli/helix.nix { inherit nixpkgs-unstable nixpkgs-personal; };
         ssh = import ./home/modules/cli/ssh.nix { };
         starship = import ./home/modules/cli/starship.nix { };
         tmux = import ./home/modules/cli/tmux.nix { };

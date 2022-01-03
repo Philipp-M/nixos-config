@@ -14,6 +14,7 @@
       starship.enable = true;
       tmux.enable = true;
       git.enable = true;
+      helix.enable = true;
     };
 
     # "too small" for dedicated modules
