@@ -17,6 +17,19 @@
     networkmanager.enable = true;
   };
 
+  services.xserver.videoDrivers = [ "intel" ];
+  services.xserver.deviceSection = ''
+    Option "DRI" "2"
+    Option "TearFree" "true"
+  '';
+
+  hardware.opengl.extraPackages = with pkgs; [
+    intel-media-driver # LIBVA_DRIVER_NAME=iHD
+    vaapiIntel # LIBVA_DRIVER_NAME=i965 (older but works better for Firefox/Chromium)
+    vaapiVdpau
+    libvdpau-va-gl
+  ];
+  hardware.opengl.extraPackages32 = with pkgs.pkgsi686Linux; [ vaapiIntel ];
 
   services.thermald.enable = true;
 
