@@ -61,6 +61,7 @@
           home-manager.nixosModules.home-manager
           inputs.musnix.nixosModule
           {
+            nix.registry.nixpkgs.flake = inputs.nixpkgs;
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
             home-manager.users.philm = {
