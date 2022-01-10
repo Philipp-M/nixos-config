@@ -1,8 +1,10 @@
-{ config, lib, pkgs, ... }: {
+{ config, lib, pkgs, nixpkgs-unstable, ... }: {
   imports = [
     ./hardware-configuration.nix
     ../../configuration.nix
   ];
+
+  nixpkgs.overlays = (import ../../secrets/nix-expressions/zen-overlays.nix { inherit nixpkgs-unstable; });
 
   fileSystems."/windows" = {
     device = "/dev/disk/by-uuid/B8EEC319EEC2CF36";

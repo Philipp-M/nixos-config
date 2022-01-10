@@ -21,15 +21,15 @@
   outputs = inputs@{ self, rycee-nur-expressions, home-manager, agenix, ... }:
     let
       system = "x86_64-linux";
-      pkgImport = pkgs: overlays:
+      pkgImport = pkgs:
         import pkgs {
           inherit system;
-          overlays = [ inputs.neovim-nightly-overlay.overlay ] ++ overlays;
+          overlays = [ inputs.neovim-nightly-overlay.overlay ];
           config.allowUnfree = true;
         };
-      nixpkgs-stable = pkgImport inputs.nixpkgs [ ];
-      nixpkgs-unstable = pkgImport inputs.nixpkgs-unstable [ ];
-      nixpkgs-personal = pkgImport inputs.nixpkgs-personal [ ];
+      nixpkgs-stable = pkgImport inputs.nixpkgs;
+      nixpkgs-unstable = pkgImport inputs.nixpkgs-unstable;
+      nixpkgs-personal = pkgImport inputs.nixpkgs-personal;
 
       homeManagerModules = {
         create-directories = import ./home/modules/create-directories.nix { };
@@ -51,9 +51,8 @@
         mpd = import ./home/modules/mpd.nix { inherit nixpkgs-unstable; };
       };
 
-      mkHost = { path, extraConfig ? { }, overlays ? [ ] }: inputs.nixpkgs.lib.nixosSystem {
+      mkHost = { path, extraConfig ? { } }: inputs.nixpkgs.lib.nixosSystem {
         inherit system;
-        pkgs = pkgImport inputs.nixpkgs overlays;
         modules = [
           home-manager.nixosModules.home-manager
           {
@@ -79,12 +78,7 @@
 
       inherit homeManagerModules;
       nixosConfigurations = {
-        zen = mkHost {
-          path = ./machines/zen;
-          overlays = [ ] ++
-            (import ./machines/zen/overlays.nix { inherit nixpkgs-unstable; }) ++
-            (import ./secrets/nix-expressions/zen-overlays.nix { inherit nixpkgs-unstable; });
-        };
+        zen = mkHost { path = ./machines/zen; };
         shadow = mkHost { path = ./machines/shadow; };
         office = mkHost { path = ./machines/office; extraConfig = agenix.nixosModules.age; };
       };
