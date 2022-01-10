@@ -324,6 +324,8 @@
 
     # AUDIO
     cantata
+    yabridge
+    yabridgectl
     pavucontrol
     unstable.helvum
     ffmpeg-full

@@ -30,17 +30,65 @@
   networking.networkmanager.dns = "none";
 
   hardware.enableRedistributableFirmware = true;
-  hardware.pulseaudio.daemon.config = {
-    default-sample-format = "s32le";
-    default-sample-rate = 44100;
-    avoid-resampling = "yes";
-  };
 
   networking.interfaces.enp38s0.useDHCP = true;
   networking.interfaces.enp39s0.useDHCP = true;
   networking.interfaces.wlo1.useDHCP = true;
 
   virtualisation.docker.enableNvidia = true;
+  systemd.enableUnifiedCgroupHierarchy = false;
+
+  musnix = {
+    enable = true;
+    kernel.optimize = true;
+  };
+  powerManagement.cpuFreqGovernor = "performance";
+
+  services.pipewire.config = {
+    pipewire = {
+      "context.properties" = {
+        "link.max-buffers" = 16;
+        "log.level" = 2;
+        "default.clock.rate" = 96000;
+        "default.clock.quantum" = 2048;
+        "default.clock.min-quantum" = 32;
+        "default.clock.max-quantum" = 2048;
+        "core.daemon" = true;
+        "core.name" = "pipewire-0";
+      };
+      "context.modules" = [
+        {
+          name = "libpipewire-module-rtkit";
+          args = {
+            "nice.level" = -15;
+            "rt.prio" = 88;
+            "rt.time.soft" = 200000;
+            "rt.time.hard" = 200000;
+          };
+          flags = [ "ifexists" "nofail" ];
+        }
+        { name = "libpipewire-module-protocol-native"; }
+        { name = "libpipewire-module-profiler"; }
+        { name = "libpipewire-module-metadata"; }
+        { name = "libpipewire-module-spa-device-factory"; }
+        { name = "libpipewire-module-spa-node-factory"; }
+        { name = "libpipewire-module-client-node"; }
+        { name = "libpipewire-module-client-device"; }
+        {
+          name = "libpipewire-module-portal";
+          flags = [ "ifexists" "nofail" ];
+        }
+        {
+          name = "libpipewire-module-access";
+          args = { };
+        }
+        { name = "libpipewire-module-adapter"; }
+        { name = "libpipewire-module-link-factory"; }
+        { name = "libpipewire-module-session-manager"; }
+      ];
+    };
+    jack."jack.properties"."node.latency" = "512/96000";
+  };
 
   # ZFS related
   services.zfs.autoScrub = {
@@ -148,7 +196,10 @@
   environment.systemPackages = with pkgs; [
     qjackctl
     libjack2
+    guitarix
+    lingot
     mpc_cli
+    carla
     jack2
     blender
     nixpkgs-unstable.pkgs.cudatoolkit_11_4

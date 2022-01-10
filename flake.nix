@@ -3,6 +3,10 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-personal.url = "github:Philipp-M/nixpkgs/personal";
+    musnix = {
+      url = "github:musnix/musnix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -55,6 +59,7 @@
         inherit system;
         modules = [
           home-manager.nixosModules.home-manager
+          inputs.musnix.nixosModule
           {
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
