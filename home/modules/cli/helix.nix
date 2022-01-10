@@ -19,12 +19,12 @@ in
             src = builtins.fetchGit {
               url = "https://github.com/helix-editor/helix.git";
               ref = "master";
-              rev = "dbaed0ba834e772e93a0ffe4258168022cf4859e";
+              rev = "e0a99ae51ac099e30dc1039f9ac1059bba90a806";
               submodules = true;
             };
             cargoDeps = old.cargoDeps.overrideAttrs (lib.const {
               inherit src;
-              outputHash = "sha256-A5+tqbsU9mH3WlG++3HPoaPNUbnl/kwUN9levBP1/ec=";
+              outputHash = "sha256-3Hn6ZZ8UM2jsSmxfbaGRQr6DwX36qpMDZHUi32r5w9o=";
             });
           }
         );
@@ -48,7 +48,7 @@ in
             "ui.menu" = transparent;
             "ui.menu.selected" = { modifiers = [ "reversed" ]; };
             "ui.linenr" = { fg = gray; bg = dark-gray; };
-            "ui.popup" = { modifiers = [ "reversed" ]; };
+            "ui.popup" = { bg = black; };
             "ui.linenr.selected" = { fg = white; bg = black; modifiers = [ "bold" ]; };
             "ui.selection" = { fg = black; bg = blue; };
             # "ui.selection.primary" = { fg = white; bg = blue; };
@@ -90,14 +90,31 @@ in
       settings = {
         theme = "base16";
         lsp.display-messages = true;
+        editor = {
+          completion-trigger-len = 0;
+          line-number = "relative";
+        };
         keys = {
           normal = {
             j = "move_char_left";
             h = "move_line_up";
             k = "move_line_down";
             g.j = "goto_line_start";
+            z.k = "scroll_down";
+            z.h = "scroll_up";
+            Z.k = "scroll_down";
+            Z.h = "scroll_up";
+            "C-w" = {
+              "C-k" = "jump_view_down";
+              "k" = "jump_view_down";
+              "C-h" = "jump_view_up";
+              "h" = "jump_view_up";
+              "C-j" = "jump_view_left";
+              "j" = "jump_view_left";
+            };
             space = {
               space = "file_picker";
+              f = ":format";
               w = ":w";
               q = ":q";
             };
