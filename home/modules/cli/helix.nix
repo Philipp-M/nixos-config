@@ -19,12 +19,12 @@ in
             src = builtins.fetchGit {
               url = "https://github.com/helix-editor/helix.git";
               ref = "master";
-              rev = "e0a99ae51ac099e30dc1039f9ac1059bba90a806";
+              rev = "a2fad4fcb0c4a0547a86cb18820f2c8612991a1d";
               submodules = true;
             };
             cargoDeps = old.cargoDeps.overrideAttrs (lib.const {
               inherit src;
-              outputHash = "sha256-3Hn6ZZ8UM2jsSmxfbaGRQr6DwX36qpMDZHUi32r5w9o=";
+              outputHash = "sha256-9y+jNW6/thcml0dnbjMaAbTS0CCGAgk4y5olb/cyxvA=";
             });
           }
         );
