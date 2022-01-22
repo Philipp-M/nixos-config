@@ -17,14 +17,14 @@ in
           old: rec {
             version = "0.5-git";
             src = builtins.fetchGit {
-              url = "https://github.com/helix-editor/helix.git";
-              ref = "master";
-              rev = "a2fad4fcb0c4a0547a86cb18820f2c8612991a1d";
+              url = "https://github.com/Philipp-M/helix.git";
+              ref = "rounded-corners";
+              rev = "eb53c0ee89e09282df6cf800b1c0036ca4bdd4c6";
               submodules = true;
             };
             cargoDeps = old.cargoDeps.overrideAttrs (lib.const {
               inherit src;
-              outputHash = "sha256-9y+jNW6/thcml0dnbjMaAbTS0CCGAgk4y5olb/cyxvA=";
+              outputHash = "sha256-Nc+gPTNGmPqWaClNnIfmK2z479FcEFYyJ8tBzBgm/G0=";
             });
           }
         );
@@ -48,7 +48,7 @@ in
             "ui.menu" = transparent;
             "ui.menu.selected" = { modifiers = [ "reversed" ]; };
             "ui.linenr" = { fg = gray; bg = dark-gray; };
-            "ui.popup" = { bg = black; };
+            "ui.popup" = { bg = transparent; };
             "ui.linenr.selected" = { fg = white; bg = black; modifiers = [ "bold" ]; };
             "ui.selection" = { fg = black; bg = blue; };
             # "ui.selection.primary" = { fg = white; bg = blue; };
