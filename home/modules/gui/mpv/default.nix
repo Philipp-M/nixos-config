@@ -11,6 +11,7 @@
         # video-sync = "audio";
         af = "scaletempo2";
         video-sync = "display-resample";
+        sub-font-size = 23;
       };
       profiles = {
         vdpau-high = {
