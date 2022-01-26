@@ -19,12 +19,12 @@ in
             src = builtins.fetchGit {
               url = "https://github.com/Philipp-M/helix.git";
               ref = "rounded-corners";
-              rev = "eb53c0ee89e09282df6cf800b1c0036ca4bdd4c6";
+              rev = "b3f817bed4d18cf2678dcaf3d77a908093b4ea6e";
               submodules = true;
             };
             cargoDeps = old.cargoDeps.overrideAttrs (lib.const {
               inherit src;
-              outputHash = "sha256-Nc+gPTNGmPqWaClNnIfmK2z479FcEFYyJ8tBzBgm/G0=";
+              outputHash = "sha256-Q408tugUkWI4pJgV7ykU7sfMGmE3ceHapS39mKgwllY=";
             });
           }
         );
@@ -96,6 +96,7 @@ in
         };
         keys = {
           normal = {
+            "'" = "repeat_last_motion";
             j = "move_char_left";
             h = "move_line_up";
             k = "move_line_down";
@@ -115,6 +116,17 @@ in
             space = {
               space = "file_picker";
               f = ":format";
+              t = {
+                t = "goto_definition";
+                i = "goto_implementation";
+                r = "goto_reference";
+                d = "goto_type_definition";
+              };
+              d = {
+                s = "signature_help";
+                d = "hover";
+              };
+              x = ":buffer-close";
               w = ":w";
               q = ":q";
             };
