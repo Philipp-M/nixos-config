@@ -93,6 +93,7 @@ in
         editor = {
           completion-trigger-len = 0;
           line-number = "relative";
+          scrolloff = 0;
         };
         keys = {
           normal = {
