@@ -18,7 +18,7 @@
       shellAliases = {
         # list aliases
         ll = "lsd -Al";
-        lld = "lsd -Altr";
+        lt = "lsd -Altr";
         llt = "lsd -Altr --tree";
         lls = "lsd -ArlS --total-size";
         l = "lsd -l";
