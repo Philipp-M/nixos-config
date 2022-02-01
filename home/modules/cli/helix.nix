@@ -94,6 +94,7 @@ in
           completion-trigger-len = 0;
           line-number = "relative";
           scrolloff = 0;
+          true-color = true;
         };
         keys = {
           normal = {
