@@ -1,5 +1,5 @@
 { nixpkgs-unstable, nixpkgs-personal, ... }:
-{ lib, config, ... }:
+{ pkgs, lib, config, ... }:
 let
   inherit (lib) mkEnableOption mkIf hasAttrByPath;
   inherit (builtins) isAttrs isFunction;
@@ -38,9 +38,6 @@ in
         nodePackages.yaml-language-server
         ocamlPackages.ocaml-lsp
         ocamlPackages.reason
-        dotnet-sdk
-        omnisharp-roslyn
-        msbuild
         ripgrep
         rnix-lsp
         nixpkgs-personal.pkgs.jdt-ls
@@ -51,6 +48,13 @@ in
         zls
       ];
     };
+
+    # TODO clean this up, so that helix and neovim can access the same instance
+    home.packages = [
+      pkgs.dotnet-sdk
+      pkgs.omnisharp-roslyn
+      pkgs.msbuild
+    ];
 
     # neovim base16 themes with transparency support
     home.file.".config/nvim/colors/base16.vim" = {
