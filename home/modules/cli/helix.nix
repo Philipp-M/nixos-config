@@ -1,5 +1,5 @@
 { nixpkgs-unstable, nixpkgs-personal, ... }:
-{ lib, config, ... }:
+{ pkgs, lib, config, ... }:
 let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.modules.cli.helix;
@@ -19,12 +19,12 @@ in
             src = builtins.fetchGit {
               url = "https://github.com/Philipp-M/helix.git";
               ref = "rounded-corners";
-              rev = "834abf3ea3833c9e972f80a03a567fb3b8bdcae2";
+              rev = "e4a291ea1da01f501fe2205f3599061a3976943b";
               submodules = true;
             };
             cargoDeps = old.cargoDeps.overrideAttrs (lib.const {
               inherit src;
-              outputHash = "sha256-XjQS18SVAFhmQCyDIaMLKODNE8UgCYtj+vJ7t4DrMtw=";
+              outputHash = "sha256-KYRdD7Dy1iJ7ugScnjTOdrsmDnAxiPAK4XtC24D3zEU=";
             });
           }
         );
@@ -86,13 +86,20 @@ in
             "error" = red;
           };
       };
-      languages = [{ name = "rust"; auto-format = false; }];
+      languages = [
+        { name = "rust"; auto-format = false; }
+        {
+          name = "c-sharp";
+          language-server = { command = "omnisharp"; args = [ "-l" "Error" "--languageserver" "-z" ]; };
+        }
+      ];
       settings = {
         theme = "base16";
         lsp.display-messages = true;
         editor = {
-          completion-trigger-len = 0;
+          completion-trigger-len = 1;
           line-number = "relative";
+          search.smart-case = false;
           scrolloff = 0;
           true-color = true;
         };
@@ -168,9 +175,9 @@ in
       nodePackages.yaml-language-server
       ocamlPackages.ocaml-lsp
       ocamlPackages.reason
-      # pkgs.dotnet-sdk
-      # pkgs.omnisharp-roslyn
-      # pkgs.msbuild
+      pkgs.dotnet-sdk
+      pkgs.omnisharp-roslyn
+      pkgs.msbuild
       ripgrep
       rnix-lsp
       nixpkgs-personal.pkgs.jdt-ls
