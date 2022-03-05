@@ -19,12 +19,12 @@ in
             src = builtins.fetchGit {
               url = "https://github.com/Philipp-M/helix.git";
               ref = "rounded-corners";
-              rev = "e4a291ea1da01f501fe2205f3599061a3976943b";
+              rev = "781a6d5d1d96d124d40e2eeda34e5a02830d609a";
               submodules = true;
             };
             cargoDeps = old.cargoDeps.overrideAttrs (lib.const {
               inherit src;
-              outputHash = "sha256-KYRdD7Dy1iJ7ugScnjTOdrsmDnAxiPAK4XtC24D3zEU=";
+              outputHash = "sha256-9/e0+UN6YDfXMb3SHaM5Dhe2sdpQ7TGaIMfGt1lg464=";
             });
           }
         );
@@ -109,6 +109,10 @@ in
             j = "move_char_left";
             h = "move_line_up";
             k = "move_line_down";
+            y = "yank_joined_to_clipboard";
+            Y = "yank_main_selection_to_clipboard";
+            p = "paste_clipboard_after";
+            P = "paste_clipboard_before";
             g.j = "goto_line_start";
             z.k = "scroll_down";
             z.h = "scroll_up";
@@ -122,6 +126,7 @@ in
               "C-j" = "jump_view_left";
               "j" = "jump_view_left";
             };
+            backspace = [ "collapse_selection" "keep_primary_selection" ];
             space = {
               space = "file_picker";
               f = ":format";
@@ -138,6 +143,9 @@ in
               x = ":buffer-close";
               w = ":w";
               q = ":q";
+              y = "yank";
+              p = "paste_after";
+              P = "paste_before";
             };
           };
           select = {
