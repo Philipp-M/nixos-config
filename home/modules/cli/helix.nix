@@ -118,6 +118,8 @@ in
             z.h = "scroll_up";
             Z.k = "scroll_down";
             Z.h = "scroll_up";
+            "C-y" = "scroll_up";
+            "C-e" = "scroll_down";
             "C-w" = {
               "C-k" = "jump_view_down";
               "k" = "jump_view_down";
