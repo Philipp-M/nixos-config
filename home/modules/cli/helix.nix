@@ -156,6 +156,15 @@ in
             j = "extend_char_left";
             h = "extend_line_up";
             k = "extend_line_down";
+            y = "yank_joined_to_clipboard";
+            Y = "yank_main_selection_to_clipboard";
+            p = "paste_clipboard_after";
+            P = "paste_clipboard_before";
+            space = {
+              y = "yank";
+              p = "paste_after";
+              P = "paste_before";
+            };
           };
         };
       };
