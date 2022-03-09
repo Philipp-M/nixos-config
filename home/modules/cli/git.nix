@@ -13,6 +13,7 @@
         pull.rebase = true;
         rebase.autostash = true;
         rerere.enabled = true;
+        submodule.recurse = true;
       };
       extraConfig.init.defaultBranch = "main";
       aliases = {
