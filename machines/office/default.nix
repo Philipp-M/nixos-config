@@ -7,6 +7,9 @@
 
   networking.interfaces.enp0s31f6.useDHCP = true;
   networking.interfaces.wlp5s0.useDHCP = false;
+  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
+  networking.networkmanager.enable = true;
+  networking.networkmanager.dns = "none";
 
   boot.kernelParams = [ "nomodeset" "pci=nomsi" ];
 
