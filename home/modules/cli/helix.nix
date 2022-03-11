@@ -1,4 +1,4 @@
-{ nixpkgs-unstable, nixpkgs-personal, ... }:
+{ nixpkgs-unstable, nixpkgs-personal, helix, ... }:
 { pkgs, lib, config, ... }:
 let
   inherit (lib) mkEnableOption mkIf;
@@ -10,24 +10,7 @@ in
   config = mkIf cfg.enable {
     programs.helix = {
       enable = true;
-      # doesn't work with flakes because of non-working submodules
-      # package = helix.packages.x86_64-linux.helix;
-      package = nixpkgs-unstable.pkgs.helix.overrideAttrs
-        (
-          old: rec {
-            version = "0.5-git";
-            src = builtins.fetchGit {
-              url = "https://github.com/Philipp-M/helix.git";
-              ref = "rounded-corners";
-              rev = "1c82b936d143387ce7c156cf6d31499a49c4d7d3";
-              submodules = true;
-            };
-            cargoDeps = old.cargoDeps.overrideAttrs (lib.const {
-              inherit src;
-              outputHash = "sha256-GZ/fWR2WclBZtOAlO/wUzzf01Vckh64gronz9JRdpss=";
-            });
-          }
-        );
+      package = helix.packages.x86_64-linux.helix;
       themes = {
         base16 = with config.theme.base16.colors;
           let
@@ -102,6 +85,7 @@ in
           search.smart-case = false;
           scrolloff = 0;
           true-color = true;
+          file-picker.hidden = false;
         };
         keys = {
           normal = {

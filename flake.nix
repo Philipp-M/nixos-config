@@ -3,6 +3,10 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/master";
     nixpkgs-personal.url = "github:Philipp-M/nixpkgs/personal";
+    helix = {
+      url = "github:Philipp-M/helix/rounded-corners";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     musnix = {
       url = "github:musnix/musnix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -22,7 +26,7 @@
     };
   };
 
-  outputs = inputs@{ self, rycee-nur-expressions, home-manager, agenix, ... }:
+  outputs = inputs@{ self, rycee-nur-expressions, home-manager, agenix, helix, ... }:
     let
       system = "x86_64-linux";
       pkgImport = pkgs:
@@ -41,7 +45,7 @@
         fish = import ./home/modules/cli/fish.nix { };
         git = import ./home/modules/cli/git.nix { };
         neovim = import ./home/modules/cli/neovim { inherit nixpkgs-unstable nixpkgs-personal; };
-        helix = import ./home/modules/cli/helix.nix { inherit nixpkgs-unstable nixpkgs-personal; };
+        helix = import ./home/modules/cli/helix.nix { inherit nixpkgs-unstable nixpkgs-personal helix; };
         ssh = import ./home/modules/cli/ssh.nix { };
         starship = import ./home/modules/cli/starship.nix { };
         tmux = import ./home/modules/cli/tmux.nix { };
