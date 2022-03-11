@@ -26,6 +26,7 @@ in
             blue = "#${base0D.hex.rgb}";
             magenta = "#${base0E.hex.rgb}";
             cyan = "#${base0C.hex.rgb}";
+            brown = "#${base0F.hex.rgb}";
           in
           {
             "ui.menu" = transparent;
@@ -51,6 +52,8 @@ in
             "string" = green;
             "variable.other.member" = red;
             "constant.character.escape" = cyan;
+            "punctuation" = brown;
+            "operator" = brown;
             "function" = blue;
             "constructor" = blue;
             "special" = blue;
