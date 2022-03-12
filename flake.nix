@@ -4,7 +4,7 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/master";
     nixpkgs-personal.url = "github:Philipp-M/nixpkgs/personal";
     helix = {
-      url = "github:Philipp-M/helix/rounded-corners";
+      url = "github:Philipp-M/helix/personal";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     musnix = {
