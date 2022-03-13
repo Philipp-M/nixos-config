@@ -188,6 +188,7 @@
   programs.dconf.enable = true;
 
   xdg.portal.enable = true;
+  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
   services.flatpak.enable = true;
 
   # allow no password for sudo (dangerous...)
@@ -337,17 +338,17 @@
     signal-desktop
     element-desktop
     qtox
-    discord
+    unstable.discord
     v4l-utils
     zoom-us
     skype
-    unstable.tdesktop
+    tdesktop
 
     # WEB
     chromium
     google-chrome
     firefox
-    unstable.torbrowser
+    unstable.tor-browser-bundle-bin
 
     # XORG/DESKTOP ENVIRONMENT
     awf
@@ -390,7 +391,7 @@
     qdirstat
     borgbackup
     electrum
-    monero-gui
+    unstable.monero-gui
     ecryptfs
     ecryptfs-helper
     keepassxc
