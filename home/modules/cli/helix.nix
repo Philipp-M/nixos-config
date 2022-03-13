@@ -101,6 +101,7 @@ in
             d = [ "yank_joined_to_clipboard" "delete_selection" ];
             p = "paste_clipboard_after";
             P = "paste_clipboard_before";
+            R = "replace_selections_with_clipboard";
             g.j = "goto_line_start";
             z.k = "scroll_down";
             z.h = "scroll_up";
@@ -119,6 +120,7 @@ in
             backspace = [ "collapse_selection" "keep_primary_selection" ];
             space = {
               space = "file_picker";
+              n = "global_search";
               f = ":format";
               t = {
                 t = "goto_definition";
@@ -136,6 +138,7 @@ in
               y = "yank";
               p = "paste_after";
               P = "paste_before";
+              R = "replace_with_yanked";
             };
           };
           select = {
