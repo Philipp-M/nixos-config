@@ -5,7 +5,7 @@
   options.modules.cli.enable = lib.mkEnableOption "Enable all personal cli configurations";
 
   config = lib.mkIf config.modules.cli.enable {
-    home.sessionVariables.EDITOR = "nvim";
+    home.sessionVariables.EDITOR = "hx";
 
     modules.cli = {
       neovim.enable = true;

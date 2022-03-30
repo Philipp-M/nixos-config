@@ -81,8 +81,8 @@ in
       ];
       settings = {
         theme = "base16";
-        lsp.display-messages = true;
         editor = {
+          lsp.display-messages = true;
           completion-trigger-len = 1;
           line-number = "relative";
           search.smart-case = false;
@@ -142,6 +142,7 @@ in
             };
           };
           select = {
+            "'" = "repeat_last_motion";
             d = [ "yank_joined_to_clipboard" "delete_selection" ];
             j = "extend_char_left";
             h = "extend_line_up";
@@ -150,10 +151,12 @@ in
             Y = "yank_main_selection_to_clipboard";
             p = "paste_clipboard_after";
             P = "paste_clipboard_before";
+            R = "replace_selections_with_clipboard";
             space = {
               y = "yank";
               p = "paste_after";
               P = "paste_before";
+              R = "replace_with_yanked";
             };
           };
         };
