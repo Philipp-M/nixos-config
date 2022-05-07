@@ -176,6 +176,21 @@
       }";
     };
   };
+  
+  systemd.services."restart-setup-keyboard-after-suspend" = {
+    enable = true;
+    description = "restarts setup-keyboard after resume because it xcape seems to have problems sometimes";
+    after = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" "suspend-then-hibernate.target" ];
+    wantedBy = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" "suspend-then-hibernate.target" ];
+    serviceConfig = {
+      Type = "simple";
+      User = "philm"; # Unfortunately this needs to be hardcoded since user services don't work for this,
+                      # see: https://unix.stackexchange.com/a/492497
+    };
+    script = ''
+      XDG_RUNTIME_DIR=/run/user/$UID DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$UID/bus ${pkgs.systemd}/bin/systemctl --no-block --user restart setup-keyboard.service
+    '';
+  };
 
   # aweful hack to enable the systemd service setup-keyboard, which maps super to tab if pressed
   services.udev.extraRules = ''
