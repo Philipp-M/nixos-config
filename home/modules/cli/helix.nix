@@ -70,6 +70,22 @@ in
             "debug" = dark-gray;
             "warning" = yellow;
             "error" = red;
+            "tag" = blue;
+            "attribute" = red;
+            "markup.heading.marker" = magenta;
+            "markup.heading.1" = { fg = blue; modifiers = [ "underlined" "bold" ]; };
+            "markup.heading.2" = { fg = blue; modifiers = [ "bold" ]; };
+            "markup.heading.3" = { fg = blue; };
+            "markup.heading.4" = { fg = blue; };
+            "markup.heading.5" = { fg = blue; };
+            "markup.heading.6" = { fg = blue; };
+            "markup.bold" = { modifiers = [ "bold" ]; };
+            "markup.italic" = { modifiers = [ "italic" ]; };
+            "markup.quote" = gray;
+            "markup.link.url" = orange;
+            "markup.link.text" = red;
+            "markup.raw" = gray;
+            "markup.list" = brown;
           };
       };
       languages = [
