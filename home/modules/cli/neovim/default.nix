@@ -1,4 +1,4 @@
-{ nixpkgs-unstable, nixpkgs-personal, ... }:
+{ nixpkgs-unstable, ... }:
 { pkgs, lib, config, ... }:
 let
   inherit (lib) mkEnableOption mkIf hasAttrByPath;
@@ -40,7 +40,7 @@ in
         ocamlPackages.reason
         ripgrep
         rnix-lsp
-        nixpkgs-personal.pkgs.jdt-ls
+        java-language-server
         sumneko-lua-language-server
         tree-sitter
         yapf

@@ -2,7 +2,6 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/master";
-    nixpkgs-personal.url = "github:Philipp-M/nixpkgs/personal";
     helix = {
       url = "github:Philipp-M/helix/personal";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -37,15 +36,14 @@
         };
       nixpkgs-stable = pkgImport inputs.nixpkgs;
       nixpkgs-unstable = pkgImport inputs.nixpkgs-unstable;
-      nixpkgs-personal = pkgImport inputs.nixpkgs-personal;
 
       homeManagerModules = {
         create-directories = import ./home/modules/create-directories.nix { };
         cli = import ./home/modules/cli { }; # enables all modules in the cli directory + small extra ones
         fish = import ./home/modules/cli/fish.nix { };
         git = import ./home/modules/cli/git.nix { };
-        neovim = import ./home/modules/cli/neovim { inherit nixpkgs-unstable nixpkgs-personal; };
-        helix = import ./home/modules/cli/helix.nix { inherit nixpkgs-unstable nixpkgs-personal helix; };
+        neovim = import ./home/modules/cli/neovim { inherit nixpkgs-unstable; };
+        helix = import ./home/modules/cli/helix.nix { inherit nixpkgs-unstable helix; };
         ssh = import ./home/modules/cli/ssh.nix { };
         starship = import ./home/modules/cli/starship.nix { };
         tmux = import ./home/modules/cli/tmux.nix { };
@@ -66,6 +64,7 @@
           inputs.musnix.nixosModule
           {
             nix.registry.nixpkgs.flake = inputs.nixpkgs;
+            nix.registry.nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
             home-manager.users.philm = {
@@ -84,7 +83,7 @@
     in
     {
       devShell."${system}" =
-        import ./shell.nix { pkgs = nixpkgs-stable; agenix = inputs.agenix.defaultPackage.x86_64-linux; };
+        import ./shell.nix { pkgs = nixpkgs-stable; agenix = inputs.agenix.defaultPackage."${system}"; };
 
       inherit homeManagerModules;
       nixosConfigurations = {

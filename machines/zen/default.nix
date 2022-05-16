@@ -202,7 +202,6 @@
     carla
     jack2
     blender
-    nixpkgs-unstable.pkgs.cudatoolkit_11_4
     nvtop
     factorio
   ];

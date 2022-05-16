@@ -340,8 +340,8 @@
 
     # AUDIO
     cantata
-    yabridge
-    yabridgectl
+    unstable.yabridge
+    unstable.yabridgectl
     pavucontrol
     unstable.helvum
     ffmpeg-full
@@ -363,7 +363,7 @@
     chromium
     google-chrome
     firefox
-    unstable.tor-browser-bundle-bin
+    tor-browser-bundle-bin
 
     # XORG/DESKTOP ENVIRONMENT
     awf
@@ -393,7 +393,7 @@
     gsettings-desktop-schemas
     appimage-run
     ntfs3g
-    woeusb
+    unstable.woeusb
     ipfs
     acpi
     freecad
@@ -426,7 +426,6 @@
     mpv
     source-code-pro
     transmission-gtk
-    deluge
     qbittorrent
     xclip
     adb-sync

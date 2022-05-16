@@ -1,4 +1,4 @@
-{ nixpkgs-unstable, nixpkgs-personal, helix, ... }:
+{ nixpkgs-unstable, helix, ... }:
 { pkgs, lib, config, ... }:
 let
   inherit (lib) mkEnableOption mkIf;
@@ -210,7 +210,7 @@ in
       pkgs.msbuild
       ripgrep
       rnix-lsp
-      nixpkgs-personal.pkgs.jdt-ls
+      java-language-server
       sumneko-lua-language-server
       tree-sitter
       yapf
