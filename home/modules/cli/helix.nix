@@ -88,13 +88,25 @@ in
             "markup.list" = brown;
           };
       };
-      languages = [
-        { name = "rust"; auto-format = false; }
-        {
-          name = "c-sharp";
-          language-server = { command = "omnisharp"; args = [ "-l" "Error" "--languageserver" "-z" ]; };
-        }
-      ];
+      languages =
+        let
+          tsserver = name: with nixpkgs-unstable.pkgs.nodePackages; {
+            inherit name;
+            language-server.command = "${typescript-language-server}/bin/typescript-language-server";
+            language-server.args = [ "--stdio" "--tsserver-path=${typescript}/lib/node_modules/typescript/lib" ];
+          };
+        in
+        [
+          { name = "rust"; auto-format = false; }
+          {
+            name = "c-sharp";
+            language-server = { command = "omnisharp"; args = [ "-l" "Error" "--languageserver" "-z" ]; };
+          }
+          (tsserver "typescript")
+          (tsserver "javascript")
+          (tsserver "tsx")
+          (tsserver "jsx")
+        ];
       settings = {
         theme = "base16";
         editor = {
@@ -198,7 +210,6 @@ in
       nodePackages.pyright
       nodePackages.stylelint
       nodePackages.svelte-language-server
-      nodePackages.typescript-language-server
       nodePackages.vim-language-server
       nodePackages.vls
       nodePackages.vscode-langservers-extracted
