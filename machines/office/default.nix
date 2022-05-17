@@ -37,7 +37,7 @@
 
   # overwrite update/upgrade, since the hostname is different
   home-manager.users.philm.programs.fish.shellAliases = {
-    upgrade = lib.mkForce "nix flake update /home/philm/dev/personal/dotfiles/ && sudo nixos-rebuild switch --flake /home/philm/dev/personal/dotfiles/#office";
-    update = lib.mkForce "sudo nixos-rebuild switch --flake /home/philm/dev/personal/dotfiles/#office";
+    upgrade = lib.mkForce "nix flake update /home/philm/dev/personal/dotfiles/ && nixos-rebuild switch --use-remote-sudo --flake /home/philm/dev/personal/dotfiles/#office";
+    update = lib.mkForce "nixos-rebuild switch --use-remote-sudo --flake /home/philm/dev/personal/dotfiles/#office";
   };
 }
