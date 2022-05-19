@@ -169,6 +169,7 @@ in
               R = "replace_with_yanked";
             };
           };
+          insert."C-space" = "completion";
           select = {
             "'" = "repeat_last_motion";
             d = [ "yank_joined_to_clipboard" "delete_selection" ];
