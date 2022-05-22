@@ -88,24 +88,78 @@ in
             "markup.list" = brown;
           };
       };
-      languages =
+      languages = with nixpkgs-unstable.pkgs;
         let
-          tsserver = name: with nixpkgs-unstable.pkgs.nodePackages; {
+          efm-lsp-eslint-prettier = language-id: {
+            command = "${efm-langserver}/bin/efm-langserver";
+            args = [ "-logfile" "/home/philm/.cache/efm-langserver.log" "-loglevel" "5" ];
+            inherit language-id;
+            config = {
+              documentFormatting = true;
+              languages."${language-id}" =
+                let
+                  findNodeModulesCmd = bin-name: ''$(
+                      if [ -z "$(command -v ''${ROOT}/node_modules/.bin/${bin-name})" ]; then
+                        echo ${nodePackages."${bin-name}"}/bin/${bin-name};
+                      else
+                        echo ''${ROOT}/node_modules/.bin/${bin-name};
+                      fi
+                    )'';
+                  eslintCmd = findNodeModulesCmd "eslint";
+                  prettierCmd = findNodeModulesCmd "prettier";
+                in
+                [
+                  {
+                    lintCommand = "${eslintCmd} -f unix --stdin --stdin-filename \${INPUT}";
+                    lintIgnoreExitCode = true;
+                    lintStdin = true;
+                    lintFormats = [ "%f:%l:%c: %m" ];
+                    formatCommand = "${prettierCmd} --stdin-filepath \${INPUT} | ${eslintCmd} --fix-dry-run -f json --stdin --stdin-filename=\${INPUT} | ${jq}/bin/jq -r \".[0].output\"";
+                    formatStdin = true;
+                  }
+                ];
+            };
+          };
+          tsserver-eslint = { name, language-id }: {
             inherit name;
-            language-server.command = "${typescript-language-server}/bin/typescript-language-server";
-            language-server.args = [ "--stdio" "--tsserver-path=${typescript}/lib/node_modules/typescript/lib" ];
+            language-servers = [
+              {
+                command = "${nodePackages.typescript-language-server}/bin/typescript-language-server";
+                args = [ "--stdio" "--tsserver-path=${nodePackages.typescript}/lib/node_modules/typescript/lib" ];
+                config.documentFormatting = false;
+                inherit language-id;
+              }
+              (efm-lsp-eslint-prettier language-id)
+            ];
           };
         in
         [
-          { name = "rust"; auto-format = false; }
+          {
+            name = "rust";
+            auto-format = false;
+            language-servers = [{
+              command = "rust-analyzer";
+              config.rust-analyzer = {
+                cargo.loadOutDirsFromCheck = true;
+                checkOnSave.command = "clippy";
+                procMacro.enable = true;
+                lens = { references = true; methodReferences = true; };
+                experimental.procAttrMacros = true;
+              };
+            }];
+          }
           {
             name = "c-sharp";
-            language-server = { command = "omnisharp"; args = [ "-l" "Error" "--languageserver" "-z" ]; };
+            language-servers = [{ command = "omnisharp"; args = [ "-l" "Error" "--languageserver" "-z" ]; }];
           }
-          (tsserver "typescript")
-          (tsserver "javascript")
-          (tsserver "tsx")
-          (tsserver "jsx")
+          {
+            name = "vue";
+            language-servers = [{ command = "${nodePackages.vls}/bin/vls"; } (efm-lsp-eslint-prettier "vue")];
+          }
+          (tsserver-eslint { name = "typescript"; language-id = "typescript"; })
+          (tsserver-eslint { name = "javascript"; language-id = "javascript"; })
+          (tsserver-eslint { name = "jsx"; language-id = "javascriptreact"; })
+          (tsserver-eslint { name = "tsx"; language-id = "typescriptreact"; })
         ];
       settings = {
         theme = "base16";
@@ -196,7 +250,6 @@ in
       clang-tools
       cmake-language-server
       dart
-      efm-langserver
       fzf
       xsel
       haskellPackages.ormolu # haskell formatter
@@ -212,7 +265,6 @@ in
       nodePackages.stylelint
       nodePackages.svelte-language-server
       nodePackages.vim-language-server
-      nodePackages.vls
       nodePackages.vscode-langservers-extracted
       nodePackages.yaml-language-server
       ocamlPackages.ocaml-lsp
