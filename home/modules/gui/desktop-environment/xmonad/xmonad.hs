@@ -4,11 +4,10 @@
 
 module Main where
 
-import System.Taffybar.Support.PagerHints (pagerHints)
 import XMonad
 import XMonad.Actions.Promote
 import XMonad.Actions.CycleWS (nextScreen, shiftNextScreen)
-import XMonad.Hooks.EwmhDesktops (ewmh, fullscreenEventHook)
+import XMonad.Hooks.EwmhDesktops (ewmh, ewmhFullscreen)
 import XMonad.Hooks.ManageDocks
 import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
@@ -91,13 +90,13 @@ myLauncher = "rofi -show run"
 
 main =
   xmonad
-    $ docks
+    $ ewmhFullscreen
     $ ewmh
-    $ pagerHints
+    $ docks
+    -- $ pagerHints
       def
         { terminal = myTerminal,
           borderWidth = 0,
-          handleEventHook = handleEventHook def <+> fullscreenEventHook,
           manageHook = manageDocks <+> manageHook def,
           layoutHook = myLayouts,
           startupHook = setWMName "LG3D",

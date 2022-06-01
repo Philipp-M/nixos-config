@@ -1,7 +1,7 @@
-{ ... }:
+{ nixpkgs-unstable, ... }:
 { pkgs, lib, config, ... }: {
   options.modules.gui.desktop-environment.enable = lib.mkEnableOption ''
-    Enable personal desktop-environment config (xmonad, taffybar etc.)
+    Enable personal desktop-environment config (xmonad, polybar etc.)
   '';
 
   config = lib.mkIf config.modules.gui.desktop-environment.enable {
@@ -17,7 +17,6 @@
             hpkgs.xmonad-contrib
             hpkgs.xmonad-extras
             hpkgs.monad-logger
-            hpkgs.taffybar
           ];
           enableContribAndExtras = true;
           config = builtins.toPath (config.lib.theme.compileTemplate {
@@ -30,14 +29,120 @@
 
     home.file.".xmonad/xmonad-x86_64-linux".force = true;
 
-    services.taffybar = {
-      enable = true;
-      package = (import ./taffybar) { inherit pkgs; };
-    };
 
-    home.file.".config/taffybar/taffybar.css".source = config.lib.theme.compileTemplate {
-      name = "taffybar.css";
-      src = ./taffybar/taffybar.template.css;
+    services.polybar = {
+      enable = true;
+      script = "polybar -r bar &";
+      package = nixpkgs-unstable.pkgs.polybar.override {
+        mpdSupport = true;
+        nlSupport = true;
+        iwSupport = true;
+        githubSupport = true;
+      };
+      config = with config.theme.base16.colors; with config.theme.extraParams; {
+        "bar/bar" = {
+          fill = "";
+          empty = "";
+          indicator = "";
+          modules-left = [ "ewmh" ];
+          modules-right = [ "memory" "cpu" "network-wired" "network-wireless" "date" ];
+          modules-center = [ "mpd" ];
+          background = "#${alpha-hex}${base00.hex.rgb}";
+          foreground = "#${base06.hex.rgb}";
+          font-0 = "${fontname}${xftfontextra}:pixelsize=16;3.5";
+          font-1 = "Font Awesome 6 Free:style=Solid:pixelsize=16;3.5";
+          font-2 = "Font Awesome 6 Brands:pixelsize=16;3.5";
+          font-3 = "Font Awesome 6 Brands:style=Regular:pixelsize=16;3.5";
+          height = 33;
+        };
+        "module/network-wired" = {
+          type = "internal/network";
+          accumulate-stats = true;
+          label-connected = "%{T2}%{T-}%downspeed:9% %{T2}%{T-}%upspeed:9%";
+          interface-type = "wired";
+          label-connected-background = "#${alpha-hex}${base0C.hex.rgb}";
+          label-connected-foreground = "#${base00.hex.rgb}";
+          label-connected-padding = 1;
+        };
+        "module/network-wireless" = {
+          type = "internal/network";
+          accumulate-stats = true;
+          label-connected = "%{T2} %{T-}%downspeed:9% %{T2}%{T-}%upspeed:9%";
+          interface-type = "wireless";
+          label-connected-background = "#${alpha-hex}${base0C.hex.rgb}";
+          label-connected-foreground = "#${base00.hex.rgb}";
+          label-connected-padding = 1;
+        };
+        "module/mpd" = {
+          type = "internal/mpd";
+          format-online = "<icon-prev> <icon-stop> <toggle> <icon-next>  <label-time>  <label-song>";
+          interval = 1;
+          icon-play = "%{T2}%{T-}";
+          icon-pause = "%{T2}⏸%{T-}";
+          icon-stop = "%{T2}%{T-}";
+          icon-prev = "%{T2}⏮%{T-}";
+          icon-next = "%{T2}⏭%{T-}";
+          icon-seekb = "%{T2}⏪%{T-}";
+          icon-seekf = "%{T2}⏩%{T-}";
+          icon-random = "%{T2}�%{T-}�";
+          icon-repeat = "%{T2}�%{T-}�";
+          icon-repeatone = "%{T2}�%{T-}�";
+          icon-single = "%{T2}�%{T-}�";
+          icon-consume = "%{T2}✀%{T-}";
+        };
+        "module/ewmh" = {
+          type = "internal/xworkspaces";
+          pin-workspaces = true;
+          enable-click = true;
+          enable-scroll = true;
+          reverse-scroll = true;
+          label-active = "%name%";
+          label-occupied = "%name%";
+          label-active-foreground = "#${base00.hex.rgb}";
+          label-active-background = "#${base03.hex.rgb}";
+          label-occupied-background = "#${alpha-hex}${base02.hex.rgb}";
+          label-active-padding = 1;
+          label-occupied-padding = 1;
+          label-empty = "";
+        };
+        "module/date" = {
+          type = "internal/date";
+          label = "%{T2}%{T-} %date% %time%";
+          label-background = "#${alpha-hex}${base0D.hex.rgb}";
+          label-foreground = "#${base00.hex.rgb}";
+          label-padding = 1;
+          interval = "1.0";
+          date = "%d.%m.%Y";
+          time = "%H:%M:%S";
+          date-alt = "%A, %d %B %Y";
+          time-alt = "%H:%M:%S";
+        };
+        "module/cpu" = {
+          type = "internal/cpu";
+          format = "%{T2}%{T-} <ramp-load> <label>";
+          label = "%percentage:3%%";
+          format-background = "#${alpha-hex}${base0B.hex.rgb}";
+          format-foreground = "#${base00.hex.rgb}";
+          ramp-load-spacing = 1;
+          ramp-load-0 = "▁";
+          ramp-load-1 = "▂";
+          ramp-load-2 = "▃";
+          ramp-load-3 = "▄";
+          ramp-load-4 = "▅";
+          ramp-load-5 = "▆";
+          ramp-load-6 = "▇";
+          ramp-load-7 = "█";
+          format-padding = 1;
+          interval = "0.5";
+        };
+        "module/memory" = {
+          label = "%{T2}%{T-}%gb_used:10%";
+          label-background = "#${alpha-hex}${base0A.hex.rgb}";
+          label-foreground = "#${base00.hex.rgb}";
+          label-padding = 1;
+          type = "internal/memory";
+        };
+      };
     };
 
     xdg.mimeApps = {

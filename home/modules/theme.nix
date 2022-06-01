@@ -10,22 +10,22 @@ let inherit (lib) concatStrings mapAttrsToList mkOption types; in
     base16-theme = mkOption {
       type = types.attrs;
       default = config.lib.theme.base16.fromYamlFile (
-        builtins.fetchurl
-          {
-            url = "https://raw.githubusercontent.com/chriskempson/base16-tomorrow-scheme/master/tomorrow-night.yaml";
-            sha256 = "sha256:0mc699fps18lk9dl154vpcdh0in62215yfq9n4mwg4213j06488z";
-          }
+        builtins.fetchurl {
+          url = "https://raw.githubusercontent.com/chriskempson/base16-tomorrow-scheme/master/tomorrow-night.yaml";
+          sha256 = "sha256:0mc699fps18lk9dl154vpcdh0in62215yfq9n4mwg4213j06488z";
+        }
       );
     };
     extraParams = mkOption {
       type = types.attrsOf types.string;
-      default = {
+      default = rec {
         fontname = "Iosevka";
         xftfontextra = ":style=Regular";
         fontsize = "16";
         xcursorSize = "32";
         dpi = "100";
         alpha = "0.85"; # background alpha for applications that support it
+        alpha-hex = builtins.readFile (pkgs.runCommandLocal "alpha-hex" { } "echo 'obase=16;scale=0;${alpha}*255/1' | ${pkgs.bc}/bin/bc | tr -d '\n' > $out");
       };
     };
   };

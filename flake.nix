@@ -1,7 +1,7 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/master";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     helix = {
       url = "github:Philipp-M/helix/personal";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -51,7 +51,7 @@
         firefox = import ./home/modules/gui/firefox.nix { };
         alacritty = import ./home/modules/gui/alacritty { };
         autorandr = import ./home/modules/gui/autorandr.nix { };
-        desktop-environment = import ./home/modules/gui/desktop-environment { };
+        desktop-environment = import ./home/modules/gui/desktop-environment { inherit nixpkgs-unstable; };
         mpv = import ./home/modules/gui/mpv { };
         theme = import ./home/modules/theme.nix { inherit rycee-nur-expressions; };
         mpd = import ./home/modules/mpd.nix { inherit nixpkgs-unstable; };

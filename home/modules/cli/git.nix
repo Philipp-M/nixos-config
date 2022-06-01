@@ -8,7 +8,7 @@
       userName = "Philipp Mildenberger";
       userEmail = "philipp@mildenberger.me";
       lfs.enable = true;
-      delta.enable = true;
+      diff-so-fancy.enable = true;
       extraConfig = {
         pull.rebase = true;
         rebase.autostash = true;

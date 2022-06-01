@@ -199,7 +199,7 @@
   '';
 
   # gtk themes (home-manager more specifically) seem to have problems without it
-  services.dbus.packages = [ pkgs.gnome3.dconf ];
+  services.dbus.packages = [ pkgs.dconf ];
   programs.dconf.enable = true;
 
   xdg.portal.enable = true;
@@ -356,7 +356,7 @@
     unstable.discord
     v4l-utils
     zoom-us
-    skype
+    skypeforlinux
     tdesktop
 
     # WEB
@@ -387,7 +387,7 @@
 
     # MISC
     neovide
-    exfat-utils
+    exfat
     rdup
     sanoid
     gsettings-desktop-schemas
@@ -433,5 +433,5 @@
     tree-sitter
   ];
 
-  fonts.fonts = with pkgs; [ nerdfonts google-fonts ];
+  fonts.fonts = with pkgs; [ font-awesome nerdfonts google-fonts ];
 }
