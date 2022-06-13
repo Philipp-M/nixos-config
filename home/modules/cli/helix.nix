@@ -40,8 +40,9 @@ in
             "comment" = { fg = gray; };
             "ui.statusline" = { fg = white; bg = dark-gray; };
             "ui.statusline.inactive" = { fg = dark-gray; bg = white; };
-            "ui.help" = { fg = dark-gray; bg = white; };
+            "ui.help" = { fg = gray; bg = white; };
             "ui.cursor" = { modifiers = [ "reversed" ]; };
+            "ui.virtual.indent-guide" = dark-gray;
             "variable" = red;
             "variable.builtin" = orange;
             "constant.numeric" = orange;
@@ -66,8 +67,8 @@ in
             "diagnostic" = { modifiers = [ "underlined" ]; };
             "ui.gutter" = { bg = black; };
             "info" = blue;
-            "hint" = dark-gray;
-            "debug" = dark-gray;
+            "hint" = gray;
+            "debug" = gray;
             "warning" = yellow;
             "error" = red;
             "tag" = blue;
@@ -152,6 +153,7 @@ in
       settings = {
         theme = "base16";
         editor = {
+          indent-guides.render = true;
           lsp.display-messages = true;
           completion-trigger-len = 1;
           line-number = "relative";
