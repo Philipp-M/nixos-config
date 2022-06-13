@@ -32,7 +32,7 @@
 
     services.polybar = {
       enable = true;
-      script = "polybar -r bar &";
+      script = "polybar bar &";
       package = nixpkgs-unstable.pkgs.polybar.override {
         mpdSupport = true;
         nlSupport = true;
@@ -54,6 +54,10 @@
           font-2 = "Font Awesome 6 Brands:pixelsize=16;3.5";
           font-3 = "Font Awesome 6 Brands:style=Regular:pixelsize=16;3.5";
           height = 33;
+          tray-position = "right";
+          tray-detached = true;
+          tray-offset-x = -750;
+          tray-background = "#${alpha-hex}${base00.hex.rgb}";
         };
         "module/network-wired" = {
           type = "internal/network";
@@ -214,7 +218,11 @@
 
     # KDE/GTK specific
 
-    gtk.enable = true;
+    gtk = {
+      enable = true;
+      iconTheme.name = "Papirus-Dark-Maia";
+      iconTheme.package = nixpkgs-unstable.pkgs.papirus-maia-icon-theme;
+    };
 
     qt = {
       enable = true;
@@ -303,7 +311,10 @@
       temperature.night = 3200;
     };
 
-    services.udiskie.enable = true;
+    services.udiskie = {
+      enable = true;
+      settings.icon_names.media = [ "media-optical" ];
+    };
 
     services.status-notifier-watcher.enable = true;
 
