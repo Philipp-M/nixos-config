@@ -33,7 +33,13 @@
 
   networking.interfaces.enp38s0.useDHCP = true;
   networking.interfaces.enp39s0.useDHCP = true;
-  networking.interfaces.wlo1.useDHCP = true;
+  networking.interfaces.wlo1.useDHCP = false;
+
+  # Bluetooth
+  boot.extraModprobeConfig = '' options bluetooth disable_ertm=1 '';
+
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
 
   virtualisation.docker.enableNvidia = true;
   systemd.enableUnifiedCgroupHierarchy = false;
@@ -200,7 +206,10 @@
 
   users.users.philm.extraGroups = [ "jackaudio" ];
 
-  home-manager.users.philm.modules.mpd.enable = true;
+  home-manager.users.philm = {
+    modules.mpd.enable = true;
+    services.blueman-applet.enable = true;
+  };
 
   nix.maxJobs = lib.mkDefault 16;
   # High-DPI console
