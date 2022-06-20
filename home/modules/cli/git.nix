@@ -18,6 +18,7 @@
       extraConfig.init.defaultBranch = "main";
       aliases = {
         pushall = "!git remote | xargs -L1 git push --all";
+        c = "commit -v";
       };
     };
   };
