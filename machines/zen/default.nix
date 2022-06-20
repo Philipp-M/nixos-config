@@ -7,7 +7,7 @@
   nixpkgs.overlays = (import ../../secrets/nix-expressions/zen-overlays.nix { inherit nixpkgs-unstable; });
 
   fileSystems."/windows" = {
-    device = "/dev/disk/by-uuid/B8EEC319EEC2CF36";
+    device = "/dev/disk/by-uuid/68460A274609F71A";
     fsType = "ntfs";
     options = [ "rw" "uid=1000" ];
   };
@@ -104,18 +104,22 @@
         hourly = 48;
         monthly = 5;
         yearly = 0;
-        settings = {
-          frequent_period = 15;
-          frequently = 8;
-        };
+        # frequently
+        # TODO with ssd enable this again including the hourly...
+        # settings = {
+        #   frequent_period = 15;
+        #   frequently = 8;
+        # };
       };
     in
     {
       enable = true;
       interval = "*:0/15";
-      datasets."tank/private" = default;
-      datasets."tank/backup" = default;
-      datasets."tank/games" = default;
+      datasets."data/private" = default;
+      datasets."data/backup" = default;
+      datasets."data/games" = default;
+      datasets."data/photos" = default;
+      datasets."data/music" = default;
     };
 
   services.syncthing = {
@@ -148,7 +152,17 @@
       ExecStart = "${pkgs.writeScript "backup-home" ''
         #!${pkgs.bash}/bin/bash
         echo "Starting Backup at $(date)" >> /var/log/home-backup.log
-        ${pkgs.rsync}/bin/rsync --delete -av --exclude .cache --filter=':- .gitignore' --filter=':- .npmignore' --filter=':- .ignore' /home/ /tank/backup/zen/home/ 2>&1  >> /var/log/home-backup.log
+        ${pkgs.rsync}/bin/rsync \
+          --delete \
+          -av \
+          --exclude philm/.cache \
+          --exclude philm/Unity \
+          --exclude philm/.config/unity3d \
+          --exclude philm/.rustup \
+          --filter=':- .gitignore' \
+          --filter=':- .npmignore' \
+          --filter=':- .ignore' /home/ \
+          /data/backup/zen/home/ 2>&1 >> /var/log/home-backup.log
         echo "Finished Backup at $(date)" >> /var/log/home-backup.log
         echo "" >> /var/log/home-backup.log
         echo "" >> /var/log/home-backup.log

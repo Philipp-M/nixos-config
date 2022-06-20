@@ -21,32 +21,28 @@
     fsType = "vfat";
   };
 
-  fileSystems."/tank" = {
-    device = "tank";
+
+  fileSystems."/data/music" = {
+    device = "data/music";
     fsType = "zfs";
   };
 
-  fileSystems."/tank/backup" = {
-    device = "tank/backup";
+  fileSystems."/data/games" = {
+    device = "data/games";
     fsType = "zfs";
   };
 
-  fileSystems."/tank/media" = {
-    device = "tank/media";
+  fileSystems."/data/backup" = {
+    device = "data/backup";
     fsType = "zfs";
   };
 
-  fileSystems."/tank/games" = {
-    device = "tank/games";
-    fsType = "zfs";
-  };
-
-  fileSystems."/tank/backup/yasnix" = {
-    device = "tank/backup/yasnix";
+  fileSystems."/data/photos" = {
+    device = "data/photos";
     fsType = "zfs";
   };
 
   swapDevices =
-    [{ device = "/dev/disk/by-uuid/ce9405eb-d20b-430f-80dd-adcda01bc5b7"; }];
+    [{ device = "/dev/disk/by-uuid/b2aa2e02-cd4c-40b6-a84c-5e06a19971b2"; }];
 
 }
