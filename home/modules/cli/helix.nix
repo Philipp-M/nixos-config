@@ -137,10 +137,12 @@ in
                 experimental.procAttrMacros = true;
               };
             };
+            solargraph.command = "${solargraph}/bin/solargraph";
             omnisharp = { command = "omnisharp"; args = [ "-l" "Error" "--languageserver" "-z" ]; };
             vls = { command = "${nodePackages.vls}/bin/vls"; };
           };
           language = [
+            { name = "ruby"; file-types = [ "rb" "rake" "rakefile" "irb" "gemfile" "gemspec" "Rakefile" "Gemfile" "Fastfile" "Matchfile" "Pluginfile" "Appfile" ]; }
             { name = "rust"; auto-format = false; language-servers = [ "rust-analyzer" ]; }
             { name = "c-sharp"; language-servers = [ "omnisharp" ]; }
             { name = "typescript"; language-servers = [{ name = "typescript-language-server"; except-features = [ "format" ]; } { name = "efm-lsp-eslint-prettier"; }]; }
