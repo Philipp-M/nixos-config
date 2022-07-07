@@ -340,7 +340,15 @@
 
     # AUDIO
     cantata
-    unstable.yabridge
+    # unstable.yabridge
+    (pkgs.yabridge.override {
+      # temporary fix for 3.8.1
+      boost = pkgs.boost175;
+      pkgsi686Linux = {
+        boost = pkgs.pkgsi686Linux.boost175;
+        xorg.libxcb = pkgs.pkgsi686Linux.xorg.libxcb;
+      };
+    })
     unstable.yabridgectl
     pavucontrol
     unstable.helvum
