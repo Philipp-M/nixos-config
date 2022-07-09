@@ -75,6 +75,7 @@
             home-manager.users.philm = {
               imports = builtins.attrValues homeManagerModules;
               programs.home-manager.enable = true;
+              home.stateVersion = "22.05";
               modules.cli.enable = true;
               modules.gui.enable = true;
               modules.create-directories.enable = true;
