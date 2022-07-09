@@ -206,6 +206,38 @@
         "type": "github"
       }
     },
+    "libplacebo": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1657319881,
+        "narHash": "sha256-MrVQK/3hGNKi5DJpz+gLhrB9VcW5df2l1dr2R1wRKJQ=",
+        "ref": "refs/heads/master",
+        "rev": "e448e5b3257c2356b283b569ae3f277724f9dd4b",
+        "revCount": 1977,
+        "type": "git",
+        "url": "https://code.videolan.org/videolan/libplacebo.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://code.videolan.org/videolan/libplacebo.git"
+      }
+    },
+    "mpv": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1657325963,
+        "narHash": "sha256-mg4ZTSGXU/vnYZK9iM5Vj4N9VeBlhYGkWhb29nPLrRk=",
+        "owner": "mpv-player",
+        "repo": "mpv",
+        "rev": "0044c19f0de29ff752eb708365322b0ec16b53e7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mpv-player",
+        "repo": "mpv",
+        "type": "github"
+      }
+    },
     "musnix": {
       "inputs": {
         "nixpkgs": [
@@ -336,6 +368,8 @@
         "agenix": "agenix",
         "helix": "helix",
         "home-manager": "home-manager",
+        "libplacebo": "libplacebo",
+        "mpv": "mpv",
         "musnix": "musnix",
         "neovim-nightly-overlay": "neovim-nightly-overlay",
         "nixpkgs": "nixpkgs",

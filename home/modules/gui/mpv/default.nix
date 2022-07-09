@@ -1,10 +1,17 @@
-{ ... }:
+{ mpv, libplacebo, ... }:
 { pkgs, lib, config, ... }: {
   options.modules.gui.mpv.enable = lib.mkEnableOption "Enable personal mpv config";
 
   config = lib.mkIf config.modules.gui.mpv.enable {
     programs.mpv = {
       enable = true;
+      package = pkgs.wrapMpv
+        ((pkgs.mpv-unwrapped.override {
+          libplacebo = pkgs.libplacebo.overrideAttrs (old: { src = libplacebo; });
+          ffmpeg = pkgs.ffmpeg_5;
+        }).overrideAttrs (old: { src = mpv; buildInputs = old.buildInputs ++ [ pkgs.xorg.libXpresent ]; }))
+        { };
+
       config = {
         x11-netwm = "yes"; # necessary for xmonads fullscreen
         profile = "gpu-high";
@@ -34,7 +41,7 @@
           x11-bypass-compositor = "yes";
         };
         gpu-high = {
-          vo = "gpu";
+          vo = "gpu-next";
           profile = "gpu-hq";
           video-sync = "display-resample";
           interpolation = "yes";
@@ -44,7 +51,7 @@
           glsl-shader = "" + builtins.path { path = ./FSRCNN_x2_r2_32-0-2.glsl; };
         };
         gpu-low = {
-          vo = "gpu";
+          vo = "gpu-next";
           profile = "gpu-hq";
           video-sync = "display-resample";
           ytdl-format = "bestvideo+bestaudio/best";

@@ -15,6 +15,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     rycee-nur-expressions = { url = "gitlab:rycee/nur-expressions"; flake = false; };
+
+    # temporary to get the 'gpu-next' backend working
+    mpv = { url = "github:mpv-player/mpv"; flake = false; };
+    libplacebo = { url = "git+https://code.videolan.org/videolan/libplacebo.git"; flake = false; };
+
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -25,7 +30,7 @@
     };
   };
 
-  outputs = inputs@{ self, rycee-nur-expressions, home-manager, agenix, helix, ... }:
+  outputs = inputs@{ self, mpv, libplacebo, rycee-nur-expressions, home-manager, agenix, helix, ... }:
     let
       system = "x86_64-linux";
       pkgImport = pkgs:
@@ -52,7 +57,7 @@
         alacritty = import ./home/modules/gui/alacritty { };
         autorandr = import ./home/modules/gui/autorandr.nix { };
         desktop-environment = import ./home/modules/gui/desktop-environment { inherit nixpkgs-unstable; };
-        mpv = import ./home/modules/gui/mpv { };
+        mpv = import ./home/modules/gui/mpv { inherit mpv libplacebo; };
         theme = import ./home/modules/theme.nix { inherit rycee-nur-expressions; };
         mpd = import ./home/modules/mpd.nix { inherit nixpkgs-unstable; };
       };
