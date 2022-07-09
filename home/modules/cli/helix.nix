@@ -219,6 +219,8 @@ in
             k = "move_line_down";
             y = "yank_joined_to_clipboard";
             Y = "yank_main_selection_to_clipboard";
+            n = [ "save_selection" "search_next" ];
+            N = [ "save_selection" "search_prev" ];
             d = [ "yank_joined_to_clipboard" "delete_selection" ];
             p = "paste_clipboard_after";
             P = "paste_clipboard_before";
