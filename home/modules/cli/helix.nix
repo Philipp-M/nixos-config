@@ -3,6 +3,55 @@
 let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.modules.cli.helix;
+  helixPackage = helix.packages.${pkgs.system}.default.overrideAttrs (self: {
+    makeWrapperArgs = with nixpkgs-unstable.pkgs;
+      self.makeWrapperArgs
+        or [
+        "--suffix"
+        "PATH"
+        ":"
+        (lib.makeBinPath [
+          clang-tools
+          cmake-language-server
+          dart
+          xsel
+          haskell-language-server
+          # julia
+          luaformatter
+          taplo-lsp
+          elixir_ls
+          solargraph
+          go
+          gopls
+          texlab
+          python310Packages.python-lsp-server
+          nodePackages.bash-language-server
+          nodePackages.dockerfile-language-server-nodejs
+          # nodePackages.pyright
+          # nodePackages.stylelint
+          nodePackages.svelte-language-server
+          nodePackages.vls
+          nodePackages.vim-language-server
+          nodePackages.vscode-langservers-extracted
+          nodePackages.yaml-language-server
+          ocamlPackages.ocaml-lsp
+          ocamlPackages.reason
+          pkgs.dotnet-sdk
+          pkgs.omnisharp-roslyn
+          pkgs.msbuild
+          ripgrep
+          rnix-lsp
+          java-language-server
+          sumneko-lua-language-server
+          yapf
+          zathura
+          zls
+        ])
+        "--set-default"
+        "RUST_SRC_PATH"
+        "${rustPlatform.rustcSrc}/library"
+      ];
+  });
 in
 {
   options.modules.cli.helix.enable = mkEnableOption "Enable personal helix";
@@ -10,7 +59,7 @@ in
   config = mkIf cfg.enable {
     programs.helix = {
       enable = true;
-      package = helix.packages.x86_64-linux.helix;
+      package = helixPackage;
       themes = {
         base16 = with config.theme.base16.colors;
           let
@@ -137,13 +186,11 @@ in
                 experimental.procAttrMacros = true;
               };
             };
-            solargraph.command = "${solargraph}/bin/solargraph";
             omnisharp = { command = "omnisharp"; args = [ "-l" "Error" "--languageserver" "-z" ]; };
-            vls = { command = "${nodePackages.vls}/bin/vls"; };
           };
           language = [
             { name = "ruby"; file-types = [ "rb" "rake" "rakefile" "irb" "gemfile" "gemspec" "Rakefile" "Gemfile" "Fastfile" "Matchfile" "Pluginfile" "Appfile" ]; }
-            { name = "rust"; auto-format = false; language-servers = [ "rust-analyzer" ]; }
+            { name = "rust"; auto-format = false; file-types = [ "lalrpop" "rs" ]; language-servers = [ "rust-analyzer" ]; }
             { name = "c-sharp"; language-servers = [ "omnisharp" ]; }
             { name = "typescript"; language-servers = [{ name = "typescript-language-server"; except-features = [ "format" ]; } { name = "efm-lsp-eslint-prettier"; }]; }
             { name = "javascript"; language-servers = [{ name = "typescript-language-server"; except-features = [ "format" ]; } { name = "efm-lsp-eslint-prettier"; }]; }
@@ -237,41 +284,5 @@ in
         };
       };
     };
-    # TODO sandbox these packages into helix
-    home.packages = with nixpkgs-unstable.pkgs; [
-      clang-tools
-      cmake-language-server
-      dart
-      fzf
-      xsel
-      haskellPackages.ormolu # haskell formatter
-      # julia
-      luaformatter
-      nixfmt
-      taplo-lsp
-      nodePackages.bash-language-server
-      nodePackages.dockerfile-language-server-nodejs
-      nodePackages.eslint
-      nodePackages.prettier
-      nodePackages.pyright
-      nodePackages.stylelint
-      nodePackages.svelte-language-server
-      nodePackages.vim-language-server
-      nodePackages.vscode-langservers-extracted
-      nodePackages.yaml-language-server
-      ocamlPackages.ocaml-lsp
-      ocamlPackages.reason
-      pkgs.dotnet-sdk
-      pkgs.omnisharp-roslyn
-      pkgs.msbuild
-      ripgrep
-      rnix-lsp
-      java-language-server
-      sumneko-lua-language-server
-      tree-sitter
-      yapf
-      zathura
-      zls
-    ];
   };
 }
