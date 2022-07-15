@@ -18,12 +18,12 @@ let
           haskell-language-server
           # julia
           luaformatter
-          taplo-lsp
           elixir_ls
           solargraph
           go
           gopls
           texlab
+          taplo-cli
           python310Packages.python-lsp-server
           nodePackages.bash-language-server
           nodePackages.dockerfile-language-server-nodejs
