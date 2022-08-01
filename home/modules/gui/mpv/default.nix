@@ -1,4 +1,4 @@
-{ mpv, libplacebo, ... }:
+{ mpv, libplacebo, glad, ... }:
 { pkgs, lib, config, ... }: {
   options.modules.gui.mpv.enable = lib.mkEnableOption "Enable personal mpv config";
 
@@ -7,7 +7,17 @@
       enable = true;
       package = pkgs.wrapMpv
         ((pkgs.mpv-unwrapped.override {
-          libplacebo = pkgs.libplacebo.overrideAttrs (old: { src = libplacebo; });
+          libplacebo = pkgs.libplacebo.overrideAttrs (old: {
+            src = libplacebo;
+            nativeBuildInputs = old.nativeBuildInputs ++ [
+              (pkgs.python3Packages.glad.overrideAttrs
+                (old: {
+                  src = glad;
+                  version = "2.0";
+                  propagatedBuildInputs = [ pkgs.python3Packages.jinja2 pkgs.python3Packages.setuptools ];
+                }))
+            ];
+          });
           ffmpeg = pkgs.ffmpeg_5;
         }).overrideAttrs (old: { src = mpv; buildInputs = old.buildInputs ++ [ pkgs.xorg.libXpresent ]; }))
         { };

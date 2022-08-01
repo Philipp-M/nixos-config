@@ -161,6 +161,23 @@
         "type": "github"
       }
     },
+    "glad": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1651218693,
+        "narHash": "sha256-9dqZup8nwZefdLK3St6EW5HU6GhOMIXh6ZemL15/Aw8=",
+        "owner": "Dav1dde",
+        "repo": "glad",
+        "rev": "b1051403cf81b984f9fc11cc5916adb5afd34766",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Dav1dde",
+        "ref": "glad2",
+        "repo": "glad",
+        "type": "github"
+      }
+    },
     "helix": {
       "inputs": {
         "nixCargoIntegration": "nixCargoIntegration",
@@ -366,6 +383,7 @@
     "root": {
       "inputs": {
         "agenix": "agenix",
+        "glad": "glad",
         "helix": "helix",
         "home-manager": "home-manager",
         "libplacebo": "libplacebo",

@@ -19,6 +19,7 @@
     # temporary to get the 'gpu-next' backend working
     mpv = { url = "github:mpv-player/mpv"; flake = false; };
     libplacebo = { url = "git+https://code.videolan.org/videolan/libplacebo.git"; flake = false; };
+    glad = { url = "github:Dav1dde/glad/glad2"; flake = false; };
 
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
@@ -26,11 +27,12 @@
     };
     home-manager = {
       url = "github:Philipp-M/home-manager/personal";
+      # url = "/home/philm/dev/personal/desktop-environment/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = inputs@{ self, mpv, libplacebo, rycee-nur-expressions, home-manager, agenix, helix, ... }:
+  outputs = inputs@{ self, mpv, libplacebo, glad, rycee-nur-expressions, home-manager, agenix, helix, ... }:
     let
       system = "x86_64-linux";
       pkgImport = pkgs:
@@ -57,7 +59,7 @@
         alacritty = import ./home/modules/gui/alacritty { };
         autorandr = import ./home/modules/gui/autorandr.nix { };
         desktop-environment = import ./home/modules/gui/desktop-environment { inherit nixpkgs-unstable; };
-        mpv = import ./home/modules/gui/mpv { inherit mpv libplacebo; };
+        mpv = import ./home/modules/gui/mpv { inherit mpv libplacebo glad; };
         theme = import ./home/modules/theme.nix { inherit rycee-nur-expressions; };
         mpd = import ./home/modules/mpd.nix { inherit nixpkgs-unstable; };
       };
