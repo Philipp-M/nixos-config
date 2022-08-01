@@ -177,7 +177,8 @@ in
               config.documentFormatting = false;
             };
             rust-analyzer = {
-              command = "rust-analyzer";
+              command = "${steam-run}/bin/steam-run";
+              args = [ "rust-analyzer" ];
               config.rust-analyzer = {
                 cargo.loadOutDirsFromCheck = true;
                 checkOnSave.command = "clippy";
