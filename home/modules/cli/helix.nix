@@ -177,8 +177,8 @@ in
               config.documentFormatting = false;
             };
             rust-analyzer = {
-              command = "${steam-run}/bin/steam-run";
-              args = [ "rust-analyzer" ];
+              command = "${pkgs.bash}/bin/bash";
+              args = [ "-c" "${steam-run}/bin/steam-run env PKG_CONFIG_PATH=$PKG_CONFIG_PATH rust-analyzer" ];
               config.rust-analyzer = {
                 cargo.loadOutDirsFromCheck = true;
                 checkOnSave.command = "clippy";
