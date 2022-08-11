@@ -9,12 +9,26 @@ let inherit (lib) concatStrings mapAttrsToList mkOption types; in
   options.theme = {
     base16-theme = mkOption {
       type = types.attrs;
-      default = config.lib.theme.base16.fromYamlFile (
-        builtins.fetchurl {
-          url = "https://raw.githubusercontent.com/chriskempson/base16-tomorrow-scheme/master/tomorrow-night.yaml";
-          sha256 = "sha256:0mc699fps18lk9dl154vpcdh0in62215yfq9n4mwg4213j06488z";
-        }
-      );
+      default = config.lib.theme.base16.fromYamlFile (builtins.toFile "tomorrow-night.yaml" ''
+        scheme: "Tomorrow Night"
+        author: "Chris Kempson (http://chriskempson.com)"
+        base00: "1d1f21"
+        base01: "282a2e"
+        base02: "373b41"
+        base03: "969896"
+        base04: "b4b7b4"
+        base05: "c5c8c6"
+        base06: "e0e0e0"
+        base07: "ffffff"
+        base08: "cc6666"
+        base09: "de935f"
+        base0A: "f0c674"
+        base0B: "b5bd68"
+        base0C: "8abeb7"
+        base0D: "81a2be"
+        base0E: "b294bb"
+        base0F: "a3685a"
+      '');
     };
     extraParams = mkOption {
       type = types.attrsOf types.string;
