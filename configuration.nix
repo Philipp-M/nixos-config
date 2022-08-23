@@ -14,6 +14,10 @@
     autoOptimiseStore = true;
   };
 
+  nixpkgs.config.permittedInsecurePackages = [
+    "libdwarf-20181024"
+  ];
+
   # Use the systemd-boot EFI boot loader.
   boot.supportedFilesystems = [ "ecryptfs" ];
   boot.loader.systemd-boot.enable = true;
