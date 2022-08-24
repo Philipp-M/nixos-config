@@ -24,6 +24,7 @@ let
           gopls
           texlab
           taplo-cli
+          pgformatter
           python310Packages.python-lsp-server
           nodePackages.bash-language-server
           nodePackages.dockerfile-language-server-nodejs
@@ -197,7 +198,8 @@ in
             { name = "javascript"; language-servers = [{ name = "typescript-language-server"; except-features = [ "format" ]; } { name = "efm-lsp-eslint-prettier"; }]; }
             { name = "jsx"; language-servers = [{ name = "typescript-language-server"; except-features = [ "format" ]; } { name = "efm-lsp-eslint-prettier"; }]; }
             { name = "tsx"; language-servers = [{ name = "typescript-language-server"; except-features = [ "format" ]; } { name = "efm-lsp-eslint-prettier"; }]; }
-            { name = "vue"; language-servers = [{ name = "vls"; except-features = [ "format" ]; } { name = "efm-lsp-eslint-prettier"; }]; }
+            { name = "vue"; language-servers = [{ name = "vuels"; except-features = [ "format" ]; } { name = "efm-lsp-eslint-prettier"; }]; }
+            { name = "sql"; formatter.command = "pg_format"; }
           ];
         };
       settings = {
