@@ -205,6 +205,7 @@ in
         theme = "base16";
         editor = {
           indent-guides.render = true;
+          auto-pairs = false;
           lsp.display-messages = true;
           completion-trigger-len = 1;
           line-number = "relative";
@@ -247,6 +248,7 @@ in
               space = "file_picker";
               n = "global_search";
               f = ":format";
+              c = "toggle_comments";
               t = {
                 t = "goto_definition";
                 i = "goto_implementation";
