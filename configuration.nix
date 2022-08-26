@@ -188,8 +188,7 @@
     wantedBy = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" "suspend-then-hibernate.target" ];
     serviceConfig = {
       Type = "simple";
-      User = "philm"; # Unfortunately this needs to be hardcoded since user services don't work for this,
-                      # see: https://unix.stackexchange.com/a/492497
+      User = "philm"; # Unfortunately this needs to be hardcoded since user services don't work for this, see: https://unix.stackexchange.com/a/492497
     };
     script = ''
       XDG_RUNTIME_DIR=/run/user/$UID DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$UID/bus ${pkgs.systemd}/bin/systemctl --no-block --user restart setup-keyboard.service
