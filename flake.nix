@@ -6,6 +6,10 @@
       url = "github:Philipp-M/helix/personal";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     musnix = {
       url = "github:musnix/musnix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,7 +36,7 @@
     };
   };
 
-  outputs = inputs@{ self, mpv, libplacebo, glad, rycee-nur-expressions, home-manager, agenix, helix, ... }:
+  outputs = inputs@{ rust-overlay, mpv, libplacebo, glad, rycee-nur-expressions, home-manager, agenix, helix, ... }:
     let
       system = "x86_64-linux";
       pkgImport = pkgs:
@@ -69,7 +73,8 @@
         modules = [
           home-manager.nixosModules.home-manager
           inputs.musnix.nixosModule
-          {
+          ({pkgs, ...}: {
+            nixpkgs.overlays = [ rust-overlay.overlays.default ];
             nix.registry.nixpkgs.flake = inputs.nixpkgs;
             nix.registry.nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
             home-manager.useUserPackages = true;
@@ -82,7 +87,7 @@
               modules.gui.enable = true;
               modules.create-directories.enable = true;
             };
-          }
+          })
           extraConfig
           path
         ];

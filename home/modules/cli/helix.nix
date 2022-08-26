@@ -25,7 +25,7 @@ let
           texlab
           taplo-cli
           pgformatter
-          python310Packages.python-lsp-server
+          python3Packages.python-lsp-server
           nodePackages.bash-language-server
           nodePackages.dockerfile-language-server-nodejs
           # nodePackages.pyright
@@ -178,13 +178,12 @@ in
               config.documentFormatting = false;
             };
             rust-analyzer = {
-              command = "${pkgs.bash}/bin/bash";
-              args = [ "-c" "${steam-run}/bin/steam-run env PKG_CONFIG_PATH=$PKG_CONFIG_PATH rust-analyzer" ];
               config.rust-analyzer = {
                 cargo.loadOutDirsFromCheck = true;
                 checkOnSave.command = "clippy";
                 procMacro.enable = true;
                 lens = { references = true; methodReferences = true; };
+                completion.autoimport.enable = true;
                 experimental.procAttrMacros = true;
               };
             };

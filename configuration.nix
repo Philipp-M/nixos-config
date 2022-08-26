@@ -267,6 +267,7 @@
     pijul
     gnumake
     jdk
+    ghc
     llvmPackages.bintools
     neovim
     kakoune
@@ -282,7 +283,7 @@
     nodejs_latest
     nodePackages.node2nix
     pkg-config
-    rustup
+    # rustup
     sqlitebrowser
     zig
     wasm-pack
@@ -442,6 +443,8 @@
     adb-sync
     udiskie
     tree-sitter
+    (rust-bin.selectLatestNightlyWith (toolchain: toolchain.default))
+    rust-bin.nightly.latest.rust-analyzer
   ];
 
   fonts.fonts = with pkgs; [ font-awesome nerdfonts google-fonts ];
