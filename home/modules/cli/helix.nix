@@ -5,18 +5,18 @@ let
   cfg = config.modules.cli.helix;
   helixPackage = helix.packages.${pkgs.system}.default.overrideAttrs (self: {
     makeWrapperArgs = with nixpkgs-unstable.pkgs;
-      self.makeWrapperArgs
-        or [
+      self.makeWrapperArgs or [ ] ++ [
         "--suffix"
         "PATH"
         ":"
         (lib.makeBinPath [
           clang-tools
           cmake-language-server
+          jsonnet-language-server
           dart
           xsel
           haskell-language-server
-          # julia
+          julia-bin
           luaformatter
           elixir_ls
           solargraph
@@ -28,8 +28,8 @@ let
           python3Packages.python-lsp-server
           nodePackages.bash-language-server
           nodePackages.dockerfile-language-server-nodejs
-          # nodePackages.pyright
-          # nodePackages.stylelint
+          nodePackages.pyright
+          nodePackages.stylelint
           nodePackages.svelte-language-server
           nodePackages.vls
           nodePackages.vim-language-server
@@ -64,7 +64,6 @@ in
       themes = {
         base16 = with config.theme.base16.colors;
           let
-            transparent = "none";
             gray = "#${base03.hex.rgb}";
             med-gray = "#${base02.hex.rgb}";
             dark-gray = "#${base01.hex.rgb}";
@@ -80,10 +79,10 @@ in
             brown = "#${base0F.hex.rgb}";
           in
           {
-            "ui.menu" = transparent;
+            "ui.menu" = { }; # transparent
             "ui.menu.selected" = { modifiers = [ "reversed" ]; };
             "ui.linenr" = { fg = gray; bg = dark-gray; };
-            "ui.popup" = { bg = transparent; };
+            "ui.popup" = { }; # transparent
             "ui.linenr.selected" = { fg = white; bg = black; modifiers = [ "bold" ]; };
             "ui.selection" = { fg = black; bg = blue; };
             "ui.selection.primary" = { bg = med-gray; };
@@ -166,7 +165,8 @@ in
                       lintIgnoreExitCode = true;
                       lintStdin = true;
                       lintFormats = [ "%f:%l:%c: %m" ];
-                      formatCommand = "${prettierCmd} --stdin-filepath \${INPUT} | ${eslintCmd} --fix-dry-run -f json --stdin --stdin-filename=\${INPUT} | ${jq}/bin/jq -r \".[0].output\"";
+                      # formatCommand = "${prettierCmd} --stdin-filepath \${INPUT} | ${eslintCmd} --fix-dry-run -f json --stdin --stdin-filename=\${INPUT} | ${jq}/bin/jq -r \".[0].output\"";
+                      formatCommand = "${prettierCmd} --stdin-filepath \${INPUT}";
                       formatStdin = true;
                     }
                   ]);

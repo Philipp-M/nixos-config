@@ -5,13 +5,25 @@
 { config, pkgs, options, lib, nixpkgs-unstable, ... }:
 {
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.overlays = [
+    # expensive since this invalidates the cache for various apps like chromium etc.
+    (final: prev: { xdg-utils = prev.xdg-utils.override { mimiSupport = true; }; })
+  ];
 
   nix = {
     package = pkgs.nixUnstable;
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
-    autoOptimiseStore = true;
+    settings = {
+      auto-optimise-store = true;
+      trusted-users = [ "root" "@wheel" ];
+      substituters = [ "https://cache.nixos.org/" "https://cache.ngi0.nixos.org" "https://cache.iog.io" "https://nix-cache.mildenberger.me" ];
+      trusted-public-keys = [
+        "nix-cache.mildenberger.me:dcNVw3YMUReIGC5JsMN4Ifv9xjbQn7rkDF7gJIO0ZoI="
+        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        "cache.ngi0.nixos.org-1:KqH5CBLNSyX184S9BKZJo1LxrxJ9ltnY2uAs5c/f1MA="
+        "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ="
+      ];
+      experimental-features = [ "nix-command" "flakes" "ca-derivations" ];
+    };
   };
 
   nixpkgs.config.permittedInsecurePackages = [

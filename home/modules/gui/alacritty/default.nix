@@ -3,6 +3,9 @@
   options.modules.gui.alacritty.enable = lib.mkEnableOption "Enable personal alacritty config";
 
   config = lib.mkIf config.modules.gui.alacritty.enable {
+
+    # set alacritty as the default terminal if enabled
+    home.sessionVariables.TERMINAL = "alacritty";
     programs.alacritty = with config.theme.extraParams; {
       enable = true;
       package = pkgs.callPackage ./alacritty-with-ligatures.nix { };
