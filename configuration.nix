@@ -167,6 +167,13 @@
     };
   };
 
+  systemd.user.services."sync-nix-cache" = {
+    path = [ config.programs.ssh.package ];
+    enable = true;
+    script = "${config.nix.package}/bin/nix copy -s --to ssh://nix-cache.mildenberger.me /run/current-system";
+    startAt = "hourly";
+  };
+
   systemd.user.services."setup-keyboard" = {
     enable = true;
     description = "Load my keyboard modifications";
