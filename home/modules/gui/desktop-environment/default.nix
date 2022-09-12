@@ -149,22 +149,35 @@
       };
     };
 
-    xdg.mimeApps = {
-      enable = true;
-      defaultApplications = {
-        "application/pdf" = "org.pwmt.zathura.desktop";
-        "image/png" = "feh.desktop";
-        "image/jpeg" = "feh.desktop";
-        "video/x-matroska" = "mpv.desktop";
-        "video/mp4" = "mpv.desktop";
-        "video/webm" = "mpv.desktop";
-        "text/html" = "firefox.desktop";
-        "x-scheme-handler/http" = "firefox.desktop";
-        "x-scheme-handler/https" = "firefox.desktop";
-        "x-scheme-handler/about" = "firefox.desktop";
-        "x-scheme-handler/unknown" = "firefox.desktop";
-        "application/x-bittorrent" = "qbittorent.desktop";
-        "x-scheme-handler/magnet" = "qbittorent.desktop";
+    # "overwrite" xdg-open with handlr
+    home.packages = [ (pkgs.writeShellScriptBin "feh" "${pkgs.feh}/bin/feh --conversion-timeout 5 \"$@\"") ];
+
+    xdg = {
+      mimeApps = {
+        enable = true;
+        defaultApplications = {
+          "application/pdf" = "org.pwmt.zathura.desktop";
+          "image/*" = "feh.desktop";
+          "video/*" = "mpv.desktop";
+          "text/html" = "firefox.desktop";
+          "text/*" = "helix.desktop";
+          "x-scheme-handler/http" = "firefox.desktop";
+          "x-scheme-handler/https" = "firefox.desktop";
+          "x-scheme-handler/about" = "firefox.desktop";
+          "x-scheme-handler/unknown" = "firefox.desktop";
+          "application/x-bittorrent" = "qbittorent.desktop";
+          "x-scheme-handler/magnet" = "qbittorent.desktop";
+        };
+      };
+      desktopEntries = {
+        helix = {
+          name = "Helix Editor";
+          genericName = "Helix Editor";
+          exec = "alacritty --title Helix --class helix -e hx %F";
+          terminal = false;
+          categories = [ "Application" "Network" "WebBrowser" ];
+          # mimeType = [ "text/*" ];
+        };
       };
     };
 

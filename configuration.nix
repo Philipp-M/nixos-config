@@ -7,7 +7,15 @@
   nixpkgs.config.allowUnfree = true;
   nixpkgs.overlays = [
     # expensive since this invalidates the cache for various apps like chromium etc.
-    (final: prev: { xdg-utils = prev.xdg-utils.override { mimiSupport = true; }; })
+    # (final: prev: { xdg-utils = prev.xdg-utils.override { mimiSupport = true; }; })
+    (final: prev: {
+      xdg-utils = prev.xdg-utils.overrideAttrs (oldAttrs: {
+        postInstall = oldAttrs.postInstall + ''
+          # "overwrite" xdg-open with handlr
+          cp ${pkgs.writeShellScriptBin "xdg-open" "${pkgs.handlr}/bin/handlr open \"$@\""}/bin/xdg-open $out/bin/xdg-open
+        '';
+      });
+    })
   ];
 
   nix = {
@@ -439,7 +447,7 @@
     # arion
     filezilla
     scrot
-    feh # to view images in terminal
+    feh # to view images in terminal wrapped in home.packages with a script for svg support
     gwenview
     smartmontools
     rdfind
