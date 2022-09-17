@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, options, lib, nixpkgs-unstable, ... }:
+{ config, pkgs, options, lib, nixpkgs-unstable, inputs, ... }:
 {
   nixpkgs.config.allowUnfree = true;
   nixpkgs.overlays = [
@@ -167,66 +167,46 @@
     };
   };
 
+  services.kanata = {
+    enable = true;
+    package = pkgs.rustPlatform.buildRustPackage {
+      pname = "kanata";
+      version = "1.0.8-git";
+      src = inputs.kanata;
+      cargoHash = "sha256-dGS9jI0Sb184NYF9Pahf5HNKnQdjK/T/wwaLUxoDyXQ=";
+      buildFeatures = [ "cmd" ];
+    };
+    keyboards.redox = {
+      # devices are configured in each /machines/<machine>/default.nix
+      # TODO extend kanata to automatically recognize input devices, autorestart/map devices if they connect/disconnect etc.
+      config = ''
+        (defsrc
+          mlft mrgt mmid
+          esc  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+          tab  q    w    f    p    g    j    l    u    y    ;    [    ]    \
+          caps a    r    s    t    d    h    n    e    i    o    '    ret
+          lsft z    x    c    v    b    k    m    ,    .    /    rsft
+          lctl lmet lalt           spc            ralt rmet cmp rctl
+        )
+        (deflayer colemak
+          mlft mrgt mmid
+          esc  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+          @xcp q    w    f    p    g    j    l    u    y    ;    [    ]    \
+          caps a    r    s    t    d    h    n    e    i    o    '    ret
+          lsft z    x    c    v    b    k    m    ,    .    /    rsft
+          lctl lmet lalt           spc            ralt rmet cmp rctl
+        )
+        (defalias xcp (tap-hold-press 300 300 tab lmet))
+      '';
+    };
+  };
+
   systemd.user.services."sync-nix-cache" = {
     path = [ config.programs.ssh.package ];
     enable = true;
     script = "${config.nix.package}/bin/nix copy -s --to ssh://nix-cache.mildenberger.me /run/current-system";
     startAt = "hourly";
   };
-
-  systemd.user.services."setup-keyboard" = {
-    enable = true;
-    description = "Load my keyboard modifications";
-    wantedBy = [ "graphical-session.target" ];
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${pkgs.bash}/bin/bash ${
-      pkgs.writeScript "setup-keyboard.sh" ''
-
-            #!${pkgs.stdenv.shell}
-
-            sleep 0.2;
-
-            # Stop previous xcape processes, otherwise xcape is launched multiple times
-            # And buttons get implemented multiple times
-            ${pkgs.killall}/bin/killall xcape
-
-            # Remap Escape to 'Hyper_L' for an extra 'hybrid' modifier for xmonad and other applications that use Super
-            # Caps Lock is useless anyway, so remap it to 'Escape' to provide comfort in vim...
-            # Unfortunately Alacritty (or more precisely winit) has a bug with xmodmap modifier remappings...
-            ${pkgs.xorg.xmodmap}/bin/xmodmap  \
-                    -e 'keycode 23 = Hyper_L'  \
-                    -e 'clear Lock'           \
-                    -e 'keycode 66 = Escape' \
-                    -e 'keycode any = Tab' \
-            # Currently the service xcape in home-manager doesn't work correctly
-            # (my guess is because xcape is started before the script above)
-            # The following line is used for reenabling Escape if it is used on its own (single tap which takes under 500ms)
-            ${pkgs.xcape}/bin/xcape -d -e 'Hyper_L=Tab'
-          ''
-      }";
-    };
-  };
-  
-  systemd.services."restart-setup-keyboard-after-suspend" = {
-    enable = true;
-    description = "restarts setup-keyboard after resume because it xcape seems to have problems sometimes";
-    after = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" "suspend-then-hibernate.target" ];
-    wantedBy = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" "suspend-then-hibernate.target" ];
-    serviceConfig = {
-      Type = "simple";
-      User = "philm"; # Unfortunately this needs to be hardcoded since user services don't work for this, see: https://unix.stackexchange.com/a/492497
-    };
-    script = ''
-      XDG_RUNTIME_DIR=/run/user/$UID DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$UID/bus ${pkgs.systemd}/bin/systemctl --no-block --user restart setup-keyboard.service
-    '';
-  };
-
-  # aweful hack to enable the systemd service setup-keyboard, which maps super to tab if pressed
-  services.udev.extraRules = ''
-    SUBSYSTEM=="input", ENV{LED}!="", ENV{ID_INPUT_KEYBOARD}=="1", ACTION=="add", TAG+="systemd", ENV{SYSTEMD_USER_WANTS}+="setup-keyboard.service"
-    SUBSYSTEM=="input", ENV{LED}!="", ENV{ID_INPUT_KEYBOARD}=="1", ACTION=="remove", TAG+="systemd", RUN+="${pkgs.killall}/bin/killall -SIGKILL xcape"
-  '';
 
   # gtk themes (home-manager more specifically) seem to have problems without it
   services.dbus.packages = [ pkgs.dconf ];
@@ -245,11 +225,14 @@
     isNormalUser = true;
     shell = pkgs.fish;
     extraGroups = [
+      "input"
+      "uinput"
       "audio"
       "dialout"
       "networkmanager"
       "systemd-journal"
       "adbusers"
+      "realtime"
       "video"
       "power"
       "wheel" # Enable ‘sudo’ for the user.

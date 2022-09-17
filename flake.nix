@@ -2,22 +2,27 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs";
+
     helix = {
       url = "github:Philipp-M/helix/personal";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+
     musnix = {
       url = "github:musnix/musnix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
     agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
     rycee-nur-expressions = { url = "gitlab:rycee/nur-expressions"; flake = false; };
 
     # temporary to get the 'gpu-next' backend working
@@ -29,11 +34,14 @@
       url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+
     home-manager = {
       url = "github:Philipp-M/home-manager/personal";
       # url = "/home/philm/dev/personal/desktop-environment/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    kanata = { url = "github:jtroo/kanata"; flake = false; };
   };
 
   outputs = inputs@{ rust-overlay, mpv, libplacebo, glad, rycee-nur-expressions, home-manager, agenix, helix, ... }:
@@ -88,6 +96,12 @@
               modules.create-directories.enable = true;
             };
           })
+          # enable kanata module from nixos-unstable
+          {
+            # not yet in stable but better be safe...
+            disabledModules = [ "services/hardware/kanata.nix" ];
+            imports = [ "${inputs.nixpkgs-unstable}/nixos/modules/services/hardware/kanata.nix" ];
+          }
           extraConfig
           path
         ];
@@ -99,6 +113,7 @@
         import ./shell.nix { pkgs = nixpkgs-stable; agenix = inputs.agenix.defaultPackage."${system}"; };
 
       inherit homeManagerModules;
+
       nixosConfigurations = {
         zen = mkHost { path = ./machines/zen; };
         shadow = mkHost { path = ./machines/shadow; };

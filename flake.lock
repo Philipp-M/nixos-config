@@ -233,6 +233,22 @@
         "type": "github"
       }
     },
+    "kanata": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1663300748,
+        "narHash": "sha256-R3UrZvjF/tMWzfJHCowUoEwSKq0MfQkDE11s5wqLJDc=",
+        "owner": "jtroo",
+        "repo": "kanata",
+        "rev": "30d64e8ee9fc6d30866a2f0db4257b49b8ebb8d4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jtroo",
+        "repo": "kanata",
+        "type": "github"
+      }
+    },
     "libplacebo": {
       "flake": false,
       "locked": {
@@ -395,6 +411,7 @@
         "glad": "glad",
         "helix": "helix",
         "home-manager": "home-manager",
+        "kanata": "kanata",
         "libplacebo": "libplacebo",
         "mpv": "mpv",
         "musnix": "musnix",

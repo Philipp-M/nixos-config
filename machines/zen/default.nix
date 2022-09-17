@@ -50,6 +50,11 @@
   };
   powerManagement.cpuFreqGovernor = "performance";
 
+  services.kanata.keyboards.redox.devices = [
+    "/dev/input/by-id/usb-Falbatech_The_Redox_Keyboard-event-kbd" # redox keyboard
+    "/dev/input/by-id/usb-Logitech_USB_Receiver-if02-event-mouse" # mouse
+  ];
+
   services.pipewire.config = {
     pipewire = {
       "context.properties" = {
