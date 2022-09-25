@@ -1,10 +1,10 @@
 { stdenv
 , lib
 , fetchFromGitHub
+, fetchpatch
 , rustPlatform
 
 , cmake
-, gzip
 , installShellFiles
 , makeWrapper
 , ncurses
@@ -24,14 +24,6 @@
 , libxkbcommon
 , wayland
 , xdg-utils
-
-  # Darwin Frameworks
-, AppKit ? null
-, CoreGraphics ? null
-, CoreServices ? null
-, CoreText ? null
-, Foundation ? null
-, OpenGL ? null
 }:
 let
   rpathLibs = [
@@ -53,43 +45,41 @@ let
 in
 rustPlatform.buildRustPackage rec {
   pname = "alacritty";
-  version = "0.7.2-dev-ligatures-mod-fix";
+  version = "0.10.0-dev-ligatures";
 
   src = fetchFromGitHub {
-    owner = "Philipp-M";
+    owner = "fee1-dead";
     repo = pname;
-    rev = "0d999b855826964523adcfb21b098e8299c622cf";
-    sha256 = "sha256-uVCT8aBiiBG33OUJCSM3bSAL02W6Qs13swZcgKJdUHM=";
+    rev = "796cdfeeaae730b2224e910bf9f1dfa81abcfd51";
+    sha256 = "sha256-Vm/pcVDh6CcR2Sl3mrIvqWF+SmX4wqtLPEeQ5GcepPA=";
   };
 
-  cargoSha256 = "sha256:1z9pdsb13q0vlmx4wcbmsgd3mqdjgaxbvwc1xhjakcnlylq7aw5m";
+
+  cargoSha256 = "sha256-0Eqh/pKQPwiiSvOrOF72+C4BZFUP0HoRzq0ZC8XCa2s=";
 
   nativeBuildInputs = [
     cmake
-    gzip
     installShellFiles
     makeWrapper
     ncurses
     pkg-config
     python3
   ];
+  
+  # skip tests because:
+  # error: Found argument '--test-threads' which wasn't expected, or isn't valid in this context
+  doCheck = false;
 
-  buildInputs = rpathLibs
-    ++ lib.optionals stdenv.isDarwin [
-    AppKit
-    CoreGraphics
-    CoreServices
-    CoreText
-    Foundation
-    OpenGL
-  ];
+  buildInputs = rpathLibs;
 
   outputs = [ "out" "terminfo" ];
 
   postPatch = ''
-    substituteInPlace alacritty/src/config/mouse.rs \
+    substituteInPlace alacritty/src/config/ui_config.rs \
       --replace xdg-open ${xdg-utils}/bin/xdg-open
   '';
+
+  checkFlags = [ "--skip=term::test::mock_term" ]; # broken on aarch64
 
   postInstall = (
     if stdenv.isDarwin then ''
@@ -98,6 +88,7 @@ rustPlatform.buildRustPackage rec {
       ln -s $out/bin $out/Applications/Alacritty.app/Contents/MacOS
     '' else ''
       install -D extra/linux/Alacritty.desktop -t $out/share/applications/
+      install -D extra/linux/io.alacritty.Alacritty.appdata.xml -t $out/share/appdata/
       install -D extra/logo/compat/alacritty-term.svg $out/share/icons/hicolor/scalable/apps/Alacritty.svg
 
       # patchelf generates an ELF that binutils' "strip" doesn't like:
@@ -115,6 +106,7 @@ rustPlatform.buildRustPackage rec {
 
     install -dm 755 "$out/share/man/man1"
     gzip -c extra/alacritty.man > "$out/share/man/man1/alacritty.1.gz"
+    gzip -c extra/alacritty-msg.man > "$out/share/man/man1/alacritty-msg.1.gz"
 
     install -Dm 644 alacritty.yml $out/share/doc/alacritty.yml
 
@@ -126,11 +118,14 @@ rustPlatform.buildRustPackage rec {
 
   dontPatchELF = true;
 
+  # passthru.tests.test = nixosTests.terminal-emulators.alacritty;
+
   meta = with lib; {
     description = "A cross-platform, GPU-accelerated terminal emulator";
     homepage = "https://github.com/alacritty/alacritty";
     license = licenses.asl20;
-    maintainers = with maintainers; [ Br1ght0ne mic92 cole-h ma27 ];
+    maintainers = with maintainers; [ Br1ght0ne mic92 ma27 ];
     platforms = platforms.unix;
+    changelog = "https://github.com/alacritty/alacritty/blob/v${version}/CHANGELOG.md";
   };
 }
