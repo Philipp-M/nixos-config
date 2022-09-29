@@ -340,7 +340,7 @@
     unzip
     b3sum
     jq
-    youtube-dl
+    unstable.youtube-dl
     zip
     unrar
     p7zip
@@ -351,22 +351,15 @@
     krita
     gimp
     inkscape
+    exiftool
 
     # AUDIO
     cantata
-    # unstable.yabridge
-    (pkgs.yabridge.override {
-      # temporary fix for 3.8.1
-      boost = pkgs.boost175;
-      pkgsi686Linux = {
-        boost = pkgs.pkgsi686Linux.boost175;
-        xorg.libxcb = pkgs.pkgsi686Linux.xorg.libxcb;
-      };
-    })
+    unstable.yabridge
     unstable.yabridgectl
     pavucontrol
     unstable.helvum
-    ffmpeg-full
+    unstable.ffmpeg_5-full
     flacon
     unstable.bitwig-studio
 

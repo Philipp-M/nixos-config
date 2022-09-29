@@ -1,4 +1,4 @@
-{ nixpkgs-unstable, helix, ... }:
+{ nixpkgs-unstable, helix, nil, ... }:
 { pkgs, lib, config, ... }:
 let
   inherit (lib) mkEnableOption mkIf;
@@ -36,6 +36,8 @@ let
           nodePackages.vscode-langservers-extracted
           nodePackages.yaml-language-server
           ocamlPackages.ocaml-lsp
+          ocamlPackages.dune_3
+          opam
           ocamlPackages.reason
           pkgs.dotnet-sdk
           pkgs.omnisharp-roslyn
@@ -177,6 +179,10 @@ in
               args = [ "--stdio" "--tsserver-path=${nodePackages.typescript}/lib/node_modules/typescript/lib" ];
               config.documentFormatting = false;
             };
+            nil = {
+              command = "${nil.packages.x86_64-linux.default}/bin/nil";
+              config.nil.formatting.command = [ "${nixpkgs-fmt}/bin/nixpkgs-fmt" ];
+            };
             rust-analyzer = {
               config.rust-analyzer = {
                 cargo.loadOutDirsFromCheck = true;
@@ -199,6 +205,7 @@ in
             { name = "tsx"; language-servers = [{ name = "typescript-language-server"; except-features = [ "format" ]; } { name = "efm-lsp-eslint-prettier"; }]; }
             { name = "vue"; language-servers = [{ name = "vuels"; except-features = [ "format" ]; } { name = "efm-lsp-eslint-prettier"; }]; }
             { name = "sql"; formatter.command = "pg_format"; }
+            { name = "nix"; language-servers = [ "nil" ]; }
           ];
         };
       settings = {

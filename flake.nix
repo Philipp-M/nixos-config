@@ -13,6 +13,11 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
+    nil = {
+      url = "github:oxalica/nil";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
     musnix = {
       url = "github:musnix/musnix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -44,13 +49,13 @@
     kanata = { url = "github:jtroo/kanata"; flake = false; };
   };
 
-  outputs = inputs@{ rust-overlay, mpv, libplacebo, glad, rycee-nur-expressions, home-manager, agenix, helix, ... }:
+  outputs = inputs@{ rust-overlay, mpv, libplacebo, glad, rycee-nur-expressions, home-manager, agenix, helix, nil, ... }:
     let
       system = "x86_64-linux";
       pkgImport = pkgs:
         import pkgs {
           inherit system;
-          overlays = [ inputs.neovim-nightly-overlay.overlay ];
+          overlays = [ inputs.neovim-nightly-overlay.overlay rust-overlay.overlays.default ];
           config.allowUnfree = true;
         };
       nixpkgs-stable = pkgImport inputs.nixpkgs;
@@ -62,7 +67,7 @@
         fish = import ./home/modules/cli/fish.nix { };
         git = import ./home/modules/cli/git.nix { };
         neovim = import ./home/modules/cli/neovim { inherit nixpkgs-unstable; };
-        helix = import ./home/modules/cli/helix.nix { inherit nixpkgs-unstable helix; };
+        helix = import ./home/modules/cli/helix.nix { inherit nixpkgs-unstable helix nil; };
         ssh = import ./home/modules/cli/ssh.nix { };
         starship = import ./home/modules/cli/starship.nix { };
         tmux = import ./home/modules/cli/tmux.nix { };
@@ -81,7 +86,7 @@
         modules = [
           home-manager.nixosModules.home-manager
           inputs.musnix.nixosModule
-          ({pkgs, ...}: {
+          ({ pkgs, ... }: {
             nixpkgs.overlays = [ rust-overlay.overlays.default ];
             nix.registry.nixpkgs.flake = inputs.nixpkgs;
             nix.registry.nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
