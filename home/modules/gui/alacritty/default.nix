@@ -5,7 +5,7 @@
   config = lib.mkIf config.modules.gui.alacritty.enable {
 
     # set alacritty as the default terminal if enabled
-    home.sessionVariables.TERMINAL = "alacritty";
+    # home.sessionVariables.TERMINAL = "alacritty";
     programs.alacritty = with config.theme.extraParams; {
       enable = true;
       package = pkgs.callPackage ./alacritty-with-ligatures.nix { };
@@ -16,7 +16,7 @@
           multiplier = 5;
         };
         custom_cursor_colors = false;
-        background_opacity = builtins.fromJSON alpha;
+        window.opacity = builtins.fromJSON alpha;
         font.size = 18;
         font.normal.family = fontname;
         font.ligatures = true;

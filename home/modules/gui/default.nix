@@ -7,6 +7,7 @@
   config = lib.mkIf config.modules.gui.enable {
     modules.gui = {
       alacritty.enable = true;
+      kitty.enable = true;
       autorandr.enable = true;
       desktop-environment.enable = true;
       firefox.enable = true;

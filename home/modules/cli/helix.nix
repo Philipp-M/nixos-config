@@ -115,7 +115,10 @@ in
             "diff.plus" = green;
             "diff.delta" = yellow;
             "diff.minus" = red;
-            "diagnostic" = { modifiers = [ "underlined" ]; };
+            "diagnostic.info" = { underline_color = "blue"; underline_style = "line"; };
+            "diagnostic.hint" = { underline_color = "green"; underline_style = "line"; };
+            "diagnostic.warning" = { underline_color = "yellow"; underline_style = "line"; };
+            "diagnostic.error" = { underline_color = "red"; underline_style = "line"; };
             "ui.gutter" = { bg = black; };
             "info" = blue;
             "hint" = gray;

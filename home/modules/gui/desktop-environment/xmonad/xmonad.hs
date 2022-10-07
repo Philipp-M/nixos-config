@@ -84,7 +84,7 @@ myKeybindings =
     ("<XF86AudioPlay>", spawn "mpc toggle")
   ]
 
-myTerminal = "alacritty"
+myTerminal = "kitty"
 
 myLauncher = "rofi -show run"
 

@@ -74,6 +74,7 @@
         gui = import ./home/modules/gui { }; # enables all modules in the gui directory + small extra ones
         firefox = import ./home/modules/gui/firefox.nix { };
         alacritty = import ./home/modules/gui/alacritty { };
+        kitty = import ./home/modules/gui/kitty.nix { };
         autorandr = import ./home/modules/gui/autorandr.nix { };
         desktop-environment = import ./home/modules/gui/desktop-environment { inherit nixpkgs-unstable; };
         mpv = import ./home/modules/gui/mpv { inherit mpv libplacebo glad; };
