@@ -369,7 +369,9 @@
     },
     "neovim-nightly-overlay": {
       "inputs": {
-        "flake-compat": "flake-compat",
+        "flake-compat": [
+          "flake-compat"
+        ],
         "neovim-flake": "neovim-flake",
         "nixpkgs": [
           "nixpkgs-unstable"
@@ -445,6 +447,7 @@
     "root": {
       "inputs": {
         "agenix": "agenix",
+        "flake-compat": "flake-compat",
         "glad": "glad",
         "helix": "helix",
         "home-manager": "home-manager",

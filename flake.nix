@@ -2,51 +2,20 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs";
-
-    helix = {
-      url = "github:Philipp-M/helix/personal";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
-    nil = {
-      url = "github:oxalica/nil";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
-    musnix = {
-      url = "github:musnix/musnix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    agenix = {
-      url = "github:ryantm/agenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
+    helix = { url = "github:Philipp-M/helix/personal"; inputs.nixpkgs.follows = "nixpkgs-unstable"; };
+    rust-overlay = { url = "github:oxalica/rust-overlay"; inputs.nixpkgs.follows = "nixpkgs-unstable"; };
+    nil = { url = "github:oxalica/nil"; inputs.nixpkgs.follows = "nixpkgs-unstable"; };
+    musnix = { url = "github:musnix/musnix"; inputs.nixpkgs.follows = "nixpkgs"; };
+    agenix = { url = "github:ryantm/agenix"; inputs.nixpkgs.follows = "nixpkgs"; };
+    flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
     rycee-nur-expressions = { url = "gitlab:rycee/nur-expressions"; flake = false; };
-
+    neovim-nightly-overlay = { url = "github:nix-community/neovim-nightly-overlay"; inputs = { nixpkgs.follows = "nixpkgs-unstable"; flake-compat.follows = "flake-compat"; }; };
+    home-manager = { url = "github:Philipp-M/home-manager/personal"; inputs.nixpkgs.follows = "nixpkgs"; };
+    kanata = { url = "github:jtroo/kanata"; flake = false; };
     # temporary to get the 'gpu-next' backend working
     mpv = { url = "github:mpv-player/mpv"; flake = false; };
     libplacebo = { url = "git+https://code.videolan.org/videolan/libplacebo.git"; flake = false; };
     glad = { url = "github:Dav1dde/glad/glad2"; flake = false; };
-
-    neovim-nightly-overlay = {
-      url = "github:nix-community/neovim-nightly-overlay";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
-    home-manager = {
-      url = "github:Philipp-M/home-manager/personal";
-      # url = "/home/philm/dev/personal/desktop-environment/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    kanata = { url = "github:jtroo/kanata"; flake = false; };
   };
 
   outputs = inputs@{ rust-overlay, mpv, libplacebo, glad, rycee-nur-expressions, home-manager, agenix, helix, nil, ... }:
@@ -115,8 +84,19 @@
       };
     in
     {
-      devShell."${system}" =
-        import ./shell.nix { pkgs = nixpkgs-stable; agenix = inputs.agenix.defaultPackage."${system}"; };
+      devShell."${system}" = with nixpkgs-stable;
+        let nixBin = writeShellScriptBin "nix" "${nixFlakes}/bin/nix --option experimental-features 'nix-command flakes' \"$@\""; in
+        mkShell {
+          buildInputs = [
+            git
+            nix-zsh-completions
+            git-crypt
+            agenix.defaultPackage."${system}"
+            nixBin
+            (nixos { nix.package = nixFlakes; }).nixos-rebuild
+          ];
+          shellHook = "export FLAKE=\"$(pwd)\"";
+        };
 
       inherit homeManagerModules;
 
