@@ -224,37 +224,9 @@ in
           true-color = true;
           file-picker.hidden = false;
         };
-        keys = {
-          normal = {
-            "'" = "repeat_last_motion";
-            j = "move_char_left";
-            h = "move_line_up";
-            k = "move_line_down";
-            y = "yank_joined_to_clipboard";
-            Y = "yank_main_selection_to_clipboard";
-            n = [ "save_selection" "search_next" ];
-            N = [ "save_selection" "search_prev" ];
-            d = [ "yank_joined_to_clipboard" "delete_selection" ];
-            p = "paste_clipboard_after";
-            P = "paste_clipboard_before";
-            R = "replace_selections_with_clipboard";
-            g.j = "goto_line_start";
-            z.k = "scroll_down";
-            z.h = "scroll_up";
-            Z.k = "scroll_down";
-            Z.h = "scroll_up";
-            "C-y" = "scroll_up";
-            "C-e" = "scroll_down";
-            "C-w" = {
-              "C-k" = "jump_view_down";
-              "k" = "jump_view_down";
-              "C-h" = "jump_view_up";
-              "h" = "jump_view_up";
-              "C-j" = "jump_view_left";
-              "j" = "jump_view_left";
-            };
-            backspace = [ "collapse_selection" "keep_primary_selection" ];
-            space = {
+        keys =
+          let
+            spaceMode = {
               space = "file_picker";
               n = "global_search";
               f = ":format";
@@ -277,27 +249,51 @@ in
               P = "paste_before";
               R = "replace_with_yanked";
             };
-          };
-          insert."C-space" = "completion";
-          select = {
-            "'" = "repeat_last_motion";
-            d = [ "yank_joined_to_clipboard" "delete_selection" ];
-            j = "extend_char_left";
-            h = "extend_line_up";
-            k = "extend_line_down";
-            y = "yank_joined_to_clipboard";
-            Y = "yank_main_selection_to_clipboard";
-            p = "paste_clipboard_after";
-            P = "paste_clipboard_before";
-            R = "replace_selections_with_clipboard";
-            space = {
-              y = "yank";
-              p = "paste_after";
-              P = "paste_before";
-              R = "replace_with_yanked";
+            commonMovementMappings = {
+              "'" = "repeat_last_motion";
+              g.j = "goto_line_start";
+              z.k = "scroll_down";
+              z.h = "scroll_up";
+              Z.k = "scroll_down";
+              Z.h = "scroll_up";
+              "C-y" = "scroll_up";
+              "C-e" = "scroll_down";
+              "C-w" = {
+                "C-k" = "jump_view_down";
+                "k" = "jump_view_down";
+                "C-h" = "jump_view_up";
+                "h" = "jump_view_up";
+                "C-j" = "jump_view_left";
+                "j" = "jump_view_left";
+              };
             };
+            yankPasteMappings = {
+              y = "yank_joined_to_clipboard";
+              Y = "yank_main_selection_to_clipboard";
+              d = [ "yank_joined_to_clipboard" "delete_selection" ];
+              p = "paste_clipboard_after";
+              P = "paste_clipboard_before";
+              R = "replace_selections_with_clipboard";
+            };
+          in
+          {
+            normal = {
+              n = [ "save_selection" "search_next" ];
+              N = [ "save_selection" "search_prev" ];
+              j = "move_char_left";
+              h = "move_line_up";
+              k = "move_line_down";
+              backspace = [ "collapse_selection" "keep_primary_selection" ];
+              space = spaceMode;
+            } // commonMovementMappings // yankPasteMappings;
+            insert."C-space" = "completion";
+            select = {
+              j = "extend_char_left";
+              h = "extend_line_up";
+              k = "extend_line_down";
+              space = spaceMode;
+            } // commonMovementMappings // yankPasteMappings;
           };
-        };
       };
     };
   };
