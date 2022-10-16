@@ -115,10 +115,10 @@ in
             "diff.plus" = green;
             "diff.delta" = yellow;
             "diff.minus" = red;
-            "diagnostic.info" = { underline_color = "blue"; underline_style = "line"; };
-            "diagnostic.hint" = { underline_color = "green"; underline_style = "line"; };
-            "diagnostic.warning" = { underline_color = "yellow"; underline_style = "line"; };
-            "diagnostic.error" = { underline_color = "red"; underline_style = "line"; };
+            "diagnostic.info" = { underline = { color = "blue"; style = "line"; }; };
+            "diagnostic.hint" = { underline = { color = "green"; style = "line"; }; };
+            "diagnostic.warning" = { underline = { color = "yellow"; style = "line"; }; };
+            "diagnostic.error" = { underline = { color = "red"; style = "line"; }; };
             "ui.gutter" = { bg = black; };
             "info" = blue;
             "hint" = gray;
@@ -215,6 +215,7 @@ in
         theme = "base16";
         editor = {
           indent-guides.render = true;
+          rainbow-brackets = true;
           auto-pairs = false;
           lsp.display-messages = true;
           completion-trigger-len = 1;
