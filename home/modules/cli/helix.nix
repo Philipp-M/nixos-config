@@ -146,10 +146,8 @@ in
       languages = with nixpkgs-unstable.pkgs;
         {
           language-server = {
-            efm-lsp-eslint-prettier = {
+            efm-lsp-prettier = {
               command = "${efm-langserver}/bin/efm-langserver";
-              # command = "/home/philm/dev/personal/go/efm-langserver/efm-langserver";
-              args = [ "-logfile" "/home/philm/.cache/efm-langserver.log" "-loglevel" "5" ];
               config = {
                 documentFormatting = true;
                 languages = lib.genAttrs [ "typescript" "javascript" "typescriptreact" "javascriptreact" "vue" ] (_:
@@ -161,22 +159,45 @@ in
                         echo ''${ROOT}/node_modules/.bin/${bin-name};
                       fi
                     )'';
-                    eslintCmd = findNodeModulesCmd "eslint";
                     prettierCmd = findNodeModulesCmd "prettier";
                   in
-                  [
-                    {
-                      lintCommand = "${eslintCmd} -f unix --stdin --stdin-filename \${INPUT}";
-                      lintIgnoreExitCode = true;
-                      lintStdin = true;
-                      lintFormats = [ "%f:%l:%c: %m" ];
-                      # formatCommand = "${prettierCmd} --stdin-filepath \${INPUT} | ${eslintCmd} --fix-dry-run -f json --stdin --stdin-filename=\${INPUT} | ${jq}/bin/jq -r \".[0].output\"";
-                      formatCommand = "${prettierCmd} --stdin-filepath \${INPUT}";
-                      formatStdin = true;
-                    }
-                  ]);
+                  [{
+                    formatCommand = "${prettierCmd} --stdin-filepath \${INPUT}";
+                    formatStdin = true;
+                  }]);
               };
             };
+            eslint = {
+              command = "vscode-eslint-language-server";
+              args = [ "--stdio" ];
+              config = {
+                validate = "on";
+                packageManager = "yarn";
+                useESLintClass = false;
+                codeActionOnSave = {
+                  enable = false;
+                  mode = "all";
+                };
+                format = true;
+                quiet = false;
+                onIgnoredFiles = "off";
+                rulesCustomizations = [ ];
+                run = "onType";
+                # nodePath configures the directory in which the eslint server should start its node_modules resolution.
+                # This path is relative to the workspace folder (root dir) of the server instance.
+                nodePath = "";
+                # use the workspace folder location or the file location (if no workspace folder is open) as the working directory
+                workingDirectory.mode = "location";
+                codeAction = {
+                  disableRuleComment = {
+                    enable = true;
+                    location = "separateLine";
+                  };
+                  showDocumentation.enable = true;
+                };
+              };
+            };
+
             typescript-language-server = {
               command = "${nodePackages.typescript-language-server}/bin/typescript-language-server";
               args = [ "--stdio" "--tsserver-path=${nodePackages.typescript}/lib/node_modules/typescript/lib" ];
@@ -198,18 +219,27 @@ in
             };
             omnisharp = { command = "omnisharp"; args = [ "-l" "Error" "--languageserver" "-z" ]; };
           };
-          language = [
-            { name = "ruby"; file-types = [ "rb" "rake" "rakefile" "irb" "gemfile" "gemspec" "Rakefile" "Gemfile" "Fastfile" "Matchfile" "Pluginfile" "Appfile" ]; }
-            { name = "rust"; auto-format = false; file-types = [ "lalrpop" "rs" ]; language-servers = [ "rust-analyzer" ]; }
-            { name = "c-sharp"; language-servers = [ "omnisharp" ]; }
-            { name = "typescript"; language-servers = [{ name = "typescript-language-server"; except-features = [ "format" ]; } { name = "efm-lsp-eslint-prettier"; }]; }
-            { name = "javascript"; language-servers = [{ name = "typescript-language-server"; except-features = [ "format" ]; } { name = "efm-lsp-eslint-prettier"; }]; }
-            { name = "jsx"; language-servers = [{ name = "typescript-language-server"; except-features = [ "format" ]; } { name = "efm-lsp-eslint-prettier"; }]; }
-            { name = "tsx"; language-servers = [{ name = "typescript-language-server"; except-features = [ "format" ]; } { name = "efm-lsp-eslint-prettier"; }]; }
-            { name = "vue"; language-servers = [{ name = "vuels"; except-features = [ "format" ]; } { name = "efm-lsp-eslint-prettier"; }]; }
-            { name = "sql"; formatter.command = "pg_format"; }
-            { name = "nix"; language-servers = [ "nil" ]; }
-          ];
+          language =
+            let
+              jsTsWebLanguageServers =
+                [
+                  { name = "typescript-language-server"; except-features = [ "format" ]; }
+                  { name = "efm-lsp-prettier"; only-features = [ "format" ]; }
+                  "eslint"
+                ];
+            in
+            [
+              { name = "ruby"; file-types = [ "rb" "rake" "rakefile" "irb" "gemfile" "gemspec" "Rakefile" "Gemfile" "Fastfile" "Matchfile" "Pluginfile" "Appfile" ]; }
+              { name = "rust"; auto-format = false; file-types = [ "lalrpop" "rs" ]; language-servers = [ "rust-analyzer" ]; }
+              { name = "c-sharp"; language-servers = [ "omnisharp" ]; }
+              { name = "typescript"; language-servers = jsTsWebLanguageServers; }
+              { name = "javascript"; language-servers = jsTsWebLanguageServers; }
+              { name = "jsx"; language-servers = jsTsWebLanguageServers; }
+              { name = "tsx"; language-servers = jsTsWebLanguageServers; }
+              { name = "vue"; language-servers = [{ name = "vuels"; except-features = [ "format" ]; } { name = "efm-lsp-prettier"; } "eslint"]; }
+              { name = "sql"; formatter.command = "pg_format"; }
+              { name = "nix"; language-servers = [ "nil" ]; }
+            ];
         };
       settings = {
         theme = "base16";
