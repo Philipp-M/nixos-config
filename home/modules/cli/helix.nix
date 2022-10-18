@@ -268,10 +268,6 @@ in
                 r = "goto_reference";
                 d = "goto_type_definition";
               };
-              d = {
-                s = "signature_help";
-                d = "hover";
-              };
               x = ":buffer-close";
               w = ":w";
               q = ":q";
