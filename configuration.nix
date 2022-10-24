@@ -147,20 +147,28 @@
     xkbVariant = "colemak";
     # Enable touchpad support.
     libinput.enable = true;
-    # Use session defined in home.nix
-    windowManager = {
-      session = [
-        {
-          name = "xmonad";
-          bgSupport = true;
-          start = ''
-            ${pkgs.runtimeShell} $HOME/.xsession &
-            waitPID=$!
-          '';
-        }
-      ];
-    };
     displayManager = {
+      lightdm = {
+        background = builtins.fetchurl {
+          url = "https://github.com/DaringCuteSeal/wallpapers/raw/main/os/nix-simple/nix-simple-geometric.png";
+          sha256 = "sha256:10fqxx5z0591jmllw9iya2dkck47fs45hkzc9p4vfwdbzz0b2y1b";
+        };
+        # this is dependent on importing the 'theme.nix' home-manager module
+        greeters.gtk.theme = with config.home-manager.users.philm.theme; {
+          name = base16.name;
+          package = pkgs.callPackage (import "${inputs.rycee-nur-expressions}/pkgs/materia-theme") { configBase16 = base16; };
+        };
+      };
+      # Use session defined in home.nix
+      session = [{
+        name = "xmonad";
+        manage = "window";
+        bgSupport = true;
+        start = ''
+          ${pkgs.runtimeShell} $HOME/.xsession &
+          waitPID=$!
+        '';
+      }];
       defaultSession = "none+xmonad";
       # this prevents accidentally turned on caps lock in the login manager (as it is remapped in the xmonad session to escape)
       sessionCommands = "${pkgs.xorg.xmodmap}/bin/xmodmap -e 'clear Lock'";
