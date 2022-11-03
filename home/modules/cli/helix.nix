@@ -150,7 +150,7 @@ in
               command = "${efm-langserver}/bin/efm-langserver";
               config = {
                 documentFormatting = true;
-                languages = lib.genAttrs [ "typescript" "javascript" "typescriptreact" "javascriptreact" "vue" ] (_:
+                languages = lib.genAttrs [ "typescript" "javascript" "typescriptreact" "javascriptreact" "vue" "json" ] (_:
                   let
                     findNodeModulesCmd = bin-name: ''$(
                       if [ -z "$(command -v ''${ROOT}/node_modules/.bin/${bin-name})" ]; then
@@ -239,6 +239,7 @@ in
               { name = "vue"; language-servers = [{ name = "vuels"; except-features = [ "format" ]; } { name = "efm-lsp-prettier"; } "eslint"]; }
               { name = "sql"; formatter.command = "pg_format"; }
               { name = "nix"; language-servers = [ "nil" ]; }
+              { name = "json"; language-servers = [{ name = "vscode-json-language-server"; except-features = [ "format" ]; } "efm-lsp-prettier"]; }
             ];
         };
       settings = {
