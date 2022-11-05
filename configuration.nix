@@ -181,7 +181,7 @@
       pname = "kanata";
       version = "1.0.8-git";
       src = inputs.kanata;
-      cargoHash = "sha256-dGS9jI0Sb184NYF9Pahf5HNKnQdjK/T/wwaLUxoDyXQ=";
+      cargoHash = "sha256-UO6BCsybExVTeL8uJiFCHzzOWRXNxZoXXtasvT3/Pw0=";
       buildFeatures = [ "cmd" ];
     };
     keyboards.redox = {
@@ -189,7 +189,7 @@
       # TODO extend kanata to automatically recognize input devices, autorestart/map devices if they connect/disconnect etc.
       config = ''
         (defsrc
-          mlft mrgt mmid
+          mlft mrgt mmid mfwd
           esc  1    2    3    4    5    6    7    8    9    0    -    =    bspc
           tab  q    w    f    p    g    j    l    u    y    ;    [    ]    \
           caps a    r    s    t    d    h    n    e    i    o    '    ret
@@ -197,7 +197,7 @@
           lctl lmet lalt           spc            ralt rmet cmp rctl
         )
         (deflayer colemak
-          mlft mrgt mmid
+          mlft mrgt mmid @metaextra
           esc  1    2    3    4    5    6    7    8    9    0    -    =    bspc
           @xcp q    w    f    p    g    j    l    u    y    ;    [    ]    \
           caps a    r    s    t    d    h    n    e    i    o    '    ret
@@ -205,6 +205,7 @@
           lctl lmet lalt           spc            ralt rmet cmp rctl
         )
         (defalias xcp (tap-hold-press 300 300 tab lmet))
+        (defalias metaextra (tap-hold-press 300 300 mfwd lmet))
       '';
     };
   };

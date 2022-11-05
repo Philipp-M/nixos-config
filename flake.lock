@@ -251,11 +251,11 @@
     "kanata": {
       "flake": false,
       "locked": {
-        "lastModified": 1663815046,
-        "narHash": "sha256-v4iW6wtNwnRGWuKt3t1DspYLfcRe8ghqsu+cIyXaArc=",
+        "lastModified": 1667681337,
+        "narHash": "sha256-cb4M10K2y7u8o+D4SI4jmAafGfdNexLOZvu/69Y2tTg=",
         "owner": "jtroo",
         "repo": "kanata",
-        "rev": "50044b415c79ff9fb86b12abc4297421589632fe",
+        "rev": "9a34988bad9181690d487aa3d61b4fde42b9d852",
         "type": "github"
       },
       "original": {
