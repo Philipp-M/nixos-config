@@ -181,7 +181,7 @@
       pname = "kanata";
       version = "1.0.8-git";
       src = inputs.kanata;
-      cargoHash = "sha256-UO6BCsybExVTeL8uJiFCHzzOWRXNxZoXXtasvT3/Pw0=";
+      cargoHash = "sha256-z4lVVlUx8EzhfZmaJOONFcGB4OMjMzYIHbezhMTetcQ=";
       buildFeatures = [ "cmd" ];
     };
     keyboards.redox = {
@@ -455,8 +455,8 @@
     adb-sync
     udiskie
     tree-sitter
-    (rust-bin.selectLatestNightlyWith (toolchain: toolchain.default))
-    rust-bin.nightly.latest.rust-analyzer
+    rust-bin.nightly."2022-11-04".default
+    rust-bin.nightly."2022-11-04".rust-analyzer
   ];
 
   fonts.fonts = with pkgs; [ font-awesome nerdfonts google-fonts ];

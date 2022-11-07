@@ -24,7 +24,7 @@
       pkgImport = pkgs:
         import pkgs {
           inherit system;
-          overlays = [ inputs.neovim-nightly-overlay.overlay rust-overlay.overlays.default ];
+          overlays = [ inputs.neovim-nightly-overlay.overlay ];
           config.allowUnfree = true;
         };
       nixpkgs-stable = pkgImport inputs.nixpkgs;
