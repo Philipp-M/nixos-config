@@ -455,8 +455,8 @@
     adb-sync
     udiskie
     tree-sitter
-    rust-bin.nightly."2022-11-04".default
-    rust-bin.nightly."2022-11-04".rust-analyzer
+    rust-bin.nightly.latest.default
+    rust-bin.nightly.latest.rust-analyzer
   ];
 
   fonts.fonts = with pkgs; [ font-awesome nerdfonts google-fonts ];
