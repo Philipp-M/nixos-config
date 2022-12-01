@@ -1,27 +1,11 @@
-{ mpv, libplacebo, glad, ... }:
+{ ... }:
 { pkgs, lib, config, ... }: {
   options.modules.gui.mpv.enable = lib.mkEnableOption "Enable personal mpv config";
 
   config = lib.mkIf config.modules.gui.mpv.enable {
     programs.mpv = {
       enable = true;
-      package = pkgs.wrapMpv
-        ((pkgs.mpv-unwrapped.override {
-          libplacebo = pkgs.libplacebo.overrideAttrs (old: {
-            src = libplacebo;
-            nativeBuildInputs = old.nativeBuildInputs ++ [
-              (pkgs.python3Packages.glad.overrideAttrs
-                (old: {
-                  src = glad;
-                  version = "2.0";
-                  propagatedBuildInputs = [ pkgs.python3Packages.jinja2 pkgs.python3Packages.setuptools ];
-                }))
-            ];
-          });
-          ffmpeg = pkgs.ffmpeg_5;
-        }).overrideAttrs (old: { src = mpv; buildInputs = old.buildInputs ++ [ pkgs.xorg.libXpresent ]; }))
-        { };
-
+      package = pkgs.wrapMpv (pkgs.mpv-unwrapped.override { ffmpeg = pkgs.ffmpeg_5; }) { };
       config = {
         x11-netwm = "yes"; # necessary for xmonads fullscreen
         profile = "gpu-high";

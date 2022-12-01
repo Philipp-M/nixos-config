@@ -181,7 +181,7 @@
       pname = "kanata";
       version = "1.0.8-git";
       src = inputs.kanata;
-      cargoHash = "sha256-z4lVVlUx8EzhfZmaJOONFcGB4OMjMzYIHbezhMTetcQ=";
+      cargoHash = "sha256-tZGTMKMrzmcpMKvTzfKC9FoPQp+lRCQ0fWOlQgxstzM=";
       buildFeatures = [ "cmd" ];
     };
     keyboards.redox = {
@@ -280,6 +280,7 @@
     cmake
     dart
     git
+    gti
     git-secret
     git-crypt
     gitAndTools.diff-so-fancy

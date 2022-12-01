@@ -46,8 +46,12 @@
 
   musnix = {
     enable = true;
-    kernel.optimize = true;
+    kernel.realtime = true;
+    rtirq.enable = true;
   };
+  # disable virtualbox as it has problems with the rt kernel
+  virtualisation.virtualbox.host.enable = lib.mkForce false;
+
   powerManagement.cpuFreqGovernor = "performance";
 
   services.kanata.keyboards.redox.devices = [
@@ -209,14 +213,15 @@
 
   hardware.nvidia.modesetting.enable = true;
 
-  users.users.philm.extraGroups = [ "jackaudio" ];
+  users.users.philm.extraGroups = [ "jackaudio" "lpadmin" ];
 
   home-manager.users.philm = {
     modules.mpd.enable = true;
     services.blueman-applet.enable = true;
   };
 
-  nix.maxJobs = lib.mkDefault 16;
+  # reduce jobs, as otherwise a lot of swapping occurs (which I guess slows down the building process)
+  nix.settings.max-jobs = lib.mkDefault 4;
   # High-DPI console
   console.font =
     lib.mkDefault "${pkgs.terminus_font}/share/consolefonts/ter-u28n.psf.gz";

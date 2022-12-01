@@ -1,24 +1,20 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs";
     helix = { url = "github:Philipp-M/helix/personal"; inputs.nixpkgs.follows = "nixpkgs-unstable"; };
     rust-overlay = { url = "github:oxalica/rust-overlay"; inputs.nixpkgs.follows = "nixpkgs-unstable"; };
     nil = { url = "github:oxalica/nil"; inputs.nixpkgs.follows = "nixpkgs-unstable"; };
-    musnix = { url = "github:musnix/musnix"; inputs.nixpkgs.follows = "nixpkgs"; };
+    musnix = { url = "github:Philipp-M/musnix/fix-zfs-gpl-issue"; inputs.nixpkgs.follows = "nixpkgs"; };
     agenix = { url = "github:ryantm/agenix"; inputs.nixpkgs.follows = "nixpkgs"; };
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
     rycee-nur-expressions = { url = "gitlab:rycee/nur-expressions"; flake = false; };
     neovim-nightly-overlay = { url = "github:nix-community/neovim-nightly-overlay"; inputs = { nixpkgs.follows = "nixpkgs-unstable"; flake-compat.follows = "flake-compat"; }; };
     home-manager = { url = "github:Philipp-M/home-manager/personal"; inputs.nixpkgs.follows = "nixpkgs"; };
     kanata = { url = "github:jtroo/kanata"; flake = false; };
-    # temporary to get the 'gpu-next' backend working
-    mpv = { url = "github:mpv-player/mpv"; flake = false; };
-    libplacebo = { url = "git+https://code.videolan.org/videolan/libplacebo.git"; flake = false; };
-    glad = { url = "github:Dav1dde/glad/glad2"; flake = false; };
   };
 
-  outputs = inputs@{ rust-overlay, mpv, libplacebo, glad, rycee-nur-expressions, home-manager, agenix, helix, nil, ... }:
+  outputs = inputs@{ rust-overlay, rycee-nur-expressions, home-manager, agenix, helix, nil, ... }:
     let
       system = "x86_64-linux";
       pkgImport = pkgs:
@@ -46,7 +42,7 @@
         kitty = import ./home/modules/gui/kitty.nix { };
         autorandr = import ./home/modules/gui/autorandr.nix { };
         desktop-environment = import ./home/modules/gui/desktop-environment { inherit nixpkgs-unstable; };
-        mpv = import ./home/modules/gui/mpv { inherit mpv libplacebo glad; };
+        mpv = import ./home/modules/gui/mpv { };
         theme = import ./home/modules/theme.nix { inherit rycee-nur-expressions; };
         mpd = import ./home/modules/mpd.nix { inherit nixpkgs-unstable; };
       };
@@ -55,7 +51,7 @@
         inherit system;
         modules = [
           home-manager.nixosModules.home-manager
-          inputs.musnix.nixosModule
+          inputs.musnix.nixosModules.default
           ({ pkgs, ... }: {
             nixpkgs.overlays = [ rust-overlay.overlays.default ];
             nix.registry.nixpkgs.flake = inputs.nixpkgs;
@@ -71,13 +67,8 @@
               modules.create-directories.enable = true;
             };
           })
-          # enable kanata module from nixos-unstable
-          {
-            # not yet in stable but better be safe...
-            disabledModules = [ "services/hardware/kanata.nix" ];
-            imports = [ "${inputs.nixpkgs-unstable}/nixos/modules/services/hardware/kanata.nix" ];
-          }
           extraConfig
+          { nixpkgs.config.permittedInsecurePackages = [ "qtwebkit-5.212.0-alpha4" ]; }
           path
         ];
         specialArgs = { inherit inputs nixpkgs-unstable; };

@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }: {
   imports = [ ./hardware-configuration.nix ../../configuration.nix ];
 
-  nix.maxJobs = lib.mkDefault 8;
+  nix.settings.max-jobs = lib.mkDefault 8;
 
   boot.supportedFilesystems = [ "zfs" ];
   boot.zfs.requestEncryptionCredentials = false;
