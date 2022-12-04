@@ -13,6 +13,8 @@
         af = "scaletempo2";
         video-sync = "display-resample";
         sub-font-size = 23;
+        cache = "yes";
+        demuxer-max-bytes = "200000k";
       };
       profiles = {
         vdpau-high = {
