@@ -2,7 +2,13 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs";
-    helix = { url = "github:Philipp-M/helix/personal"; inputs.nixpkgs.follows = "nixpkgs-unstable"; };
+    nixpkgs-marksman.url = "github:stasjok/nixpkgs/marksman";
+    nci = {
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.rust-overlay.follows = "rust-overlay";
+      url = "github:yusdacra/nix-cargo-integration";
+    };
+    helix = { url = "github:Philipp-M/helix/personal"; inputs.nixpkgs.follows = "nixpkgs-unstable"; inputs.nci.follows = "nci"; };
     rust-overlay = { url = "github:oxalica/rust-overlay"; inputs.nixpkgs.follows = "nixpkgs-unstable"; };
     nil = { url = "github:oxalica/nil"; inputs.nixpkgs.follows = "nixpkgs-unstable"; };
     musnix = { url = "github:Philipp-M/musnix/fix-zfs-gpl-issue"; inputs.nixpkgs.follows = "nixpkgs"; };
@@ -25,6 +31,8 @@
         };
       nixpkgs-stable = pkgImport inputs.nixpkgs;
       nixpkgs-unstable = pkgImport inputs.nixpkgs-unstable;
+      nixpkgs-marksman = pkgImport inputs.nixpkgs-marksman;
+      # nixpkgs-nixos-21_11 = pkgImport inputs.nixpkgs-nixos-21_11;
 
       homeManagerModules = {
         create-directories = import ./home/modules/create-directories.nix { };
@@ -32,7 +40,7 @@
         fish = import ./home/modules/cli/fish.nix { };
         git = import ./home/modules/cli/git.nix { };
         neovim = import ./home/modules/cli/neovim { inherit nixpkgs-unstable; };
-        helix = import ./home/modules/cli/helix.nix { inherit nixpkgs-unstable helix nil; };
+        helix = import ./home/modules/cli/helix.nix { inherit nixpkgs-unstable helix nil nixpkgs-marksman; };
         ssh = import ./home/modules/cli/ssh.nix { };
         starship = import ./home/modules/cli/starship.nix { };
         tmux = import ./home/modules/cli/tmux.nix { };

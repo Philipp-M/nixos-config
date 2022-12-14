@@ -23,11 +23,11 @@
     "crane": {
       "flake": false,
       "locked": {
-        "lastModified": 1661875961,
-        "narHash": "sha256-f1h/2c6Teeu1ofAHWzrS8TwBPcnN+EEu+z1sRVmMQTk=",
+        "lastModified": 1670900067,
+        "narHash": "sha256-VXVa+KBfukhmWizaiGiHRVX/fuk66P8dgSFfkVN4/MY=",
         "owner": "ipetkov",
         "repo": "crane",
-        "rev": "d9f394e4e20e97c2a60c3ad82c2b6ef99be19e24",
+        "rev": "59b31b41a589c0a65e4a1f86b0e5eac68081468b",
         "type": "github"
       },
       "original": {
@@ -55,55 +55,47 @@
     "dream2nix": {
       "inputs": {
         "alejandra": [
-          "helix",
           "nci"
         ],
         "all-cabal-json": [
-          "helix",
           "nci"
         ],
         "crane": "crane",
         "devshell": [
-          "helix",
           "nci",
           "devshell"
         ],
+        "flake-parts": "flake-parts",
         "flake-utils-pre-commit": [
-          "helix",
           "nci"
         ],
         "ghc-utils": [
-          "helix",
           "nci"
         ],
         "gomod2nix": [
-          "helix",
           "nci"
         ],
         "mach-nix": [
-          "helix",
           "nci"
         ],
+        "nix-pypi-fetcher": "nix-pypi-fetcher",
         "nixpkgs": [
-          "helix",
           "nci",
           "nixpkgs"
         ],
         "poetry2nix": [
-          "helix",
           "nci"
         ],
         "pre-commit-hooks": [
-          "helix",
           "nci"
         ]
       },
       "locked": {
-        "lastModified": 1668851003,
-        "narHash": "sha256-X7RCQQynbxStZR2m7HW38r/msMQwVl3afD6UXOCtvx4=",
+        "lastModified": 1671030889,
+        "narHash": "sha256-7n5c78+LU7FHdDhFhsTwRPVuuIm7RYzUFC7qJK6HfT4=",
         "owner": "nix-community",
         "repo": "dream2nix",
-        "rev": "c77e8379d8fe01213ba072e40946cbfb7b58e628",
+        "rev": "1576b6321b9486090f401e4bdac647c3a7548db0",
         "type": "github"
       },
       "original": {
@@ -125,6 +117,24 @@
       "original": {
         "owner": "edolstra",
         "repo": "flake-compat",
+        "type": "github"
+      }
+    },
+    "flake-parts": {
+      "inputs": {
+        "nixpkgs-lib": "nixpkgs-lib"
+      },
+      "locked": {
+        "lastModified": 1668450977,
+        "narHash": "sha256-cfLhMhnvXn6x1vPm+Jow3RiFAUSCw/l1utktCw5rVA4=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "d591857e9d7dd9ddbfba0ea02b43b927c3c0f1fa",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
         "type": "github"
       }
     },
@@ -190,7 +200,9 @@
     },
     "helix": {
       "inputs": {
-        "nci": "nci",
+        "nci": [
+          "nci"
+        ],
         "nixpkgs": [
           "nixpkgs-unstable"
         ],
@@ -275,20 +287,18 @@
         "devshell": "devshell",
         "dream2nix": "dream2nix",
         "nixpkgs": [
-          "helix",
-          "nixpkgs"
+          "nixpkgs-unstable"
         ],
         "rust-overlay": [
-          "helix",
           "rust-overlay"
         ]
       },
       "locked": {
-        "lastModified": 1669011203,
-        "narHash": "sha256-Lymj4HktNEFmVXtwI0Os7srDXHZbZW0Nzw3/+5Hf8ko=",
+        "lastModified": 1671030964,
+        "narHash": "sha256-pqa/lHPG3AfjVf9il8PbIFGRKbMPWOuuEqo3aHdiNC4=",
         "owner": "yusdacra",
         "repo": "nix-cargo-integration",
-        "rev": "c5133b91fc1d549087c91228bd213f2518728a4b",
+        "rev": "7016f6f97e47d3b412f1554d19d93c1d63d2a643",
         "type": "github"
       },
       "original": {
@@ -367,18 +377,68 @@
         "type": "github"
       }
     },
+    "nix-pypi-fetcher": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1669065297,
+        "narHash": "sha256-UStjXjNIuIm7SzMOWvuYWIHBkPUKQ8Id63BMJjnIDoA=",
+        "owner": "DavHau",
+        "repo": "nix-pypi-fetcher",
+        "rev": "a9885ac6a091576b5195d547ac743d45a2a615ac",
+        "type": "github"
+      },
+      "original": {
+        "owner": "DavHau",
+        "repo": "nix-pypi-fetcher",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1669791787,
-        "narHash": "sha256-KBfoA2fOI5+wCrm7PR+j7jHqXeTkVRPQ0m5fcKchyuU=",
+        "lastModified": 1669834992,
+        "narHash": "sha256-YnhZGHgb4C3Q7DSGisO/stc50jFb9F/MzHeKS4giotg=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "e76c78d20685a043d23f5f9e0ccd2203997f1fb1",
+        "rev": "596a8e828c5dfa504f91918d0fa4152db3ab5502",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
+        "ref": "nixos-22.11",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-lib": {
+      "locked": {
+        "dir": "lib",
+        "lastModified": 1665349835,
+        "narHash": "sha256-UK4urM3iN80UXQ7EaOappDzcisYIuEURFRoGQ/yPkug=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "34c5293a71ffdb2fe054eb5288adc1882c1eb0b1",
+        "type": "github"
+      },
+      "original": {
+        "dir": "lib",
+        "owner": "NixOS",
         "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-marksman": {
+      "locked": {
+        "lastModified": 1670221901,
+        "narHash": "sha256-Ag5wbSswMTyGXXbWlh2zm2Q5GrsoUANmzbZkCH6ojAw=",
+        "owner": "stasjok",
+        "repo": "nixpkgs",
+        "rev": "36b09745a39f1d6fb876190c35e8795027bdff52",
+        "type": "github"
+      },
+      "original": {
+        "owner": "stasjok",
+        "ref": "marksman",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -398,22 +458,6 @@
         "type": "github"
       }
     },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1669834992,
-        "narHash": "sha256-YnhZGHgb4C3Q7DSGisO/stc50jFb9F/MzHeKS4giotg=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "596a8e828c5dfa504f91918d0fa4152db3ab5502",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-22.11",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "agenix": "agenix",
@@ -422,9 +466,11 @@
         "home-manager": "home-manager",
         "kanata": "kanata",
         "musnix": "musnix",
+        "nci": "nci",
         "neovim-nightly-overlay": "neovim-nightly-overlay",
         "nil": "nil",
-        "nixpkgs": "nixpkgs_2",
+        "nixpkgs": "nixpkgs",
+        "nixpkgs-marksman": "nixpkgs-marksman",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "rust-overlay": "rust-overlay_3",
         "rycee-nur-expressions": "rycee-nur-expressions"
