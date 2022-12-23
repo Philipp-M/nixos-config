@@ -48,7 +48,7 @@
 
   boot.tmpOnTmpfs = true;
 
-  system.stateVersion = "20.09";
+  system.stateVersion = "22.11";
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_IE.UTF-8";
@@ -351,7 +351,7 @@
     wget
     unzip
     b3sum
-    jq
+    yq
     unstable.youtube-dl
     zip
     unrar
@@ -374,13 +374,15 @@
     unstable.ffmpeg_5-full
     flacon
     unstable.bitwig-studio
+    reaper
 
     # COMMUNICATION
     thunderbird
     signal-desktop
     element-desktop
     qtox
-    unstable.discord
+    discord
+    unstable.slack
     v4l-utils
     zoom-us
     skypeforlinux
