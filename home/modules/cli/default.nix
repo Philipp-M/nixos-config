@@ -19,6 +19,8 @@
 
     # "too small" for dedicated modules
 
+    programs.nix-index.enable = true;
+
     programs.zoxide.enable = true;
 
     programs.bat.enable = true;

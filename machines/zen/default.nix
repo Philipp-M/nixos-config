@@ -1,84 +1,215 @@
-{ config, lib, pkgs, nixpkgs-unstable, ... }: {
+{ config, lib, pkgs, nixpkgs-unstable, modulesPath, ... }: {
   imports = [
-    ./hardware-configuration.nix
+    (modulesPath + "/installer/scan/not-detected.nix")
     ../../configuration.nix
   ];
 
-  nixpkgs.overlays = (import ../../secrets/nix-expressions/zen-overlays.nix { inherit nixpkgs-unstable; });
+  nixpkgs.overlays = import ../../secrets/nix-expressions/zen-overlays.nix { inherit nixpkgs-unstable; };
 
-  fileSystems."/windows" = {
-    device = "/dev/disk/by-uuid/68460A274609F71A";
-    fsType = "ntfs";
-    options = [ "rw" "uid=1000" ];
+  hardware = {
+    cpu.amd.updateMicrocode = true;
+    enableRedistributableFirmware = true;
+    bluetooth.enable = true;
+    nvidia = {
+      package = config.boot.kernelPackages.nvidiaPackages.production;
+      modesetting.enable = true;
+    };
   };
 
-  # use blender from flatpak for Optix support
-  nixpkgs.config.packageOverrides = pkgs: {
-    blender = pkgs.blender.override { cudaSupport = true; };
+  boot = {
+    initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "uas" "sd_mod" ];
+    supportedFilesystems = [ "ntfs" "zfs" ];
+    zfs.requestEncryptionCredentials = false;
+    zfs.enableUnstable = true;
+    kernelPackages = pkgs.linuxPackages_6_0;
+    extraModulePackages = [ config.boot.kernelPackages.zenpower ];
+    kernelModules = [ "kvm-amd" "snd-seq" "snd-rawmidi" ];
+    loader.systemd-boot.consoleMode = "max";
+    # Bluetooth
+    extraModprobeConfig = ''
+      options bluetooth disable_ertm=1
+    '';
   };
 
-  boot.supportedFilesystems = [ "ntfs" "zfs" ];
-  boot.zfs.requestEncryptionCredentials = false;
-  boot.extraModulePackages = [ config.boot.kernelPackages.zenpower ];
-  boot.kernelModules = [ "snd-seq" "snd-rawmidi" ];
+  # optimize kernel for low-latency audio
+  powerManagement.cpuFreqGovernor = "performance";
+  musnix.enable = true;
 
-  networking.hostId = "80e43ffd";
-  networking.hostName = "zen";
+  # disk configuration
+  # root on tmpfs and persistence via impermanence
 
-  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
-  networking.networkmanager.enable = true;
-  networking.networkmanager.dns = "none";
-
-  hardware.enableRedistributableFirmware = true;
-
-  networking.interfaces.enp38s0.useDHCP = true;
-  networking.interfaces.enp39s0.useDHCP = true;
-  networking.interfaces.wlo1.useDHCP = false;
-
-  # Bluetooth
-  boot.extraModprobeConfig = '' options bluetooth disable_ertm=1 '';
-
-  hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
-
-  virtualisation.docker.enableNvidia = true;
-  systemd.enableUnifiedCgroupHierarchy = false;
-
-  musnix = {
-    enable = true;
-    kernel.realtime = true;
-    rtirq.enable = true;
+  fileSystems = {
+    "/persistent" = {
+      device = "/dev/disk/by-uuid/9e97953d-e86d-4057-8ebb-fb297a4ad3e6";
+      fsType = "f2fs";
+      options = [ "compress_algorithm=lz4" "compress_chksum" "atgc" "gc_merge" "lazytime" ];
+      neededForBoot = true;
+    };
+    # impermanence tries to unmount /nix, thus manually bind mount it here
+    "/nix" = {
+      device = "/persistent/nix/";
+      options = [ "bind" ];
+      depends = [ "/persistent" ];
+      neededForBoot = true;
+    };
+    "/boot" = { device = "/dev/disk/by-uuid/90D9-9D03"; fsType = "vfat"; };
+    "/data/music" = { device = "data/music"; fsType = "zfs"; };
+    # impermanence doesn't support yet direct bind mounts (without the path prefix on the persistent device)
+    "/home/philm/Music" = { device = "/data/music"; options = [ "bind" ]; depends = [ "/data/music" ]; };
+    "/data/games" = { device = "data/games"; fsType = "zfs"; };
+    "/data/media" = { device = "data/media"; fsType = "zfs"; };
+    "/data/backup" = { device = "data/backup"; fsType = "zfs"; };
+    "/data/audio" = { device = "data/audio"; fsType = "zfs"; };
+    "/data/photos" = { device = "data/photos"; fsType = "zfs"; };
+    "/home/philm/Photos" = { device = "/data/photos"; options = [ "bind" ]; depends = [ "/data/photos" ]; };
+    # root on tmpfs
+    "/" = { device = "none"; fsType = "tmpfs"; options = [ "defaults" "size=64G" "mode=755" ]; };
   };
+
+  # persistent state
+
+  environment.persistence."/persistent" = {
+    hideMounts = true;
+    directories = [
+      "/var/log"
+      "/var/lib/blueman"
+      "/var/lib/cups/ppd"
+      "/var/lib/bluetooth"
+      "/var/lib/systemd/coredump"
+      "/var/lib/docker"
+      "/var/lib/teamviewer"
+      "/var/lib/NetworkManager"
+      "/var/lib/flatpak"
+      "/etc/NetworkManager/system-connections"
+    ];
+    files = [
+      "/etc/machine-id"
+      "/etc/ssh/ssh_host_ed25519_key"
+      "/etc/ssh/ssh_host_rsa_key"
+      "/etc/ssh/ssh_host_ed25519_key.pub"
+      "/etc/ssh/ssh_host_rsa_key.pub"
+      "/var/lib/cups/subscriptions.conf"
+      "/var/lib/cups/printers.conf"
+    ];
+    users.philm = {
+      directories = [
+        "dev"
+        "wallpaper"
+        "screenshots"
+        "Downloads"
+        "Desktop"
+        "Pictures"
+        "Documents"
+        "Videos"
+        "Audio"
+        "VirtualBox VMs"
+        "Bitwig Studio"
+        "SteamLibrary"
+        "Calibre Library"
+        "Unity"
+        { directory = ".gnupg"; mode = "0700"; }
+        { directory = ".ssh"; mode = "0700"; }
+        { directory = ".local/share/keyrings"; mode = "0700"; }
+        ".config/calibre"
+        ".config/cantata"
+        ".config/chromium"
+        ".config/dconf"
+        ".config/discord"
+        ".config/easyeffects"
+        ".config/Element"
+        ".config/gtk-2.0"
+        ".config/gtk-3.0"
+        ".config/gtk-4.0"
+        ".config/kdeconnect"
+        ".config/qBittorrent"
+        ".config/Signal"
+        ".config/syncthing"
+        ".config/yabridgectl"
+        ".local/share/mpd"
+        ".local/share/rofi"
+        ".local/share/flatpak"
+        ".local/share/zathura"
+        ".local/share/nix"
+        ".local/share/qBittorrent"
+        ".local/share/Steam"
+        ".local/share/cantata"
+        ".local/share/fish"
+        ".local/share/zoxide"
+        ".local/state/wireplumber"
+        ".BitwigStudio"
+        ".cache/nix" # avoid unnecessary fetching
+        ".var/app"
+        ".vst"
+        ".gnome"
+        ".steam"
+        ".cargo"
+        ".mozilla"
+        ".thunderbird"
+        ".wine"
+        ".xmonad"
+      ];
+      files = [ ".cache/helix/helix.log" ".npmrc" ];
+    };
+  };
+
+  swapDevices = [{ device = "/dev/disk/by-uuid/c44661f2-5dfb-4f7d-854e-4d3ebd4eabdd"; }];
+
+  networking = {
+    hostId = "80e43ffd";
+    hostName = "zen";
+    nameservers = [ "1.1.1.1" "8.8.8.8" ];
+    networkmanager = {
+      enable = true;
+      dns = "none";
+    };
+    interfaces = {
+      enp38s0.useDHCP = true;
+      enp39s0.useDHCP = true;
+      wlo1.useDHCP = false;
+    };
+  };
+
+
   # disable virtualbox as it has problems with the rt kernel
   virtualisation.virtualbox.host.enable = lib.mkForce false;
-
-  powerManagement.cpuFreqGovernor = "performance";
+  virtualisation.docker.enableNvidia = true;
 
   services.kanata.keyboards.redox.devices = [
     "/dev/input/by-id/usb-Falbatech_The_Redox_Keyboard-event-kbd" # redox keyboard
     "/dev/input/by-id/usb-Logitech_USB_Receiver-if02-event-mouse" # mouse
   ];
 
+  users = let philm-password = builtins.readFile ../../secrets/philm-password; in {
+    mutableUsers = false;
+    users.philm = {
+      initialHashedPassword = philm-password;
+      extraGroups = [ "jackaudio" "lpadmin" ];
+    };
+    users.root.initialHashedPassword = philm-password;
+  };
+
+  services.blueman.enable = true;
+
   services.pipewire.config = {
     pipewire = {
       "context.properties" = {
         "link.max-buffers" = 16;
         "log.level" = 2;
-        "default.clock.rate" = 96000;
-        "default.clock.quantum" = 2048;
-        "default.clock.min-quantum" = 32;
+        "default.clock.rate" = 48000;
+        "default.clock.quantum" = 64;
+        "default.clock.min-quantum" = 64;
         "default.clock.max-quantum" = 2048;
         "core.daemon" = true;
         "core.name" = "pipewire-0";
       };
       "context.modules" = [
         {
-          name = "libpipewire-module-rtkit";
+          name = "libpipewire-module-rt";
           args = {
-            "nice.level" = -15;
-            "rt.prio" = 88;
-            "rt.time.soft" = 200000;
-            "rt.time.hard" = 200000;
+            nice.level = 20;
+            rt.prio = 88;
+            rt.time.soft = -1;
+            rt.time.hard = -1;
           };
           flags = [ "ifexists" "nofail" ];
         }
@@ -116,7 +247,7 @@
       # (default values, which aren't overwritten by templates)
       default = {
         daily = 7;
-        hourly = 48;
+        hourly = 1000; # > one month hourly snapshots
         monthly = 5;
         yearly = 0;
         # frequently
@@ -129,7 +260,6 @@
     in
     {
       enable = true;
-      interval = "*:0/15";
       datasets."data/private" = default;
       datasets."data/backup" = default;
       datasets."data/games" = default;
@@ -159,31 +289,33 @@
     proxyWebsockets = true;
   };
 
-  systemd.services.backup-home = {
-    description = "Backups home with rsync";
+  # don't backup everything in persistent,
+  # as not everything is important (over a long period) (i.e. cached things or logs),
+  # but may litter the backup partition (many writes)
+  systemd.services.backup-persistent = {
+    description = "Backups (important stuff of) persistent partition with rsync";
+    startAt = "*-*-* *:50:00";
+    serviceConfig.Type = "simple";
     wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${pkgs.writeScript "backup-home" ''
-        #!${pkgs.bash}/bin/bash
-        echo "Starting Backup at $(date)" >> /var/log/home-backup.log
-        ${pkgs.rsync}/bin/rsync \
-          --delete \
-          -av \
-          --exclude philm/.cache \
-          --exclude philm/Unity \
-          --exclude philm/.config/unity3d \
-          --exclude philm/.rustup \
-          --filter=':- .gitignore' \
-          --filter=':- .npmignore' \
-          --filter=':- .ignore' /home/ \
-          /data/backup/zen/home/ 2>&1 >> /var/log/home-backup.log
-        echo "Finished Backup at $(date)" >> /var/log/home-backup.log
-        echo "" >> /var/log/home-backup.log
-        echo "" >> /var/log/home-backup.log
-      '' }";
-    };
-    startAt = "*-*-* 12,18,23:07:00";
+    script = ''
+      printf "Started Backup at $(date)\n" >> /var/log/backup-persistent.log
+      ${pkgs.rsync}/bin/rsync \
+        --delete \
+        -av \
+        --exclude var/lib/systemd \
+        --exclude var/lib/docker \
+        --exclude var/log \
+        --exclude nix \
+        --exclude home/philm/Unity \
+        --exclude home/philm/.rustup \
+        --exclude home/philm/.cache \
+        --exclude home/philm/.cargo \
+        --filter=':- .gitignore' \
+        --filter=':- .npmignore' \
+        --filter=':- .ignore' /persistent/ \
+        /data/backup/zen/ 2>&1 >> /var/log/backup-persistent.log
+      printf "Finished Backup at $(date)\n\n" >> /var/log/backup-persistent.log
+    '';
   };
 
   systemd.services.hd-idle = {
@@ -211,9 +343,6 @@
     videoDrivers = [ "nvidia" ];
   };
 
-  hardware.nvidia.modesetting.enable = true;
-
-  users.users.philm.extraGroups = [ "jackaudio" "lpadmin" ];
 
   home-manager.users.philm = {
     modules.mpd.enable = true;
@@ -221,12 +350,13 @@
   };
 
   # reduce jobs, as otherwise a lot of swapping occurs (which I guess slows down the building process)
-  nix.settings.max-jobs = lib.mkDefault 4;
+  nix.settings.max-jobs = lib.mkDefault 2;
   # High-DPI console
   console.font =
     lib.mkDefault "${pkgs.terminus_font}/share/consolefonts/ter-u28n.psf.gz";
 
   environment.systemPackages = with pkgs; [
+    (import ../../secrets/nix-expressions/toggle-light.nix { inherit pkgs; })
     qjackctl
     libjack2
     guitarix

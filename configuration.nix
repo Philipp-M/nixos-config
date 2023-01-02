@@ -6,8 +6,8 @@
 {
   nixpkgs.config.allowUnfree = true;
   nixpkgs.overlays = [
-    # expensive since this invalidates the cache for various apps like chromium etc.
-    # (final: prev: { xdg-utils = prev.xdg-utils.override { mimiSupport = true; }; })
+    # "overwrite" xdg-open with handlr
+    # very expensive since this invalidates the cache for a lot of (almost all) graphical apps.
     (final: prev: {
       xdg-utils = prev.xdg-utils.overrideAttrs (oldAttrs: {
         postInstall = oldAttrs.postInstall + ''
@@ -16,10 +16,28 @@
         '';
       });
     })
+    (final: prev: {
+      shntool = nixpkgs-unstable.pkgs.shntool.overrideAttrs (
+        old: {
+          version = "24-bit";
+          patches = [
+            (builtins.fetchurl {
+              url = "https://salsa.debian.org/debian/shntool/-/raw/57efcd7b34c2107dd785c11d79dfcd4520b2bc41/debian/patches/950803.patch?inline=false";
+              sha256 = "sha256:0rlybjm6qf3ydqr44ns4yg4hwi4jhq237a5p6ph2v7s0630c90i9";
+            })
+          ];
+        }
+      );
+    })
   ];
+
+  nixpkgs.hostPlatform = "x86_64-linux";
 
   nix = {
     package = pkgs.nixUnstable;
+    registry.nixpkgs.flake = inputs.nixpkgs;
+    registry.nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
+
     settings = {
       auto-optimise-store = true;
       trusted-users = [ "root" "@wheel" ];
@@ -34,9 +52,7 @@
     };
   };
 
-  nixpkgs.config.permittedInsecurePackages = [
-    "libdwarf-20181024"
-  ];
+  nixpkgs.config.permittedInsecurePackages = [ "libdwarf-20181024" "qtwebkit-5.212.0-alpha4" ];
 
   # Use the systemd-boot EFI boot loader.
   boot.supportedFilesystems = [ "ecryptfs" ];
@@ -45,8 +61,6 @@
 
   boot.extraModulePackages = [ config.boot.kernelPackages.v4l2loopback ];
   boot.kernelModules = [ "v4l2loopback" ];
-
-  boot.tmpOnTmpfs = true;
 
   system.stateVersion = "22.11";
 
@@ -152,7 +166,7 @@
     displayManager = {
       lightdm = {
         background = builtins.fetchurl {
-          url = "https://github.com/DaringCuteSeal/wallpapers/raw/main/os/nix-simple/nix-simple-geometric.png";
+          url = "https://github.com/DaringCuteSeal/wallpapers/raw/gh-pages/os/nix-simple/nix-simple-geometric.png";
           sha256 = "sha256:10fqxx5z0591jmllw9iya2dkck47fs45hkzc9p4vfwdbzz0b2y1b";
         };
         # this is dependent on importing the 'theme.nix' home-manager module
@@ -183,7 +197,7 @@
       pname = "kanata";
       version = "1.0.8-git";
       src = inputs.kanata;
-      cargoHash = "sha256-tZGTMKMrzmcpMKvTzfKC9FoPQp+lRCQ0fWOlQgxstzM=";
+      cargoHash = "sha256-9DfKjr4EdRmPE3LWdygPXgNUoYrroUCGvhuAh60Kns8=";
       buildFeatures = [ "cmd" ];
     };
     keyboards.redox = {
@@ -226,6 +240,8 @@
   xdg.portal.enable = true;
   xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
   services.flatpak.enable = true;
+  services.teamviewer.enable = true;
+  programs.command-not-found.enable = false;
 
   # allow no password for sudo (dangerous...)
   security.sudo.enable = true;
@@ -330,6 +346,7 @@
     fasd
     fzf
     file
+    progress
     htop
     killall
     lm_sensors
@@ -392,6 +409,7 @@
     chromium
     google-chrome
     firefox
+    firefox-beta-bin
     tor-browser-bundle-bin
 
     # XORG/DESKTOP ENVIRONMENT
@@ -428,6 +446,7 @@
     freecad
     appimage-run
     openvpn
+    openvpn3
     powertop
     usbutils
     cabextract

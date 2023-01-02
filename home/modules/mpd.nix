@@ -19,6 +19,7 @@
         input_cache {
           size "1 GB"
         }
+        auto_update "yes"
       '';
     };
   };

@@ -1,16 +1,21 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs";
+    impermanence.url = "github:nix-community/impermanence";
     helix = { url = "github:Philipp-M/helix/personal"; inputs.nixpkgs.follows = "nixpkgs-unstable"; };
     rust-overlay = { url = "github:oxalica/rust-overlay"; inputs.nixpkgs.follows = "nixpkgs-unstable"; };
     nil = { url = "github:oxalica/nil"; inputs.nixpkgs.follows = "nixpkgs-unstable"; };
-    musnix = { url = "github:Philipp-M/musnix/fix-zfs-gpl-issue"; inputs.nixpkgs.follows = "nixpkgs"; };
+    musnix = { url = "github:Philipp-M/musnix/fix-zfs-gpl-issue"; inputs.nixpkgs.follows = "nixpkgs-unstable"; };
     agenix = { url = "github:ryantm/agenix"; inputs.nixpkgs.follows = "nixpkgs"; };
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
     rycee-nur-expressions = { url = "gitlab:rycee/nur-expressions"; flake = false; };
     neovim-nightly-overlay = { url = "github:nix-community/neovim-nightly-overlay"; inputs = { nixpkgs.follows = "nixpkgs-unstable"; flake-compat.follows = "flake-compat"; }; };
-    home-manager = { url = "github:Philipp-M/home-manager/personal"; inputs.nixpkgs.follows = "nixpkgs"; };
+    home-manager = { url = "github:Philipp-M/home-manager/personal-unstable"; inputs.nixpkgs.follows = "nixpkgs"; };
+
+    nix-index-database.url = "github:Mic92/nix-index-database";
+    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+
     kanata = { url = "github:jtroo/kanata"; flake = false; };
   };
 
@@ -52,14 +57,13 @@
         modules = [
           home-manager.nixosModules.home-manager
           inputs.musnix.nixosModules.default
+          inputs.impermanence.nixosModules.impermanence
           ({ pkgs, ... }: {
             nixpkgs.overlays = [ rust-overlay.overlays.default ];
-            nix.registry.nixpkgs.flake = inputs.nixpkgs;
-            nix.registry.nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
             home-manager.users.philm = {
-              imports = builtins.attrValues homeManagerModules;
+              imports = builtins.attrValues homeManagerModules ++ [ inputs.nix-index-database.hmModules.nix-index ];
               programs.home-manager.enable = true;
               home.stateVersion = "22.05";
               modules.cli.enable = true;
@@ -68,7 +72,6 @@
             };
           })
           extraConfig
-          { nixpkgs.config.permittedInsecurePackages = [ "qtwebkit-5.212.0-alpha4" ]; }
           path
         ];
         specialArgs = { inherit inputs nixpkgs-unstable; };
@@ -79,6 +82,8 @@
         let nixBin = writeShellScriptBin "nix" "${nixFlakes}/bin/nix --option experimental-features 'nix-command flakes' \"$@\""; in
         mkShell {
           buildInputs = [
+            f2fs-tools
+            gptfdisk
             git
             nix-zsh-completions
             git-crypt

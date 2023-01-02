@@ -105,8 +105,11 @@
           label-active-foreground = "#${base00.hex.rgb}";
           label-active-background = "#${base03.hex.rgb}";
           label-occupied-background = "#${alpha-hex}${base02.hex.rgb}";
+          label-urgent-foreground = "#${base0D.hex.rgb}";
+          label-urgent-background = "#${alpha-hex}${base02.hex.rgb}";
           label-active-padding = 1;
           label-occupied-padding = 1;
+          label-urgent-padding = 1;
           label-empty = "";
         };
         "module/date" = {
@@ -149,7 +152,6 @@
       };
     };
 
-    # "overwrite" xdg-open with handlr
     home.packages = [ (pkgs.writeShellScriptBin "feh" "${pkgs.feh}/bin/feh --conversion-timeout 5 \"$@\"") ];
 
     xdg = {
@@ -251,6 +253,9 @@
           src = ./rofi/theme.template.rasi;
         }
       );
+      extraConfig = {
+        cache-dir = ".local/share/rofi/cache";
+      };
     };
 
     services.picom = {

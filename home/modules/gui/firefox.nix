@@ -25,8 +25,10 @@
             "general.smoothScroll" = false;
             "geo.enabled" = false;
             "gfx.webrender.all" = true;
+            "gfx.webrender.precache-shaders" = true;
             "gfx.webrender.compositor" = true;
             "gfx.webrender.compositor.force-enabled" = true;
+            "gfx.webrender.program-binary-disk" = true;
             "layout.css.devPixelsPerPx" = "1.25";
             "media.gpu-process-decoder" = true;
             "media.navigator.enabled" = false;
@@ -48,7 +50,9 @@
             "signon.rememberSignons" = false;
             "svg.context-properties.content.enabled" = true;
             "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
-            "widget.content.gtk-theme-override" = "Adwaita:light";
+            "widget.content.gtk-theme-override" = config.theme.base16.name;
+            "widget.content.allow-gtk-dark-theme" = true;
+            "services.sync.prefs.sync.extensions.activeThemeID" = false;
           };
         };
       };
