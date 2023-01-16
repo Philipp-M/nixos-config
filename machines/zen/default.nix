@@ -125,6 +125,8 @@
         ".config/Signal"
         ".config/syncthing"
         ".config/yabridgectl"
+        ".config/FreeCAD"
+        ".config/gh"
         ".local/share/mpd"
         ".local/share/rofi"
         ".local/share/flatpak"
@@ -135,6 +137,7 @@
         ".local/share/cantata"
         ".local/share/fish"
         ".local/share/zoxide"
+        ".local/share/TelegramDesktop"
         ".local/state/wireplumber"
         ".BitwigStudio"
         ".cache/nix" # avoid unnecessary fetching
@@ -302,14 +305,15 @@
       ${pkgs.rsync}/bin/rsync \
         --delete \
         -av \
-        --exclude var/lib/systemd \
-        --exclude var/lib/docker \
-        --exclude var/log \
-        --exclude nix \
-        --exclude home/philm/Unity \
-        --exclude home/philm/.rustup \
-        --exclude home/philm/.cache \
-        --exclude home/philm/.cargo \
+        --delete-excluded \
+        --exclude /var/lib/systemd \
+        --exclude /var/lib/docker \
+        --exclude /var/log \
+        --exclude /nix \
+        --exclude /home/philm/Unity \
+        --exclude /home/philm/.rustup \
+        --exclude /home/philm/.cache \
+        --exclude /home/philm/.cargo \
         --filter=':- .gitignore' \
         --filter=':- .npmignore' \
         --filter=':- .ignore' /persistent/ \
