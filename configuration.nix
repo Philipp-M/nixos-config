@@ -37,6 +37,11 @@
     package = pkgs.nixUnstable;
     registry.nixpkgs.flake = inputs.nixpkgs;
     registry.nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
+    nixPath = [
+      "nixpkgs=${inputs.nixpkgs}"
+      "nixpkgs-unstable=${inputs.nixpkgs-unstable}"
+      "/nix/var/nix/profiles/per-user/root/channels"
+    ];
 
     settings = {
       auto-optimise-store = true;
