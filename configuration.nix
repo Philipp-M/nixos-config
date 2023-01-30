@@ -439,6 +439,7 @@
 
     # MISC
     neovide
+    inputs.comma.packages.${pkgs.system}.default
     exfat
     rdup
     sanoid

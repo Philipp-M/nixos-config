@@ -11,6 +11,7 @@
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
     rycee-nur-expressions = { url = "gitlab:rycee/nur-expressions"; flake = false; };
     neovim-nightly-overlay = { url = "github:nix-community/neovim-nightly-overlay"; inputs = { nixpkgs.follows = "nixpkgs-unstable"; flake-compat.follows = "flake-compat"; }; };
+    comma = { url = "github:nix-community/comma"; inputs = { nixpkgs.follows = "nixpkgs-unstable"; flake-compat.follows = "flake-compat"; }; };
     home-manager = { url = "github:Philipp-M/home-manager/personal-unstable"; inputs.nixpkgs.follows = "nixpkgs"; };
 
     nix-index-database.url = "github:Mic92/nix-index-database";
