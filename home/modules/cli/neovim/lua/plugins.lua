@@ -25,17 +25,19 @@ return require("packer").startup(function(use)
   -- Indentation tracking
   use {'lukas-reineke/indent-blankline.nvim', config = [[require('config.indent-blankline')]]}
 
-  use 'joshdick/onedark.vim' -- Theme inspired by Atom
+  -- use 'joshdick/onedark.vim' -- Theme inspired by Atom
 
   -- Highlights
   use {
-    'nvim-treesitter/nvim-treesitter',
+    -- 'nvim-treesitter/nvim-treesitter',
+    '~/dev/personal/tree-sitter/nvim-treesitter',
     requires = {
       'nvim-treesitter/nvim-treesitter-refactor', 'nvim-treesitter/nvim-treesitter-textobjects', 'p00f/nvim-ts-rainbow'
     },
     config = [[require('config.treesitter')]]
   }
-  use 'jordwalke/vim-reasonml'
+
+  -- use 'jordwalke/vim-reasonml'
 
   use {
     'nvim-treesitter/playground',
@@ -54,27 +56,29 @@ return require("packer").startup(function(use)
 
   -- Git
   use {
-    {'tpope/vim-fugitive', cmd = {'Git', 'Gstatus', 'Gblame', 'Gpush', 'Gpull', 'Gcommit', 'Gdiff'}}, {
-      'lewis6991/gitsigns.nvim',
-      requires = {'nvim-lua/plenary.nvim'},
-      config = function()
-        require('gitsigns').setup({
-          signs = {
-            add = {hl = 'GitSignsAdd', text = '▊', numhl = 'GitSignsAddNr', linehl = 'GitSignsAddLn'},
-            change = {hl = 'GitSignsChange', text = '▊', numhl = 'GitSignsChangeNr', linehl = 'GitSignsChangeLn'},
-            delete = {hl = 'GitSignsDelete', text = '▊', numhl = 'GitSignsDeleteNr', linehl = 'GitSignsDeleteLn'},
-            topdelete = {hl = 'GitSignsDelete', text = '▊', numhl = 'GitSignsDeleteNr', linehl = 'GitSignsDeleteLn'},
-            changedelete = {
-              hl = 'GitSignsChange',
-              text = '▊',
-              numhl = 'GitSignsChangeNr',
-              linehl = 'GitSignsChangeLn'
-            }
-          },
-          keymaps = {}
-        })
-      end
-    }, {'TimUntersberger/neogit', opt = true}
+    {'tpope/vim-fugitive', cmd = {'Git', 'Gstatus', 'Gblame', 'Gpush', 'Gpull', 'Gcommit', 'Gdiff'}},
+    --  {
+    --   'lewis6991/gitsigns.nvim',
+    --   requires = {'nvim-lua/plenary.nvim'},
+    --   config = function()
+    --     require('gitsigns').setup({
+    --       signs = {
+    --         add = {hl = 'GitSignsAdd', text = '▊', numhl = 'GitSignsAddNr', linehl = 'GitSignsAddLn'},
+    --         change = {hl = 'GitSignsChange', text = '▊', numhl = 'GitSignsChangeNr', linehl = 'GitSignsChangeLn'},
+    --         delete = {hl = 'GitSignsDelete', text = '▊', numhl = 'GitSignsDeleteNr', linehl = 'GitSignsDeleteLn'},
+    --         topdelete = {hl = 'GitSignsDelete', text = '▊', numhl = 'GitSignsDeleteNr', linehl = 'GitSignsDeleteLn'},
+    --         changedelete = {
+    --           hl = 'GitSignsChange',
+    --           text = '▊',
+    --           numhl = 'GitSignsChangeNr',
+    --           linehl = 'GitSignsChangeLn'
+    --         }
+    --       },
+    --       keymaps = {}
+    --     })
+    --   end
+    -- },
+     {'TimUntersberger/neogit', opt = true}
   }
 
   -- Keymappings

@@ -5,7 +5,6 @@
   config = lib.mkIf config.modules.gui.mpv.enable {
     programs.mpv = {
       enable = true;
-      package = pkgs.wrapMpv (pkgs.mpv-unwrapped.override { ffmpeg = pkgs.ffmpeg_5; }) { };
       config = {
         x11-netwm = "yes"; # necessary for xmonads fullscreen
         profile = "gpu-high";

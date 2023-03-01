@@ -1,0 +1,15 @@
+(defpoll time :interval "5s" `date +'{"date": "%d/%m", "hour": "%H", "minute": "%M", "day": "%A"}'`)
+(defwidget clock_module []
+  (box
+    :space-evenly false
+    (label
+      :text {time.hour}
+      :class "hour")
+    (label
+      :text ":")
+    (label
+      :text {time.minute}
+      :class "minute")
+    (label
+      :text {time.date}
+      :class "date")))

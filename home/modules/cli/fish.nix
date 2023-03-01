@@ -11,7 +11,6 @@
         npm set prefix $HOME/.npm/global
 
         set -gx PATH $HOME/.cargo/bin/ $PATH
-        set -gx PATH ./node_modules/.bin/ $PATH
         set -gx PATH $HOME/.npm/global/bin/ $PATH
         set -gx PATH $HOME/.gem/*/bin/ $PATH
       '';

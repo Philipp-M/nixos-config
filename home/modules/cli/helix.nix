@@ -1,10 +1,10 @@
-{ nixpkgs-unstable, helix, nil, ... }:
+{ helix, nil, nickel, ... }:
 { pkgs, lib, config, ... }:
 let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.modules.cli.helix;
   helixPackage = helix.packages.${pkgs.system}.default.overrideAttrs (self: {
-    makeWrapperArgs = with nixpkgs-unstable.pkgs;
+    makeWrapperArgs = with pkgs;
       self.makeWrapperArgs or [ ] ++ [
         "--suffix"
         "PATH"
@@ -19,12 +19,26 @@ let
           julia-bin
           luaformatter
           elixir_ls
+          marksman
+          ltex-ls
           solargraph
           go
           gopls
           texlab
-          taplo-cli
+          (rustPlatform.buildRustPackage {
+            pname = "taplo";
+            version = "0.8.0-shutdown-request-fix";
+            src = builtins.fetchGit {
+              url = "https://github.com/the-mikedavis/taplo.git";
+              ref = "md-handle-shutdown";
+              rev = "f8389bfbb5e3200c52c9d5cf63d7c6fd70ba66b1";
+            };
+            cargoSha256 = "sha256-V0zliIwr6aKiq4gKVtNhKijA6qHuJGgTCtBFg7Syp7M=";
+            buildFeatures = [ "lsp" ];
+          })
           pgformatter
+          kotlin-language-server
+          nickel.packages.${pkgs.system}.default
           (python3.withPackages (ps: with ps; [ python-lsp-server ] ++ python-lsp-server.optional-dependencies.all))
           nodePackages.bash-language-server
           nodePackages.dockerfile-language-server-nodejs
@@ -81,17 +95,17 @@ in
             brown = "#${base0F.hex.rgb}";
           in
           {
-            "ui.menu" = { }; # transparent
+            "ui.menu" = { bg = dark-gray; }; # transparent
             "ui.menu.selected" = { modifiers = [ "reversed" ]; };
             "ui.linenr" = { fg = gray; bg = dark-gray; };
-            "ui.popup" = { }; # transparent
+            "ui.popup" = { bg = dark-gray; };
             "ui.linenr.selected" = { fg = white; bg = black; modifiers = [ "bold" ]; };
-            "ui.selection" = { fg = black; bg = blue; };
+            "ui.selection" = { bg = dark-gray; };
             "ui.selection.primary" = { bg = med-gray; };
             "comment" = { fg = gray; };
             "ui.statusline" = { fg = white; bg = dark-gray; };
             "ui.statusline.inactive" = { fg = dark-gray; bg = white; };
-            "ui.help" = { fg = gray; bg = white; };
+            "ui.help" = { fg = gray; bg = dark-gray; };
             "ui.cursor" = { modifiers = [ "reversed" ]; };
             "ui.virtual.indent-guide" = dark-gray;
             "variable" = red;
@@ -99,12 +113,14 @@ in
             "constant.numeric" = orange;
             "constant" = orange;
             "attributes" = yellow;
+            "attribute" = cyan;
             "type" = yellow;
             "ui.cursor.match" = { fg = yellow; modifiers = [ "underlined" ]; };
             "string" = green;
             "variable.other.member" = red;
             "constant.character.escape" = cyan;
             "punctuation" = brown;
+            "punctuation.special" = brown;
             "operator" = brown;
             "function" = blue;
             "constructor" = blue;
@@ -126,7 +142,7 @@ in
             "warning" = yellow;
             "error" = red;
             "tag" = blue;
-            "attribute" = red;
+            "tag.builtin" = orange;
             "markup.heading.marker" = magenta;
             "markup.heading.1" = { fg = blue; modifiers = [ "underlined" "bold" ]; };
             "markup.heading.2" = { fg = blue; modifiers = [ "bold" ]; };
@@ -143,28 +159,17 @@ in
             "markup.list" = brown;
           };
       };
-      languages = with nixpkgs-unstable.pkgs;
+      languages = with pkgs;
         {
           language-server = {
             efm-lsp-prettier = {
               command = "${efm-langserver}/bin/efm-langserver";
               config = {
                 documentFormatting = true;
-                languages = lib.genAttrs [ "typescript" "javascript" "typescriptreact" "javascriptreact" "vue" "json" "markdown" ] (_:
-                  let
-                    findNodeModulesCmd = bin-name: ''$(
-                      if [ -z "$(command -v ''${ROOT}/node_modules/.bin/${bin-name})" ]; then
-                        echo ${nodePackages."${bin-name}"}/bin/${bin-name};
-                      else
-                        echo ''${ROOT}/node_modules/.bin/${bin-name};
-                      fi
-                    )'';
-                    prettierCmd = findNodeModulesCmd "prettier";
-                  in
-                  [{
-                    formatCommand = "${prettierCmd} --stdin-filepath \${INPUT}";
-                    formatStdin = true;
-                  }]);
+                languages = lib.genAttrs [ "typescript" "javascript" "typescriptreact" "javascriptreact" "vue" "json" "markdown" ] (_: [{
+                  formatCommand = "${nodePackages.prettier}/bin/prettier --stdin-filepath \${INPUT}";
+                  formatStdin = true;
+                }]);
               };
             };
             eslint = {
@@ -174,10 +179,8 @@ in
                 validate = "on";
                 packageManager = "yarn";
                 useESLintClass = false;
-                codeActionOnSave = {
-                  enable = false;
-                  mode = "all";
-                };
+                codeActionOnSave.mode = "all";
+                # codeActionsOnSave = { mode = "all"; };
                 format = true;
                 quiet = false;
                 onIgnoredFiles = "off";
@@ -187,7 +190,10 @@ in
                 # This path is relative to the workspace folder (root dir) of the server instance.
                 nodePath = "";
                 # use the workspace folder location or the file location (if no workspace folder is open) as the working directory
-                workingDirectory.mode = "location";
+
+                workingDirectory.mode = "auto";
+                experimental = { };
+                problems.shortenToSingleLine = false;
                 codeAction = {
                   disableRuleComment = {
                     enable = true;
@@ -224,8 +230,8 @@ in
               jsTsWebLanguageServers =
                 [
                   { name = "typescript-language-server"; except-features = [ "format" ]; }
-                  { name = "efm-lsp-prettier"; only-features = [ "format" ]; }
                   "eslint"
+                  { name = "efm-lsp-prettier"; only-features = [ "format" ]; }
                 ];
             in
             [
@@ -240,22 +246,26 @@ in
               { name = "sql"; formatter.command = "pg_format"; }
               { name = "nix"; language-servers = [ "nil" ]; }
               { name = "json"; language-servers = [{ name = "vscode-json-language-server"; except-features = [ "format" ]; } "efm-lsp-prettier"]; }
-              { name = "markdown"; language-servers = [{ name = "marksman"; except-features = [ "format" ]; } "efm-lsp-prettier"]; }
+              { name = "markdown"; language-servers = [{ name = "marksman"; except-features = [ "format" ]; } "ltex-ls" "efm-lsp-prettier"]; }
             ];
         };
       settings = {
         theme = "base16";
         editor = {
+          idle-timeout = 33;
           indent-guides.render = true;
           rainbow-brackets = true;
           auto-pairs = false;
           lsp.display-messages = true;
+          # lsp.inline-diagnostics.other-lines = [];
           completion-trigger-len = 1;
           line-number = "relative";
           search.smart-case = false;
           scrolloff = 0;
           true-color = true;
           file-picker.hidden = false;
+          soft-wrap.enable = true;
+          # persistent-undo = true;
         };
         keys =
           let
@@ -312,11 +322,13 @@ in
               j = "move_char_left";
               h = "move_line_up";
               k = "move_line_down";
+              "C-x" = [ "extend_line_below" "trim_selections" ]; # "change_selection"
               backspace = [ "collapse_selection" "keep_primary_selection" ];
               space = spaceMode;
             } // commonMovementMappings // yankPasteMappings;
             insert."C-space" = "completion";
             select = {
+              "C-x" = [ "extend_line_below" "trim_selections" ]; # "change_selection"
               j = "extend_char_left";
               h = "extend_line_up";
               k = "extend_line_down";

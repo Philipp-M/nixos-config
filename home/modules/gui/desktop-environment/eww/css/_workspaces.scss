@@ -1,0 +1,19 @@
+.ws {
+  // background-color: $fg;
+  background-color: $base01;
+  min-width: 24px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  border-radius: 4px;
+  margin-top: 4px;
+  margin-right: 4px;
+
+  &.active {
+    color: $blue;
+    background-color: $base02;
+  }
+
+  &.inactive {
+    color: $base05;
+  }
+}

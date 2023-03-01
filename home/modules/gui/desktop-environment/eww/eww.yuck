@@ -1,0 +1,86 @@
+(include "./modules/bluetooth.yuck")
+(include "./modules/bright.yuck")
+(include "./modules/clock.yuck")
+(include "./modules/music.yuck")
+(include "./modules/net.yuck")
+(include "./modules/network-traffic.yuck")
+(include "./modules/sys.yuck")
+(include "./modules/variables.yuck")
+(include "./modules/volume.yuck")
+(include "./modules/workspaces.yuck")
+(include "./modules/workspaces-ewmh.yuck")
+
+(include "./windows/calendar.yuck")
+(include "./windows/music.yuck")
+(include "./windows/osd.yuck")
+(include "./windows/system-menu.yuck")
+
+(defwidget left []
+  (box
+    :space-evenly false
+    :halign "start"
+    (workspaces)))
+
+(defwidget left-xmonad []
+  (box
+    :space-evenly false
+    :halign "start"
+    (workspaces-ewmh)))
+
+(defwidget right []
+  (box
+    :space-evenly false
+    :halign "end"
+    (network-traffic)
+    (bright)
+    (volume-module)
+    (bluetooth)
+    (net)
+    (sys)
+    (clock_module)))
+
+(defwidget center []
+  (box
+    :space-evenly false
+    :halign "center"
+    (music-module)))
+
+(defwidget bar []
+  (centerbox
+    :class "bar"
+    (left)
+    (center)
+    (right)))
+
+(defwidget xmonadbar []
+  (centerbox
+    :class "bar"
+    (left-xmonad)
+    (center)
+    (right)))
+
+(defwindow bar
+    :monitor 0
+    :geometry (geometry :x "0%"
+      :y "0%"
+      :width "100%"
+      :height "32px"
+      :anchor "top center")
+    :stacking "fg"
+    :reserve (struts :side "top" :distance "32px")
+    :exclusive true
+  (bar))
+
+(defwindow xmonadbar
+    :monitor 0
+    :geometry (geometry :x "0%"
+      :y "0%"
+      :width "100%"
+      :height "32px"
+      :anchor "top center")
+    :stacking "fg"
+    :windowtype "dock"
+    :wm-ignore false
+    :reserve (struts :side "top" :distance "32px")
+    :exclusive true
+  (xmonadbar))

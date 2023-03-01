@@ -21,6 +21,8 @@
 
     programs.nix-index.enable = true;
 
+    programs.nushell.enable = true;
+
     programs.zoxide.enable = true;
 
     programs.bat.enable = true;

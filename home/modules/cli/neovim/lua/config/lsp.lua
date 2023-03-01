@@ -96,15 +96,15 @@ local function on_attach(client, bufnr)
   buf_keymap('n', '<C-b>', '<cmd>lua require("lspsaga.action").smart_scroll_with_saga(-1)<CR>', opts)
 
   -- Set some keybinds conditional on server capabilities
-  if client.resolved_capabilities.document_formatting then
+  if client.server_capabilities.document_formatting then
     buf_keymap("n", "<space>f", "<cmd>lua vim.lsp.buf.formatting()<cr>", opts)
   end
-  if client.resolved_capabilities.document_range_formatting then
+  if client.server_capabilities.document_range_formatting then
     buf_keymap("v", "<space>f", "<cmd>lua vim.lsp.buf.range_formatting()<cr>", opts)
   end
 
   -- Set autocommands conditional on server_capabilities
-  if client.resolved_capabilities.document_highlight then
+  if client.server_capabilities.document_highlight then
     vim.api.nvim_exec([[
       hi LspReferenceRead cterm=bold ctermbg=red guibg=gray20
       hi LspReferenceText cterm=bold ctermbg=red guibg=gray20
@@ -130,7 +130,7 @@ local function on_attach(client, bufnr)
 end
 
 local function on_attach_without_formatting(client, bufnr)
-  client.resolved_capabilities.document_formatting = false
+  client.server_capabilities.document_formatting = false
   on_attach(client, bufnr)
 end
 
@@ -214,18 +214,18 @@ local servers = {
     }
   },
   stylelint_lsp = {cmd = {"stylelint"}}, -- not yet working, needs stylelint-lsp in nixpkgs upstream
-  sumneko_lua = {
-    cmd = {'lua-language-server'},
-    settings = {
-      Lua = {
-        diagnostics = {globals = {'vim'}},
-        runtime = {version = 'LuaJIT', path = vim.split(package.path, ';')},
-        workspace = {
-          library = {[vim.fn.expand("$VIMRUNTIME/lua")] = true, [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true}
-        }
-      }
-    }
-  },
+  -- lua_ls = {
+  --   cmd = {'lua-language-server'},
+  --   settings = {
+  --     Lua = {
+  --       diagnostics = {globals = {'vim'}},
+  --       runtime = {version = 'LuaJIT', path = vim.split(package.path, ';')},
+  --       workspace = {
+  --         library = {[vim.fn.expand("$VIMRUNTIME/lua")] = true, [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true}
+  --       }
+  --     }
+  --   }
+  -- },
   svelte = {},
   taplo = {},
   texlab = {
@@ -267,7 +267,7 @@ for server, config in pairs(servers) do
     underline = true,
     update_in_insert = true
   })
-  local cmp_capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+  local cmp_capabilities = require('cmp_nvim_lsp').default_capabilities()
   config.capabilities = vim.tbl_deep_extend('keep', config.capabilities or {}, lsp_status.capabilities,
                                             cmp_capabilities, snippet_capabilities)
   lspconfig[server].setup(config)

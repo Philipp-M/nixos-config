@@ -15,6 +15,7 @@ import XMonad.Layout.NoBorders (smartBorders, noBorders)
 import XMonad.Layout.NoFrillsDecoration
 import XMonad.Layout.Spacing
 import XMonad.Layout.Dwindle
+import XMonad.Layout.Reflect
 import XMonad.Layout.StackTile
 import qualified XMonad.StackSet as W
 import XMonad.Util.EZConfig
@@ -52,8 +53,8 @@ myLayouts = smartBorders $ mkToggle (single NBFULL)
     $ addTopBar
     $ mySpacing
     $ tiled
-      -- ||| (Mirror tiled)
-      ||| (Dwindle R CW 1 1.1)
+      ||| reflectHoriz tiled
+      ||| Dwindle R CW 1 1.1
       -- ||| Dwindle L CW 1.5 1.1
       -- currently only use 2 layouts: Dwindle and tiled
   where

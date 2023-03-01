@@ -88,7 +88,7 @@ rustPlatform.buildRustPackage rec {
       ln -s $out/bin $out/Applications/Alacritty.app/Contents/MacOS
     '' else ''
       install -D extra/linux/Alacritty.desktop -t $out/share/applications/
-      install -D extra/linux/io.alacritty.Alacritty.appdata.xml -t $out/share/appdata/
+      # install -D extra/linux/io.alacritty.Alacritty.appdata.xml -t $out/share/appdata/
       install -D extra/logo/compat/alacritty-term.svg $out/share/icons/hicolor/scalable/apps/Alacritty.svg
 
       # patchelf generates an ELF that binutils' "strip" doesn't like:

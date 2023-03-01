@@ -1,8 +1,7 @@
-{ nixpkgs-unstable, ... }:
+{ ... }:
 { pkgs, lib, config, ... }:
 let
-  inherit (lib) mkEnableOption mkIf hasAttrByPath;
-  inherit (builtins) isAttrs isFunction;
+  inherit (lib) mkEnableOption mkIf;
   cfg = config.modules.cli.neovim;
 in
 {
@@ -11,8 +10,8 @@ in
   config = mkIf cfg.enable {
     programs.neovim = {
       enable = true;
-      package = nixpkgs-unstable.pkgs.neovim-nightly;
-      extraPackages = with nixpkgs-unstable.pkgs; [
+      package = pkgs.neovim-nightly;
+      extraPackages = with pkgs; [
         clang-tools
         cmake-language-server
         dart
@@ -50,10 +49,10 @@ in
     };
 
     # TODO clean this up, so that helix and neovim can access the same instance
-    home.packages = [
-      pkgs.dotnet-sdk
-      pkgs.omnisharp-roslyn
-      pkgs.msbuild
+    home.packages = with pkgs; [
+      dotnet-sdk
+      omnisharp-roslyn
+      msbuild
     ];
 
     # neovim base16 themes with transparency support

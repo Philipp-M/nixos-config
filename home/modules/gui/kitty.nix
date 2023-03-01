@@ -9,8 +9,7 @@
       programs.kitty = with config.theme.extraParams; {
         enable = true;
         font = {
-          name = "Iosevka Kitty";
-          package = (pkgs.iosevka.override { privateBuildPlan = { family = "Iosevka Kitty"; export-glyph-names = true; }; set = "kitty"; });
+          name = fontname;
           size = 18;
         };
         settings = {
@@ -19,6 +18,7 @@
           enable_audio_bell = false;
           update_check_interval = 0;
           background_opacity = alpha;
+          linux_display_server = "x11";
         };
         extraConfig = with config.theme.base16.colors;
           ''

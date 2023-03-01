@@ -1,4 +1,4 @@
-{ nixpkgs-unstable, ... }:
+{ ... }:
 { pkgs, lib, config, ... }: {
   options.modules.mpd.enable = lib.mkEnableOption "Enable personal mpd config";
 
@@ -21,6 +21,15 @@
         }
         auto_update "yes"
       '';
+    };
+    systemd.user.services.mpd-mpris = {
+      Service = {
+        Type = "simple";
+        # awful hack
+        ExecStart = "${pkgs.writeShellScriptBin "delay-mpd-dris" "${pkgs.coreutils}/bin/sleep 1 && ${pkgs.mpd-mpris}/bin/mpd-mpris"}/bin/delay-mpd-dris";
+      };
+      Unit.PartOf = [ "mpd.socket" "mpd.service" ];
+      Install.WantedBy = [ "mpd.socket" "mpd.service" ];
     };
   };
 }

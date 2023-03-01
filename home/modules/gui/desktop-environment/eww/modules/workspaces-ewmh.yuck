@@ -1,0 +1,13 @@
+(deflisten ewmh-state "ewmh-status-listener 2> /tmp/ewmh-status-listener-log")
+(defwidget workspaces-ewmh []
+  (eventbox
+		:onscroll "echo '(${ewmh-state.current_desktop_id}{}+${arraylength(ewmh-state.desktops)})%${arraylength(ewmh-state.desktops)}' | sed -e \"s/up/+1/g\" -e \"s/down/-1/g\" | bc | xargs wmctrl -s"
+		(box
+			:class "module workspaces"
+		  (for ws in {ewmh-state.desktops}
+		    (button
+					:onclick "wmctrl -s ${ws.id}"
+					:visible {arraylength(ws.windows) > 0 || ws.id == ewmh-state.current_desktop_id}
+					:class "ws ${ws.id == ewmh-state.current_desktop_id ? "active" : arraylength(ws.windows) > 0 ? "inactive" : "empty"}"
+					:tooltip {jq(ws, '[.windows[] | .name] | join(", ")')} ; TODO formatting could be improved
+					"${ws.name}")))))

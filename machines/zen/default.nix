@@ -1,10 +1,10 @@
-{ config, lib, pkgs, nixpkgs-unstable, modulesPath, ... }: {
+{ config, lib, pkgs, modulesPath, ... }: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     ../../configuration.nix
   ];
 
-  nixpkgs.overlays = import ../../secrets/nix-expressions/zen-overlays.nix { inherit nixpkgs-unstable; };
+  nixpkgs.overlays = import ../../secrets/nix-expressions/zen-overlays.nix;
 
   hardware = {
     cpu.amd.updateMicrocode = true;
@@ -13,15 +13,19 @@
     nvidia = {
       package = config.boot.kernelPackages.nvidiaPackages.production;
       modesetting.enable = true;
+      powerManagement.enable = true;
+      forceFullCompositionPipeline = true;
     };
   };
 
   boot = {
     initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "uas" "sd_mod" ];
+    initrd.checkJournalingFS = false; # fsck.f2fs is broken with extended node bitmap (needed for precious inodes)
+    kernelParams = [ "nordrand" "amd_iommu=fullflush" ];
     supportedFilesystems = [ "ntfs" "zfs" ];
     zfs.requestEncryptionCredentials = false;
     zfs.enableUnstable = true;
-    kernelPackages = pkgs.linuxPackages_6_0;
+    kernelPackages = pkgs.linuxPackages_6_1;
     extraModulePackages = [ config.boot.kernelPackages.zenpower ];
     kernelModules = [ "kvm-amd" "snd-seq" "snd-rawmidi" ];
     loader.systemd-boot.consoleMode = "max";
@@ -40,7 +44,7 @@
 
   fileSystems = {
     "/persistent" = {
-      device = "/dev/disk/by-uuid/9e97953d-e86d-4057-8ebb-fb297a4ad3e6";
+      device = "/dev/disk/by-uuid/7040ac76-fb32-4990-975b-54eddc0aa684";
       fsType = "f2fs";
       options = [ "compress_algorithm=lz4" "compress_chksum" "atgc" "gc_merge" "lazytime" ];
       neededForBoot = true;
@@ -127,6 +131,9 @@
         ".config/yabridgectl"
         ".config/FreeCAD"
         ".config/gh"
+        ".config/heroic"
+        ".config/Google"
+        ".config/tree-sitter"
         ".local/share/mpd"
         ".local/share/rofi"
         ".local/share/flatpak"
@@ -141,6 +148,9 @@
         ".local/state/wireplumber"
         ".BitwigStudio"
         ".cache/nix" # avoid unnecessary fetching
+        ".cache/Google" # Android studio takes a long time otherwise
+        ".gradle"
+        ".android"
         ".var/app"
         ".vst"
         ".gnome"
@@ -193,14 +203,32 @@
 
   services.blueman.enable = true;
 
+  # necessary for 172 and 192 kHz sample rate
+  environment.etc."wireplumber/main.lua.d/50-alsa-config.lua".text = ''
+    alsa_monitor.rules = { {
+      matches = { { { "device.name", "matches", "alsa_card.usb-MOTU_UltraLite-mk5_UL5LFF562C-00" }, }, },
+      apply_properties = {
+        ["api.alsa.use-acp"] = true,
+        ["api.alsa.use-ucm"] = false,
+        ["api.acp.auto-profile"] = false,
+        ["api.acp.pro-channels"] = 10,
+        ["api.acp.probe-rate"] = 176400,
+        ["device.profile"] = "pro-audio",
+      },
+    }, }
+  '';
+
   services.pipewire.config = {
     pipewire = {
       "context.properties" = {
         "link.max-buffers" = 16;
         "log.level" = 2;
-        "default.clock.rate" = 48000;
-        "default.clock.quantum" = 64;
-        "default.clock.min-quantum" = 64;
+        # "default.clock.allowed-rates" = [ 44100 48000 ];
+        "default.clock.allowed-rates" = [ 176400 192000 ];
+        "default.clock.rate" = 176400;
+        # "default.clock.rate" = 44100;
+        "default.clock.quantum" = 1024;
+        "default.clock.min-quantum" = 16;
         "default.clock.max-quantum" = 2048;
         "core.daemon" = true;
         "core.name" = "pipewire-0";
@@ -209,10 +237,10 @@
         {
           name = "libpipewire-module-rt";
           args = {
-            nice.level = 20;
-            rt.prio = 88;
-            rt.time.soft = -1;
-            rt.time.hard = -1;
+            "nice.level" = 20;
+            "rt.prio" = 88;
+            "rt.time.soft" = -1;
+            "rt.time.hard" = -1;
           };
           flags = [ "ifexists" "nofail" ];
         }
@@ -314,6 +342,10 @@
         --exclude /home/philm/.rustup \
         --exclude /home/philm/.cache \
         --exclude /home/philm/.cargo \
+        --exclude /home/philm/.gradle \
+        --exclude /home/philm/.android \
+        --exclude /home/philm/.npmrc \
+        --exclude /home/philm/.xmonad \
         --filter=':- .gitignore' \
         --filter=':- .npmignore' \
         --filter=':- .ignore' /persistent/ \
@@ -327,34 +359,22 @@
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "simple";
-      ExecStart = "${nixpkgs-unstable.pkgs.hd-idle}/bin/hd-idle -i 180 -c ata";
+      ExecStart = "${pkgs.hd-idle}/bin/hd-idle -i 180 -c ata";
     };
   };
 
-  services.xserver = {
-    dpi = 110;
-    screenSection = ''
-      DefaultDepth 24
-      Option "RegistryDwords" "PerfLevelSrc=0x3322; PowerMizerDefaultAC=0x1"
-      Option "TripleBuffer" "True"
-      Option "Stereo" "0"
-      Option "nvidiaXineramaInfoOrder" "DP-4, DP-2"
-      Option "metamodes" "DP-2: nvidia-auto-select +3840+0 { ForceFullCompositionPipeline=On }, DP-4: nvidia-auto-select +0+0 { ForceFullCompositionPipeline=On }"
-      Option "SLI" "Off"
-      Option "MultiGPU" "Off"
-      Option "BaseMosaic" "off"
-    '';
-    videoDrivers = [ "nvidia" ];
-  };
-
+  services.xserver = { dpi = 110; videoDrivers = [ "nvidia" ]; };
 
   home-manager.users.philm = {
     modules.mpd.enable = true;
     services.blueman-applet.enable = true;
+    home.sessionVariables = {
+      LIBVA_DRIVER_NAME = "nvidia";
+    };
   };
 
   # reduce jobs, as otherwise a lot of swapping occurs (which I guess slows down the building process)
-  nix.settings.max-jobs = lib.mkDefault 2;
+  nix.settings.max-jobs = lib.mkDefault 1;
   # High-DPI console
   console.font =
     lib.mkDefault "${pkgs.terminus_font}/share/consolefonts/ter-u28n.psf.gz";
@@ -369,6 +389,14 @@
     carla
     jack2
     blender
+    nvidia-vaapi-driver
+    heroic
+    arduino
+    shntool
+    flac
+    cuetools
+    # arduino-core
+    arduino-cli
     nvtop
     factorio
   ];

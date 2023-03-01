@@ -8,7 +8,6 @@
     # home.sessionVariables.TERMINAL = "alacritty";
     programs.alacritty = with config.theme.extraParams; {
       enable = true;
-      package = pkgs.callPackage ./alacritty-with-ligatures.nix { };
       settings = {
         live_config_reload = true;
         scrolling = {

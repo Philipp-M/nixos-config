@@ -2,22 +2,31 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, options, lib, nixpkgs-unstable, inputs, ... }:
+{ config, pkgs, lib, inputs, ... }:
 {
+  imports = [
+    inputs.home-manager.nixosModules.home-manager
+    inputs.musnix.nixosModules.default
+    inputs.hyprland.nixosModules.default
+    inputs.impermanence.nixosModules.impermanence
+  ];
+
   nixpkgs.config.allowUnfree = true;
   nixpkgs.overlays = [
+    inputs.rust-overlay.overlays.default
+    inputs.neovim-nightly-overlay.overlay
     # "overwrite" xdg-open with handlr
-    # very expensive since this invalidates the cache for a lot of (almost all) graphical apps.
     (final: prev: {
+      # very expensive since this invalidates the cache for a lot of (almost all) graphical apps.
       xdg-utils = prev.xdg-utils.overrideAttrs (oldAttrs: {
         postInstall = oldAttrs.postInstall + ''
           # "overwrite" xdg-open with handlr
-          cp ${pkgs.writeShellScriptBin "xdg-open" "${pkgs.handlr}/bin/handlr open \"$@\""}/bin/xdg-open $out/bin/xdg-open
+          cp ${prev.writeShellScriptBin "xdg-open" "${prev.handlr}/bin/handlr open \"$@\""}/bin/xdg-open $out/bin/xdg-open
         '';
       });
     })
     (final: prev: {
-      shntool = nixpkgs-unstable.pkgs.shntool.overrideAttrs (
+      shntool = prev.shntool.overrideAttrs (
         old: {
           version = "24-bit";
           patches = [
@@ -28,6 +37,44 @@
           ];
         }
       );
+      firefox = prev.wrapFirefox
+        (prev.firefox-unwrapped.overrideAttrs (
+          old: {
+            patches = old.patches ++ [
+              (builtins.fetchurl {
+                url = "https://phabricator.services.mozilla.com/D164578?download=true";
+                sha256 = "sha256:0g576pjsh6shd53414ram44b7vyd4r9h1y3cah2dgzgf3hx4kvpx";
+              })
+            ];
+          }
+        ))
+        { };
+      rofi-wayland-unwrapped = prev.rofi-wayland-unwrapped.overrideAttrs
+        (old: {
+          src = prev.fetchFromGitHub {
+            owner = "lbonn";
+            repo = "rofi";
+            rev = "f8bec1453c94a114f366efbfab12fb3b7856a1ab";
+            fetchSubmodules = true;
+            sha256 = "sha256-+aLQjLPRaJY2+/Ilc76u52U561pI2Ta0GvfirhLJP8U=";
+          };
+          version = "1.7.6+wayland1-git";
+        });
+    })
+    (final: prev: {
+      youtube-dl = prev.youtube-dl.overrideAttrs (
+        old: {
+          src = prev.fetchFromGitHub {
+            owner = "ytdl-org";
+            repo = "youtube-dl";
+            rev = "fe7e13066c20b10fe48bc154431440da36baec53";
+            sha256 = "sha256-suGzr/R0FbYrIS+aKAaQ9E8C6ssUZIIM7mq3QXiC1s4=";
+          };
+          patches = [ ];
+          postInstall = "";
+          version = "git";
+        }
+      );
     })
   ];
 
@@ -36,20 +83,16 @@
   nix = {
     package = pkgs.nixUnstable;
     registry.nixpkgs.flake = inputs.nixpkgs;
-    registry.nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
-    nixPath = [
-      "nixpkgs=${inputs.nixpkgs}"
-      "nixpkgs-unstable=${inputs.nixpkgs-unstable}"
-      "/nix/var/nix/profiles/per-user/root/channels"
-    ];
+    nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
 
     settings = {
       auto-optimise-store = true;
       trusted-users = [ "root" "@wheel" ];
-      substituters = [ "https://cache.nixos.org/" "https://cache.ngi0.nixos.org" "https://cache.iog.io" "https://nix-cache.mildenberger.me" ];
+      substituters = [ "https://nix-cache.mildenberger.me" "https://cache.nixos.org/" "https://hyprland.cachix.org" "https://cache.ngi0.nixos.org" "https://cache.iog.io" ];
       trusted-public-keys = [
         "nix-cache.mildenberger.me:dcNVw3YMUReIGC5JsMN4Ifv9xjbQn7rkDF7gJIO0ZoI="
         "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
         "cache.ngi0.nixos.org-1:KqH5CBLNSyX184S9BKZJo1LxrxJ9ltnY2uAs5c/f1MA="
         "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ="
       ];
@@ -60,11 +103,10 @@
   nixpkgs.config.permittedInsecurePackages = [ "libdwarf-20181024" "qtwebkit-5.212.0-alpha4" ];
 
   # Use the systemd-boot EFI boot loader.
-  boot.supportedFilesystems = [ "ecryptfs" ];
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  boot.extraModulePackages = [ config.boot.kernelPackages.v4l2loopback ];
+  boot.extraModulePackages = [ config.boot.kernelPackages.v4l2loopback.out ];
   boot.kernelModules = [ "v4l2loopback" ];
 
   system.stateVersion = "22.11";
@@ -152,7 +194,7 @@
   # Enable the OpenSSH daemon.
   services.openssh = {
     enable = true;
-    permitRootLogin = "yes";
+    settings.PermitRootLogin = "yes";
   };
 
   services.udisks2.enable = true;
@@ -160,6 +202,12 @@
   # Enable the X11 windowing system.
 
   services.autorandr.enable = true;
+  hardware.pulseaudio.enable = false;
+
+  environment.sessionVariables = {
+    WLR_NO_HARDWARE_CURSORS = "1";
+    EDITOR = "${config.home-manager.users.philm.programs.helix.package}/bin/hx";
+  };
 
   services.xserver = {
     enable = true;
@@ -168,18 +216,11 @@
     xkbVariant = "colemak";
     # Enable touchpad support.
     libinput.enable = true;
+    displayManager.gdm.enable = true;
+    displayManager.gdm.debug = true;
+
     displayManager = {
-      lightdm = {
-        background = builtins.fetchurl {
-          url = "https://github.com/DaringCuteSeal/wallpapers/raw/gh-pages/os/nix-simple/nix-simple-geometric.png";
-          sha256 = "sha256:10fqxx5z0591jmllw9iya2dkck47fs45hkzc9p4vfwdbzz0b2y1b";
-        };
-        # this is dependent on importing the 'theme.nix' home-manager module
-        greeters.gtk.theme = with config.home-manager.users.philm.theme; {
-          name = base16.name;
-          package = pkgs.callPackage (import "${inputs.rycee-nur-expressions}/pkgs/materia-theme") { configBase16 = base16; };
-        };
-      };
+      sessionPackages = [ config.home-manager.users.philm.modules.gui.desktop-environment.hyprland-session-wrapper ];
       # Use session defined in home.nix
       session = [{
         name = "xmonad";
@@ -191,8 +232,6 @@
         '';
       }];
       defaultSession = "none+xmonad";
-      # this prevents accidentally turned on caps lock in the login manager (as it is remapped in the xmonad session to escape)
-      sessionCommands = "${pkgs.xorg.xmodmap}/bin/xmodmap -e 'clear Lock'";
     };
   };
 
@@ -200,9 +239,9 @@
     enable = true;
     package = pkgs.rustPlatform.buildRustPackage {
       pname = "kanata";
-      version = "1.0.8-git";
+      version = "1.3.0-git";
       src = inputs.kanata;
-      cargoHash = "sha256-9DfKjr4EdRmPE3LWdygPXgNUoYrroUCGvhuAh60Kns8=";
+      cargoHash = "sha256-IW+TjVROjzllQuk5SMCq4O06c1+hAlfRQlRRJ2MFFl0=";
       buildFeatures = [ "cmd" ];
     };
     keyboards.redox = {
@@ -242,8 +281,19 @@
   services.dbus.packages = [ pkgs.dconf ];
   programs.dconf.enable = true;
 
-  xdg.portal.enable = true;
-  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  xdg.portal = {
+    enable = true;
+    wlr.enable = true; # necessary? as hyprland has its own xdg-portal based on wlr
+    xdgOpenUsePortal = true;
+    extraPortals = [
+      pkgs.xdg-desktop-portal-gtk
+      pkgs.xdg-desktop-portal-kde
+      (inputs.xdph.packages.${pkgs.hostPlatform.system}.default.override {
+        hyprland-share-picker = inputs.xdph.packages.${pkgs.hostPlatform.system}.hyprland-share-picker.override { hyprland = config.home-manager.users.philm.wayland.windowManager.hyprland.package; };
+      })
+    ];
+  };
+
   services.flatpak.enable = true;
   services.teamviewer.enable = true;
   programs.command-not-found.enable = false;
@@ -273,6 +323,18 @@
   };
   users.extraGroups.vboxusers.members = [ "philm" ];
 
+  # configure home-manager
+  home-manager.useUserPackages = true;
+  home-manager.useGlobalPkgs = true;
+  home-manager.users.philm = {
+    imports = builtins.attrValues inputs.self.homeManagerModules ++ [ inputs.nix-index-database.hmModules.nix-index ];
+    programs.home-manager.enable = true;
+    home.stateVersion = "22.05";
+    modules.cli.enable = true;
+    modules.gui.enable = true;
+    modules.create-directories.enable = true;
+  };
+
   # All system wide packages
 
   programs.fish.enable = true;
@@ -286,16 +348,18 @@
 
   programs.steam.enable = true;
 
+  services.gnome.gnome-keyring.enable = true;
+  programs.seahorse.enable = true;
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  environment.systemPackages = with pkgs; let unstable = nixpkgs-unstable.pkgs; in
-  [
+  environment.systemPackages = with pkgs; [
     # DEVELOPMENT
     ## compilers and dev environment
     # clang_10 # conflicts with gcc
-    python38Full
-    python38Packages.pip
-    python38Packages.setuptools
+    python3Full
+    python3Packages.pip
+    python3Packages.setuptools
     elixir
     gcc10
     gdb
@@ -318,7 +382,6 @@
     droidcam
     flatpak-builder
     # haskell.compiler.ghc882
-    carnix
     nixpkgs-review
     php
     yarn
@@ -366,7 +429,7 @@
     bat
     zoxide
     bandwhich
-    # grex, TODO implement support
+    grex
     hyperfine
     tealdeer
     procs
@@ -374,7 +437,7 @@
     unzip
     b3sum
     yq
-    unstable.youtube-dl
+    youtube-dl
     zip
     unrar
     p7zip
@@ -389,13 +452,14 @@
 
     # AUDIO
     cantata
-    unstable.yabridge
-    unstable.yabridgectl
+    yabridge
+    yabridgectl
     pavucontrol
-    unstable.helvum
-    unstable.ffmpeg_5-full
+    helvum
+    ffmpeg_5-full
     flacon
-    unstable.bitwig-studio
+    bitwig-studio
+    playerctl
     reaper
 
     # COMMUNICATION
@@ -404,10 +468,11 @@
     element-desktop
     qtox
     discord
-    unstable.slack
+    slack
     v4l-utils
     zoom-us
     skypeforlinux
+    fractal
     tdesktop
 
     # WEB
@@ -415,7 +480,9 @@
     google-chrome
     firefox
     firefox-beta-bin
+    (brave.override { vulkanSupport = true; })
     tor-browser-bundle-bin
+    ff2mpv
 
     # XORG/DESKTOP ENVIRONMENT
     awf
@@ -432,13 +499,18 @@
     deadd-notification-center
 
     # GAMES
-    unstable.lutris
     minecraft
-    unstable.wineWowPackages.staging
-    unstable.winetricks
+    wineWowPackages.staging
+    winetricks
+    protontricks
 
     # MISC
+    scrcpy
     neovide
+    xorg.xhost
+    nix-du
+    nix-tree
+    nix-query-tree-viewer
     inputs.comma.packages.${pkgs.system}.default
     exfat
     rdup
@@ -446,7 +518,7 @@
     gsettings-desktop-schemas
     appimage-run
     ntfs3g
-    unstable.woeusb
+    woeusb
     ipfs
     acpi
     freecad
@@ -460,9 +532,7 @@
     qdirstat
     borgbackup
     electrum
-    unstable.monero-gui
-    ecryptfs
-    ecryptfs-helper
+    monero-gui
     keepassxc
     memtester
     docker-compose
@@ -489,5 +559,11 @@
     rust-bin.nightly.latest.rust-analyzer
   ];
 
-  fonts.fonts = with pkgs; [ font-awesome nerdfonts google-fonts ];
+  # TODO put these in home-manager?
+  fonts.fonts = with pkgs; [
+    font-awesome
+    nerdfonts
+    google-fonts
+    material-symbols
+  ];
 }

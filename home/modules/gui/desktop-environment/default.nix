@@ -1,15 +1,270 @@
-{ nixpkgs-unstable, ... }:
-{ pkgs, lib, config, ... }: {
+{ eww, hyprland, ewmh-status-listener, ... }:
+{ pkgs, lib, config, ... }:
+let
+  eww-x11 = eww.packages.${pkgs.hostPlatform.system}.eww;
+  eww-wayland = eww.packages.${pkgs.hostPlatform.system}.eww-wayland;
+in
+{
+  imports = [ hyprland.homeManagerModules.default ];
   options.modules.gui.desktop-environment.enable = lib.mkEnableOption ''
     Enable personal desktop-environment config (xmonad, polybar etc.)
   '';
+
+  options.modules.gui.desktop-environment.hyprland-session-wrapper = lib.mkOption {
+    type = with lib.types; nullOr package;
+    default = let sessionName = "Hyprland"; in pkgs.writeTextFile
+      {
+        name = sessionName;
+        destination = "/share/wayland-sessions/${sessionName}.desktop";
+        text = ''
+          [Desktop Entry]
+          Version=1.0
+          Name=${sessionName}
+          Type=Application
+          Comment=An intelligent dynamic tiling Wayland compositor
+          Exec=${pkgs.writeShellScriptBin sessionName ''
+            . "${config.home.profileDirectory}/etc/profile.d/hm-session-vars.sh"
+
+            if [ -e "$HOME/.profile" ]; then
+              . "$HOME/.profile"
+            fi
+            systemctl --user stop graphical-session.target graphical-session-pre.target
+
+            ${lib.optionalString (config.xsession.importedVariables != [ ])
+            ("systemctl --user import-environment "
+              + toString (lib.unique config.xsession.importedVariables))}
+
+            ${lib.optionalString (config.wayland.windowManager.hyprland.nvidiaPatches) ''            
+              export LIBVA_DRIVER_NAME=nvidia
+              export GBM_BACKEND=nvidia-drm
+              export GDK_BACKEND=wayland
+              export __GLX_VENDOR_LIBRARY_NAME=nvidia
+              export WLR_NO_HARDWARE_CURSORS=1
+            ''}
+            export XDG_SESSION_TYPE=wayland
+            # export GTK_USE_PORTAL=1
+            export MOZ_GLX_TEST_EARLY_WL_ROUNDTRIP=1
+            export NIXOS_OZONE_WL=1
+            systemctl --user start hm-graphical-session.target
+            systemctl --user start hyprland-session.target
+            ${config.wayland.windowManager.hyprland.package}/bin/Hyprland
+            systemctl --user stop hyprland-session.target
+            systemctl --user stop hm-graphical-session.target
+            systemctl --user stop graphical-session.target
+            systemctl --user stop graphical-session-pre.target
+            unset __HM_SESS_VARS_SOURCED
+          ''}/bin/${sessionName}
+        '';
+      } // {
+      providedSessions = [ sessionName ];
+    };
+    description = ''
+      Hyprland session wrapper which sets some environment vars for desktop use and manages relevant graphical systemd services.
+    '';
+  };
 
   config = lib.mkIf config.modules.gui.desktop-environment.enable {
     home.keyboard.variant = "colemak";
     home.keyboard.layout = "us";
 
+    home.pointerCursor = {
+      package = pkgs.vanilla-dmz;
+      name = "Vanilla-DMZ-AA";
+      gtk.enable = true;
+      x11.enable = true;
+    };
+
+    wayland.windowManager.hyprland = {
+      enable = true;
+      package = let cfg = config.wayland.windowManager.hyprland; in
+        hyprland.packages.${pkgs.system}.default.override {
+          enableXWayland = cfg.xwayland.enable;
+          hidpiXWayland = cfg.xwayland.hidpi;
+          nvidiaPatches = cfg.nvidiaPatches;
+          legacyRenderer = true;
+        };
+      nvidiaPatches = true;
+      recommendedEnvironment = false; # environment vars get set in session to not intervene with X11 sessions
+      extraConfig =
+        let
+          pointer = config.home.pointerCursor;
+        in
+        ''
+          $mod = SUPER
+
+          # set cursor for HL itself
+          exec-once = hyprctl setcursor ${pointer.name} ${toString pointer.size}
+          # exec-once = killall eww && systemctl restart --user eww && sleep 0.3 && eww open bar
+          exec-once = ${eww-wayland}/bin/eww open bar
+
+          misc {
+            # disable auto polling for config file changes
+            disable_autoreload = 1
+            focus_on_activate = 1
+          }
+
+          # touchpad gestures
+          gestures {
+            workspace_swipe = 1
+            workspace_swipe_forever = 1
+          }
+
+          general {
+            layout = master
+            gaps_in = 6
+            gaps_out = 6
+            border_size = 0
+          }
+
+          input {
+            kb_layout = us
+            kb_variant = colemak
+            repeat_rate = 60
+            repeat_delay = 300
+            # focus change on cursor move
+            follow_mouse = 1
+            accel_profile = flat
+            sensitivity = 1.5
+            touchpad {
+              scroll_factor = 0.3
+            }
+          }
+
+          decoration {
+            rounding = 6
+            blur = true
+            blur_size = 8
+            blur_passes = 4
+            blur_new_optimizations = true
+            # inactive_opacity = 0.8
+            drop_shadow = true
+            shadow_ignore_window = true
+            shadow_offset = 0 0
+            shadow_range = 16
+            shadow_render_power = 2
+            col.shadow = 0x${config.theme.extraParams.alpha-hex}${config.theme.base16.colors.base0D.hex.rgb}
+            col.shadow_inactive = 0xAA000000
+            blurls = rofi
+            blurls = gtk-layer-shell
+          }
+
+          animations {
+            enabled = 1
+            animation = border,1,2,default
+            animation = fade,1,4,default
+            animation = windows,1,3,default,popin 80%
+            animation = workspaces,1,2,default,slide
+          }
+
+          master {
+            new_on_top = true
+            no_gaps_when_only = true
+          }
+
+          dwindle {
+            pseudotile = 1
+            preserve_split = 1
+            no_gaps_when_only = true
+          }
+
+          misc {
+            disable_hyprland_logo = true
+          }
+
+          exec-once = ${pkgs.swaybg}/bin/swaybg -i ~/wallpaper/JWST/wallpaper/STScI-01GA76Q01D09HFEV174SVMQDMV.png
+
+          # windowrules
+          # windowrulev2 = fullscreen,pin,class:Rofi
+          # windowrulev2 = fullscreen,pin,class:Rofi
+          windowrulev2 = tile,class:kitty
+          # mouse movements
+          bindm = $mod,mouse:272,movewindow
+          bindm = $mod,mouse:273,resizewindow
+          bindm = $mod ALT,mouse:272,resizewindow
+          # compositor commands
+          bind = $mod SHIFT,Q,exit
+          bind = $mod,Backspace,killactive,
+          bind = $mod,F,fullscreen,1
+          bind = $mod SHIFT,F,fullscreen
+          # bind = $mod,G,togglegroup,
+          bind = $mod SHIFT,N,changegroupactive,f
+          bind = $mod SHIFT,P,changegroupactive,b
+          # bind = $mod,R,togglesplit,
+          bind = $mod,T,togglefloating,
+          # bind = $mod,P,pseudo,
+          bind = $mod,P,layoutmsg,swapwithmaster master
+          bind = $mod,A,layoutmsg,addmaster
+          bind = $mod,R,layoutmsg,removemaster
+          # bind = $mod,N,layoutmsg,cyclenext
+          # bind = $mod,E,layoutmsg,cycleprev
+          bind = $mod,K,layoutmsg,cyclenext
+          bind = $mod,H,layoutmsg,cycleprev
+          bind = $mod ALT,,resizeactive,
+          # utility
+          # bind = $mod,Return,exec,${pkgs.alacritty}/bin/alacritty
+          # bind = $mod,Return,exec,${config.programs.alacritty.package}/bin/alacritty
+          # bind = $mod,Return,exec,hyprctl --batch "keyword windowrule tile,kitty ; dispatch exec ${config.programs.kitty.package}/bin/kitty"
+          bind = $mod,Return,exec,kitty
+          bind = $mod,Space,exec,rofi -show run
+          bind = $mod,I,exec,toggle-light
+          bind = $mod,S,exec,env XDG_CURRENT_DESKTOP=sway XDG_SESSION_DESKTOP=sway QT_QPA_PLATFORM=wayland flameshot gui
+          bind = $mod,W,exec,firefox
+          bind = $mod,Escape,exec,wlogout -p layer-shell
+          bind = $mod,L,exec,gtklock
+          # bind = $mod,E,exec,
+          bind = $mod,O,exec,wl-ocr
+          # move focus
+          bind = $mod,J,movefocus,l
+          bind = $mod,L,movefocus,r
+          # bind = $mod,H,movefocus,u
+          # bind = $mod,K,movefocus,d
+          bind = $mod SHIFT,J,movewindow,l
+          bind = $mod SHIFT,L,movewindow,r
+          bind = $mod SHIFT,H,movewindow,u
+          bind = $mod SHIFT,K,movewindow,d
+
+          bind = $mod,1,workspace,1
+          bind = $mod SHIFT,1,movetoworkspacesilent,1
+          bind = $mod,2,workspace,2
+          bind = $mod SHIFT,2,movetoworkspacesilent,2
+          bind = $mod,3,workspace,3
+          bind = $mod SHIFT,3,movetoworkspacesilent,3
+          bind = $mod,4,workspace,4
+          bind = $mod SHIFT,4,movetoworkspacesilent,4
+          bind = $mod,5,workspace,5
+          bind = $mod SHIFT,5,movetoworkspacesilent,5
+          bind = $mod,6,workspace,6
+          bind = $mod SHIFT,6,movetoworkspacesilent,6
+          bind = $mod,7,workspace,7
+          bind = $mod SHIFT,7,movetoworkspacesilent,7
+          bind = $mod,8,workspace,8
+          bind = $mod SHIFT,8,movetoworkspacesilent,8
+          bind = $mod,9,workspace,9
+          bind = $mod SHIFT,9,movetoworkspacesilent,9
+        
+          # media controls
+          bind = ,XF86AudioPlay,exec,mpc toggle
+          bind = ,XF86AudioPrev,exec,mpc prev
+          bind = ,XF86AudioNext,exec,mpc next
+          # volume
+          bindle = ,XF86AudioRaiseVolume,exec,${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%+
+          bindle = ,XF86AudioLowerVolume,exec,${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%-
+          bind = ,XF86AudioMute,exec,${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+          bind = ,XF86AudioMicMute,exec,${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+        '';
+    };
+
     xsession = {
       enable = true;
+      profileExtra = ''
+        export MOZ_USE_XINPUT2=1
+        export XDG_SESSION_TYPE=x11
+        export GDK_BACKEND=x11
+        export PATH=${eww-x11}/bin:$PATH
+      '';
+      initExtra = ''
+        systemctl start --user xmonad-session.target
+      '';
       windowManager = {
         xmonad = {
           enable = true;
@@ -27,132 +282,124 @@
       };
     };
 
-    home.file.".xmonad/xmonad-x86_64-linux".force = true;
-
-
-    services.polybar = {
-      enable = true;
-      script = "polybar bar &";
-      package = nixpkgs-unstable.pkgs.polybar.override {
-        mpdSupport = true;
-        nlSupport = true;
-        iwSupport = true;
-        githubSupport = true;
-      };
-      config = with config.theme.base16.colors; with config.theme.extraParams; {
-        "bar/bar" = {
-          fill = "";
-          empty = "";
-          indicator = "";
-          modules-left = [ "ewmh" ];
-          modules-right = [ "memory" "cpu" "network-wired" "network-wireless" "date" ];
-          modules-center = [ "mpd" ];
-          background = "#${alpha-hex}${base00.hex.rgb}";
-          foreground = "#${base06.hex.rgb}";
-          font-0 = "${fontname}${xftfontextra}:pixelsize=16;3.5";
-          font-1 = "Font Awesome 6 Free:style=Solid:pixelsize=16;3.5";
-          font-2 = "Font Awesome 6 Brands:pixelsize=16;3.5";
-          font-3 = "Font Awesome 6 Brands:style=Regular:pixelsize=16;3.5";
-          height = 33;
-          tray-position = "right";
-          tray-detached = true;
-          tray-offset-x = -750;
-          tray-background = "#${alpha-hex}${base00.hex.rgb}";
-        };
-        "module/network-wired" = {
-          type = "internal/network";
-          accumulate-stats = true;
-          label-connected = "%{T2}%{T-}%downspeed:9% %{T2}%{T-}%upspeed:9%";
-          interface-type = "wired";
-          label-connected-background = "#${alpha-hex}${base0C.hex.rgb}";
-          label-connected-foreground = "#${base00.hex.rgb}";
-          label-connected-padding = 1;
-        };
-        "module/network-wireless" = {
-          type = "internal/network";
-          accumulate-stats = true;
-          label-connected = "%{T2} %{T-}%downspeed:9% %{T2}%{T-}%upspeed:9%";
-          interface-type = "wireless";
-          label-connected-background = "#${alpha-hex}${base0C.hex.rgb}";
-          label-connected-foreground = "#${base00.hex.rgb}";
-          label-connected-padding = 1;
-        };
-        "module/mpd" = {
-          type = "internal/mpd";
-          format-online = "<icon-prev> <icon-stop> <toggle> <icon-next>  <label-time>  <label-song>";
-          interval = 1;
-          icon-play = "%{T2}%{T-}";
-          icon-pause = "%{T2}⏸%{T-}";
-          icon-stop = "%{T2}%{T-}";
-          icon-prev = "%{T2}⏮%{T-}";
-          icon-next = "%{T2}⏭%{T-}";
-          icon-seekb = "%{T2}⏪%{T-}";
-          icon-seekf = "%{T2}⏩%{T-}";
-          icon-random = "%{T2}�%{T-}�";
-          icon-repeat = "%{T2}�%{T-}�";
-          icon-repeatone = "%{T2}�%{T-}�";
-          icon-single = "%{T2}�%{T-}�";
-          icon-consume = "%{T2}✀%{T-}";
-        };
-        "module/ewmh" = {
-          type = "internal/xworkspaces";
-          pin-workspaces = true;
-          enable-click = true;
-          enable-scroll = true;
-          reverse-scroll = true;
-          label-active = "%name%";
-          label-occupied = "%name%";
-          label-active-foreground = "#${base00.hex.rgb}";
-          label-active-background = "#${base03.hex.rgb}";
-          label-occupied-background = "#${alpha-hex}${base02.hex.rgb}";
-          label-urgent-foreground = "#${base0D.hex.rgb}";
-          label-urgent-background = "#${alpha-hex}${base02.hex.rgb}";
-          label-active-padding = 1;
-          label-occupied-padding = 1;
-          label-urgent-padding = 1;
-          label-empty = "";
-        };
-        "module/date" = {
-          type = "internal/date";
-          label = "%{T2}%{T-} %date% %time%";
-          label-background = "#${alpha-hex}${base0D.hex.rgb}";
-          label-foreground = "#${base00.hex.rgb}";
-          label-padding = 1;
-          interval = "1.0";
-          date = "%d.%m.%Y";
-          time = "%H:%M:%S";
-          date-alt = "%A, %d %B %Y";
-          time-alt = "%H:%M:%S";
-        };
-        "module/cpu" = {
-          type = "internal/cpu";
-          format = "%{T2}%{T-} <ramp-load> <label>";
-          label = "%percentage:3%%";
-          format-background = "#${alpha-hex}${base0B.hex.rgb}";
-          format-foreground = "#${base00.hex.rgb}";
-          ramp-load-spacing = 1;
-          ramp-load-0 = "▁";
-          ramp-load-1 = "▂";
-          ramp-load-2 = "▃";
-          ramp-load-3 = "▄";
-          ramp-load-4 = "▅";
-          ramp-load-5 = "▆";
-          ramp-load-6 = "▇";
-          ramp-load-7 = "█";
-          format-padding = 1;
-          interval = "0.5";
-        };
-        "module/memory" = {
-          label = "%{T2}%{T-}%gb_used:10%";
-          label-background = "#${alpha-hex}${base0A.hex.rgb}";
-          label-foreground = "#${base00.hex.rgb}";
-          label-padding = 1;
-          type = "internal/memory";
-        };
+    systemd.user.targets.xmonad-session = {
+      Unit = {
+        Requires = [ "graphical-session.target" ];
+        RefuseManualStart = false;
+        StopWhenUnneeded = false;
       };
     };
 
-    home.packages = [ (pkgs.writeShellScriptBin "feh" "${pkgs.feh}/bin/feh --conversion-timeout 5 \"$@\"") ];
+    # temporary for debugging xmonad
+    # home.activation.linkXmonadHs = ''
+    #   $DRY_RUN_CMD ln -fs $VERBOSE_ARG \
+    #     $HOME/dev/personal/dotfiles/home/modules/gui/desktop-environment/xmonad/xmonad.hs $HOME/.xmonad/xmonad.hs
+    # '';
+
+    # temporary for debugging eww
+    # home.activation.linkEww = ''
+    #   $DRY_RUN_CMD ln -fs $VERBOSE_ARG \
+    #     $HOME/dev/personal/dotfiles/home/modules/gui/desktop-environment/eww $HOME/.config/eww
+    # '';
+
+    xdg.configFile."_eww_colors.scss".text = with config.theme.base16.colors; ''
+      $base00: rgba(${toString base00.dec.r}, ${toString base00.dec.g}, ${toString base00.dec.b}, ${toString config.theme.extraParams.alpha});
+      $base01: #${base01.hex.rgb};
+      $base02: #${base02.hex.rgb};
+      $base03: #${base03.hex.rgb};
+      $base04: #${base04.hex.rgb};
+      $base05: #${base05.hex.rgb};
+      $base06: #${base06.hex.rgb};
+      $base07: #${base07.hex.rgb};
+      $base08: #${base08.hex.rgb};
+      $base09: #${base09.hex.rgb};
+      $base0A: #${base0A.hex.rgb};
+      $base0B: #${base0B.hex.rgb};
+      $base0C: #${base0C.hex.rgb};
+      $base0D: #${base0D.hex.rgb};
+      $base0E: #${base0E.hex.rgb};
+      $base0F: #${base0F.hex.rgb};
+
+      $blue: $base0D;
+      $cyan: $base0C;
+      $green: $base0B;
+      $magenta: $base0E;
+      $yellow: $base0A;
+      $red: $base08;
+      $orange: $base09;
+      $brown: $base0F;
+    '';
+
+    systemd.user.services =
+      let
+        eww-dependencies = with pkgs; [
+          config.wayland.windowManager.hyprland.package
+          ewmh-status-listener.packages.${pkgs.system}.default
+          bash
+          bc
+          blueberry
+          bluez
+          coreutils
+          dbus
+          dunst
+          findutils
+          gawk
+          gnused
+          gojq
+          imagemagick
+          iwgtk
+          jaq
+          light
+          vnstat
+          networkmanager
+          networkmanagerapplet
+          pavucontrol
+          playerctl
+          procps
+          pulseaudio
+          xorg.xprop
+          wmctrl
+          gnused
+          ripgrep
+          socat
+          udev
+          upower
+          util-linux
+          wget
+          wireplumber
+          wlogout
+          wofi
+        ];
+        mkEwwService = { sessionTarget, ewwPackage, sessionManagerName }: {
+          Unit = {
+            Description = "Eww Daemon for ${sessionManagerName}";
+            PartOf = [ "graphical-session.target" sessionTarget ];
+          };
+          Service = {
+            Environment = "PATH=/run/wrappers/bin:${lib.makeBinPath ([ ewwPackage ] ++ eww-dependencies)}";
+            ExecStart = "${ewwPackage}/bin/eww daemon --no-daemonize";
+            Restart = "on-failure";
+          };
+          Install.WantedBy = [ sessionTarget ];
+        };
+      in
+      # eww unfortunately only works either in X11 or in wayland with the same binary, thus the two different services
+      {
+        eww-hyprland = mkEwwService { sessionTarget = "hyprland-session.target"; ewwPackage = eww-wayland; sessionManagerName = "Hyprland"; };
+        eww-xmonad = mkEwwService { sessionTarget = "xmonad-session.target"; ewwPackage = eww-x11; sessionManagerName = "XMonad"; };
+        eww-xmonad-statusbar = {
+          Unit = { Description = "Eww widgets for xmonad"; PartOf = [ "eww-xmonad.service" ]; };
+          Service = { Type = "oneshot"; ExecStart = "${eww-x11}/bin/eww open xmonadbar"; };
+          Install.WantedBy = [ "eww-xmonad.service" ];
+        };
+        picom.Unit.BindsTo = [ "xmonad-session.target" ];
+      };
+
+
+    home.packages = [
+      (lib.mkIf config.wayland.windowManager.hyprland.enable pkgs.wl-clipboard)
+      (pkgs.writeShellScriptBin "feh" "${pkgs.feh}/bin/feh --conversion-timeout 5 \"$@\"")
+    ];
 
     xdg = {
       mimeApps = {
@@ -169,6 +416,7 @@
           "x-scheme-handler/unknown" = "firefox.desktop";
           "application/x-bittorrent" = "qbittorent.desktop";
           "x-scheme-handler/magnet" = "qbittorent.desktop";
+          "x-scheme-handler/mailto" = "thunderbird.desktop";
         };
       };
       desktopEntries = {
@@ -196,7 +444,6 @@
         "Xft.hintstyle" = "hintslight";
         "Xft.lcdfilter" = "lcddefault";
         "Xft.font" = "xft:${fontname}${xftfontextra}:size=${fontsize}";
-        "Xcursor.size" = xcursorSize;
 
         "*color0" = "#${base00.hex.rgb}";
         "*color1" = "#${base08.hex.rgb}";
@@ -236,7 +483,7 @@
     gtk = {
       enable = true;
       iconTheme.name = "Papirus-Dark-Maia";
-      iconTheme.package = nixpkgs-unstable.pkgs.papirus-maia-icon-theme;
+      iconTheme.package = pkgs.papirus-maia-icon-theme;
     };
 
     qt = {
@@ -245,6 +492,7 @@
     };
 
     programs.rofi = {
+      package = pkgs.rofi-wayland;
       enable = true;
       enableBase16Theme = false;
       theme = builtins.toPath (
@@ -259,7 +507,7 @@
     };
 
     services.picom = {
-      enable = true;
+      # enable = true;
       # add fancy dual kawase blur to picom
       package = pkgs.picom.overrideAttrs (
         old: {
@@ -271,7 +519,7 @@
           };
         }
       );
-      experimentalBackends = true;
+      extraArgs = [ "--experimental-backends" ];
       settings = {
         # general
         backend = "glx";
@@ -317,14 +565,10 @@
       imageDirectory = "%h/wallpaper/";
     };
 
-    services.redshift = {
+    services.gammastep = {
       enable = true;
-      settings = {
-        manual = {
-          lat = "47.267";
-          lon = "11.383";
-        };
-      };
+      latitude = "47.267";
+      longitude = "11.383";
       temperature.day = 6500;
       temperature.night = 3200;
     };
