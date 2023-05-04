@@ -1,4 +1,4 @@
-{ helix, nil, nickel, ... }:
+{ helix, nil,  ... }: #nickel,
 { pkgs, lib, config, ... }:
 let
   inherit (lib) mkEnableOption mkIf;
@@ -38,7 +38,7 @@ let
           })
           pgformatter
           kotlin-language-server
-          nickel.packages.${pkgs.system}.default
+          # nickel.packages.${pkgs.system}.default
           (python3.withPackages (ps: with ps; [ python-lsp-server ] ++ python-lsp-server.optional-dependencies.all))
           nodePackages.bash-language-server
           nodePackages.dockerfile-language-server-nodejs

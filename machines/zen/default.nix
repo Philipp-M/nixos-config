@@ -44,7 +44,7 @@
 
   fileSystems = {
     "/persistent" = {
-      device = "/dev/disk/by-uuid/7040ac76-fb32-4990-975b-54eddc0aa684";
+      device = "/dev/disk/by-uuid/a0aab361-0865-4b5b-a556-5e2c97ea53d1";
       fsType = "f2fs";
       options = [ "compress_algorithm=lz4" "compress_chksum" "atgc" "gc_merge" "lazytime" ];
       neededForBoot = true;
@@ -84,6 +84,7 @@
       "/var/lib/teamviewer"
       "/var/lib/NetworkManager"
       "/var/lib/flatpak"
+      "/var/lib/vnstat"
       "/etc/NetworkManager/system-connections"
     ];
     files = [
@@ -133,7 +134,9 @@
         ".config/gh"
         ".config/heroic"
         ".config/Google"
+        ".config/BraveSoftware"
         ".config/tree-sitter"
+        ".config/obs-studio"
         ".local/share/mpd"
         ".local/share/rofi"
         ".local/share/flatpak"
@@ -218,54 +221,54 @@
     }, }
   '';
 
-  services.pipewire.config = {
-    pipewire = {
-      "context.properties" = {
-        "link.max-buffers" = 16;
-        "log.level" = 2;
-        # "default.clock.allowed-rates" = [ 44100 48000 ];
-        "default.clock.allowed-rates" = [ 176400 192000 ];
-        "default.clock.rate" = 176400;
-        # "default.clock.rate" = 44100;
-        "default.clock.quantum" = 1024;
-        "default.clock.min-quantum" = 16;
-        "default.clock.max-quantum" = 2048;
-        "core.daemon" = true;
-        "core.name" = "pipewire-0";
-      };
-      "context.modules" = [
-        {
-          name = "libpipewire-module-rt";
-          args = {
-            "nice.level" = 20;
-            "rt.prio" = 88;
-            "rt.time.soft" = -1;
-            "rt.time.hard" = -1;
-          };
-          flags = [ "ifexists" "nofail" ];
-        }
-        { name = "libpipewire-module-protocol-native"; }
-        { name = "libpipewire-module-profiler"; }
-        { name = "libpipewire-module-metadata"; }
-        { name = "libpipewire-module-spa-device-factory"; }
-        { name = "libpipewire-module-spa-node-factory"; }
-        { name = "libpipewire-module-client-node"; }
-        { name = "libpipewire-module-client-device"; }
-        {
-          name = "libpipewire-module-portal";
-          flags = [ "ifexists" "nofail" ];
-        }
-        {
-          name = "libpipewire-module-access";
-          args = { };
-        }
-        { name = "libpipewire-module-adapter"; }
-        { name = "libpipewire-module-link-factory"; }
-        { name = "libpipewire-module-session-manager"; }
-      ];
-    };
-    jack."jack.properties"."node.latency" = "512/96000";
-  };
+  # services.pipewire.config = {
+  #   pipewire = {
+  #     "context.properties" = {
+  #       "link.max-buffers" = 16;
+  #       "log.level" = 2;
+  #       # "default.clock.allowed-rates" = [ 44100 48000 ];
+  #       "default.clock.allowed-rates" = [ 176400 192000 ];
+  #       "default.clock.rate" = 176400;
+  #       # "default.clock.rate" = 44100;
+  #       "default.clock.quantum" = 1024;
+  #       "default.clock.min-quantum" = 16;
+  #       "default.clock.max-quantum" = 2048;
+  #       "core.daemon" = true;
+  #       "core.name" = "pipewire-0";
+  #     };
+  #     "context.modules" = [
+  #       {
+  #         name = "libpipewire-module-rt";
+  #         args = {
+  #           "nice.level" = 20;
+  #           "rt.prio" = 88;
+  #           "rt.time.soft" = -1;
+  #           "rt.time.hard" = -1;
+  #         };
+  #         flags = [ "ifexists" "nofail" ];
+  #       }
+  #       { name = "libpipewire-module-protocol-native"; }
+  #       { name = "libpipewire-module-profiler"; }
+  #       { name = "libpipewire-module-metadata"; }
+  #       { name = "libpipewire-module-spa-device-factory"; }
+  #       { name = "libpipewire-module-spa-node-factory"; }
+  #       { name = "libpipewire-module-client-node"; }
+  #       { name = "libpipewire-module-client-device"; }
+  #       {
+  #         name = "libpipewire-module-portal";
+  #         flags = [ "ifexists" "nofail" ];
+  #       }
+  #       {
+  #         name = "libpipewire-module-access";
+  #         args = { };
+  #       }
+  #       { name = "libpipewire-module-adapter"; }
+  #       { name = "libpipewire-module-link-factory"; }
+  #       { name = "libpipewire-module-session-manager"; }
+  #     ];
+  #   };
+  #   jack."jack.properties"."node.latency" = "512/96000";
+  # };
 
   # ZFS related
   services.zfs.autoScrub = {

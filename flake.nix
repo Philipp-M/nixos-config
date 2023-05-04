@@ -1,6 +1,9 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs";
+    # nixpkgs.url = "github:NixOS/nixpkgs";
+    nixpkgs.url = "github:Philipp-M/nixpkgs/update-frei0r-plugins";
+    # nixpkgs.url = "git+file:///home/philm/dev/personal/nix/nixpkgs";
+    devenv = { url = "github:cachix/devenv/latest"; inputs.nixpkgs.follows = "nixpkgs"; inputs.flake-compat.follows = "flake-compat"; };
     impermanence.url = "github:nix-community/impermanence";
     helix = { url = "github:Philipp-M/helix/personal"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
     rust-overlay = { url = "github:oxalica/rust-overlay"; inputs.nixpkgs.follows = "nixpkgs"; };
@@ -8,7 +11,7 @@
     musnix = { url = "github:Philipp-M/musnix/fix-zfs-gpl-issue"; inputs.nixpkgs.follows = "nixpkgs"; };
     agenix = { url = "github:ryantm/agenix"; inputs.nixpkgs.follows = "nixpkgs"; };
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
-    nickel = { url = "github:tweag/nickel"; inputs.nixpkgs.follows = "nixpkgs"; };
+    # nickel = { url = "github:tweag/nickel"; inputs.nixpkgs.follows = "nixpkgs"; };
     rycee-nur-expressions = { url = "gitlab:rycee/nur-expressions"; flake = false; };
     neovim-nightly-overlay = { url = "github:nix-community/neovim-nightly-overlay"; inputs = { nixpkgs.follows = "nixpkgs"; flake-compat.follows = "flake-compat"; }; };
     comma = { url = "github:nix-community/comma"; inputs = { nixpkgs.follows = "nixpkgs"; flake-compat.follows = "flake-compat"; }; };
@@ -18,15 +21,17 @@
     nix-index-database.url = "github:Mic92/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
 
-    kanata = { url = "github:jtroo/kanata"; flake = false; };
-    eww = { url = "github:elkowar/eww"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; flake-compat.follows = "flake-compat"; }; };
+    # kanata = { url = "github:jtroo/kanata"; flake = false; };
+    eww = { url = "github:Philipp-M/eww/fix-nix-flake"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; flake-compat.follows = "flake-compat"; }; };
     ewmh-status-listener = { url = "github:Philipp-M/ewmh-status-listener"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
+    fractal-next = { url = "git+https://gitlab.gnome.org/GNOME/fractal.git"; flake = false; };
     hyprland = { url = "github:hyprwm/Hyprland"; inputs = { nixpkgs.follows = "nixpkgs"; }; };
     xdph = {
       url = "github:hyprwm/xdg-desktop-portal-hyprland";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.hyprland-protocols.follows = "hyprland/hyprland-protocols";
     };
+    mpv-ai-upscale = { url = "github:Alexkral/AviSynthAiUpscale"; flake = false; };
   };
 
   outputs = inputs:

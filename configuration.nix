@@ -11,7 +11,8 @@
     inputs.impermanence.nixosModules.impermanence
   ];
 
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config = import ./nixpkgs-config.nix;
+
   nixpkgs.overlays = [
     inputs.rust-overlay.overlays.default
     inputs.neovim-nightly-overlay.overlay
@@ -100,11 +101,10 @@
     };
   };
 
-  nixpkgs.config.permittedInsecurePackages = [ "libdwarf-20181024" "qtwebkit-5.212.0-alpha4" ];
-
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.systemd-boot.memtest86.enable = true;
 
   boot.extraModulePackages = [ config.boot.kernelPackages.v4l2loopback.out ];
   boot.kernelModules = [ "v4l2loopback" ];
@@ -204,6 +204,8 @@
   services.autorandr.enable = true;
   hardware.pulseaudio.enable = false;
 
+  services.vnstat.enable = true;
+
   environment.sessionVariables = {
     WLR_NO_HARDWARE_CURSORS = "1";
     EDITOR = "${config.home-manager.users.philm.programs.helix.package}/bin/hx";
@@ -237,13 +239,13 @@
 
   services.kanata = {
     enable = true;
-    package = pkgs.rustPlatform.buildRustPackage {
-      pname = "kanata";
-      version = "1.3.0-git";
-      src = inputs.kanata;
-      cargoHash = "sha256-IW+TjVROjzllQuk5SMCq4O06c1+hAlfRQlRRJ2MFFl0=";
-      buildFeatures = [ "cmd" ];
-    };
+    # package = pkgs.rustPlatform.buildRustPackage {
+    #   pname = "kanata";
+    #   version = "1.3.0-git";
+    #   src = inputs.kanata;
+    #   cargoHash = "sha256-IW+TjVROjzllQuk5SMCq4O06c1+hAlfRQlRRJ2MFFl0=";
+    #   buildFeatures = [ "cmd" ];
+    # };
     keyboards.redox = {
       # devices are configured in each /machines/<machine>/default.nix
       # TODO extend kanata to automatically recognize input devices, autorestart/map devices if they connect/disconnect etc.
@@ -329,6 +331,8 @@
   home-manager.users.philm = {
     imports = builtins.attrValues inputs.self.homeManagerModules ++ [ inputs.nix-index-database.hmModules.nix-index ];
     programs.home-manager.enable = true;
+    nixpkgs.config = import ./nixpkgs-config.nix;
+    xdg.configFile."nixpkgs/config.nix".source = ./nixpkgs-config.nix;
     home.stateVersion = "22.05";
     modules.cli.enable = true;
     modules.gui.enable = true;
@@ -512,6 +516,9 @@
     nix-tree
     nix-query-tree-viewer
     inputs.comma.packages.${pkgs.system}.default
+    inputs.devenv.packages.${pkgs.system}.devenv
+    # colmapWithCuda
+    colmap
     exfat
     rdup
     sanoid
@@ -557,6 +564,7 @@
     tree-sitter
     rust-bin.nightly.latest.default
     rust-bin.nightly.latest.rust-analyzer
+    cargo-flamegraph
   ];
 
   # TODO put these in home-manager?

@@ -2,7 +2,11 @@
 { pkgs, lib, config, ... }:
 let
   eww-x11 = eww.packages.${pkgs.hostPlatform.system}.eww;
-  eww-wayland = eww.packages.${pkgs.hostPlatform.system}.eww-wayland;
+  # -wayland.overrideAttrs (_: {
+  #   cargoBuildNoDefaultFeatures = false;
+  #   cargoCheckNoDefaultFeatures = false;
+  # });
+  eww-wayland = eww-x11; # includes x11 and wayland support now
 in
 {
   imports = [ hyprland.homeManagerModules.default ];
