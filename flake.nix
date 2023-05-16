@@ -24,6 +24,7 @@
     # kanata = { url = "github:jtroo/kanata"; flake = false; };
     eww = { url = "github:Philipp-M/eww/fix-nix-flake"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; flake-compat.follows = "flake-compat"; }; };
     ewmh-status-listener = { url = "github:Philipp-M/ewmh-status-listener"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
+    chatgpt-tui = { url = "github:Philipp-M/chatgpt-tui"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
     fractal-next = { url = "git+https://gitlab.gnome.org/GNOME/fractal.git"; flake = false; };
     hyprland = { url = "github:hyprwm/Hyprland"; inputs = { nixpkgs.follows = "nixpkgs"; }; };
     xdph = {

@@ -1,5 +1,5 @@
-{ ... }:
-{ lib, config, ... }: {
+{ chatgpt-tui, ... }:
+{ pkgs, lib, config, ... }: {
   options.modules.cli.fish.enable = lib.mkEnableOption "Enable personal fish config";
 
   config = lib.mkIf config.modules.cli.fish.enable {
@@ -34,6 +34,7 @@
         sudoe = "sudo -E";
         tree = "tree -C";
         gdiff = "git diff --no-index";
+        chat = "${chatgpt-tui.packages.${pkgs.system}.default}/bin/chatgpt-tui";
       };
     };
   };
