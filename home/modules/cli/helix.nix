@@ -1,4 +1,4 @@
-{ helix, nil,  ... }: #nickel,
+{ helix, nil, ... }: #nickel,
 { pkgs, lib, config, ... }:
 let
   inherit (lib) mkEnableOption mkIf;
@@ -211,8 +211,12 @@ in
             };
             nil = {
               command = "${nil.packages.x86_64-linux.default}/bin/nil";
-              config.nil.formatting.command = [ "${nixpkgs-fmt}/bin/nixpkgs-fmt" ];
+              config.nil = {
+                formatting.command = [ "${nixpkgs-fmt}/bin/nixpkgs-fmt" ];
+                nix.flake.autoEvalInputs = true;
+              };
             };
+            ltex-ls.command = "ltex-ls";
             rust-analyzer = {
               config.rust-analyzer = {
                 cargo.loadOutDirsFromCheck = true;
@@ -255,6 +259,7 @@ in
           idle-timeout = 33;
           indent-guides.render = true;
           rainbow-brackets = true;
+          sticky-context.enable = true;
           auto-pairs = false;
           lsp.display-messages = true;
           # lsp.inline-diagnostics.other-lines = [];
