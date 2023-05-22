@@ -670,11 +670,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1681703948,
-        "narHash": "sha256-b4SVUtIJuEASL5XhJr8JacKk/qCQoefefNzh28AH83o=",
+        "lastModified": 1684789984,
+        "narHash": "sha256-qWavJ+8Ir2JBPzIF5l6ShAKE8mUcGeRFtKdPniCCNP8=",
         "owner": "Philipp-M",
         "repo": "home-manager",
-        "rev": "b8bf52f78e641b86047cf75b19dcb247404d925b",
+        "rev": "e714456630d7b54b5ee34bb2779712a66cc55832",
         "type": "github"
       },
       "original": {
