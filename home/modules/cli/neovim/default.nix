@@ -10,7 +10,6 @@ in
   config = mkIf cfg.enable {
     programs.neovim = {
       enable = true;
-      package = pkgs.neovim-nightly;
       extraPackages = with pkgs; [
         clang-tools
         cmake-language-server

@@ -15,7 +15,6 @@
 
   nixpkgs.overlays = [
     inputs.rust-overlay.overlays.default
-    inputs.neovim-nightly-overlay.overlay
     # "overwrite" xdg-open with handlr
     (final: prev: {
       # very expensive since this invalidates the cache for a lot of (almost all) graphical apps.

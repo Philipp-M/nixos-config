@@ -13,7 +13,6 @@
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
     # nickel = { url = "github:tweag/nickel"; inputs.nixpkgs.follows = "nixpkgs"; };
     rycee-nur-expressions = { url = "gitlab:rycee/nur-expressions"; flake = false; };
-    neovim-nightly-overlay = { url = "github:nix-community/neovim-nightly-overlay"; inputs = { nixpkgs.follows = "nixpkgs"; flake-compat.follows = "flake-compat"; }; };
     comma = { url = "github:nix-community/comma"; inputs = { nixpkgs.follows = "nixpkgs"; flake-compat.follows = "flake-compat"; }; };
     home-manager = { url = "github:Philipp-M/home-manager/personal"; inputs.nixpkgs.follows = "nixpkgs"; };
     # home-manager = { url = "git+file:///home/philm/dev/personal/desktop-environment/home-manager"; inputs.nixpkgs.follows = "nixpkgs"; };
@@ -33,6 +32,7 @@
       inputs.hyprland-protocols.follows = "hyprland/hyprland-protocols";
     };
     mpv-ai-upscale = { url = "github:Alexkral/AviSynthAiUpscale"; flake = false; };
+    fzf-fish = { url = "github:PatrickF1/fzf.fish"; flake = false; };
   };
 
   outputs = inputs:

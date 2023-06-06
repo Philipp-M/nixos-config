@@ -1,10 +1,11 @@
-{ chatgpt-tui, ... }:
+{ chatgpt-tui, fzf-fish, ... }:
 { pkgs, lib, config, ... }: {
   options.modules.cli.fish.enable = lib.mkEnableOption "Enable personal fish config";
 
   config = lib.mkIf config.modules.cli.fish.enable {
     programs.fish = {
       enable = true;
+      plugins = [{ name = "fzf"; src = fzf-fish; }];
       shellInit = ''
         set fish_greeting ""
 
