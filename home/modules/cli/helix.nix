@@ -259,7 +259,7 @@ in
           idle-timeout = 33;
           indent-guides.render = true;
           rainbow-brackets = true;
-          sticky-context.enable = true;
+          # sticky-context.enable = true;
           auto-pairs = false;
           lsp.display-messages = true;
           # lsp.inline-diagnostics.other-lines = [];
