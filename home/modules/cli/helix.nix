@@ -1,4 +1,4 @@
-{ helix, nil, ... }: #nickel,
+{ helix, nil, taplo, ... }:
 { pkgs, lib, config, ... }:
 let
   inherit (lib) mkEnableOption mkIf;
@@ -27,17 +27,16 @@ let
           texlab
           (rustPlatform.buildRustPackage {
             pname = "taplo";
-            version = "0.8.0-shutdown-request-fix";
-            src = builtins.fetchGit {
-              url = "https://github.com/the-mikedavis/taplo.git";
-              ref = "md-handle-shutdown";
-              rev = "f8389bfbb5e3200c52c9d5cf63d7c6fd70ba66b1";
-            };
-            cargoSha256 = "sha256-V0zliIwr6aKiq4gKVtNhKijA6qHuJGgTCtBFg7Syp7M=";
+            version = "0.8.0-git";
+            src = taplo;
+            # cargoSha256 = ""; # when updating the flake input, necessary for new hash...
+            cargoSha256 = "sha256-RegLIYddogLPjzt/xpEio25jaOJ9g+OxmFyYXgwLHbY=";
             buildFeatures = [ "lsp" ];
           })
           pgformatter
           kotlin-language-server
+          nickel
+          topiary
           # nickel.packages.${pkgs.system}.default
           (python3.withPackages (ps: with ps; [ python-lsp-server ] ++ python-lsp-server.optional-dependencies.all))
           nodePackages.bash-language-server

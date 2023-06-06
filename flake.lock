@@ -926,6 +926,7 @@
         "nixpkgs": "nixpkgs",
         "rust-overlay": "rust-overlay",
         "rycee-nur-expressions": "rycee-nur-expressions",
+        "taplo": "taplo",
         "xdph": "xdph_2"
       }
     },
@@ -1008,6 +1009,22 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "taplo": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1684527585,
+        "narHash": "sha256-xwST/1X4yxJ+qCgkaGpY6zr8XKY93cgiggrFcujBPvg=",
+        "owner": "tamasfe",
+        "repo": "taplo",
+        "rev": "f1eae005910219b4b459d87c57726314cedeb9c6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tamasfe",
+        "repo": "taplo",
         "type": "github"
       }
     },

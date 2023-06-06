@@ -11,7 +11,7 @@
     musnix = { url = "github:Philipp-M/musnix/fix-zfs-gpl-issue"; inputs.nixpkgs.follows = "nixpkgs"; };
     agenix = { url = "github:ryantm/agenix"; inputs.nixpkgs.follows = "nixpkgs"; };
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
-    # nickel = { url = "github:tweag/nickel"; inputs.nixpkgs.follows = "nixpkgs"; };
+    taplo = { url = "github:tamasfe/taplo"; flake = false; };
     rycee-nur-expressions = { url = "gitlab:rycee/nur-expressions"; flake = false; };
     comma = { url = "github:nix-community/comma"; inputs = { nixpkgs.follows = "nixpkgs"; flake-compat.follows = "flake-compat"; }; };
     home-manager = { url = "github:Philipp-M/home-manager/personal"; inputs.nixpkgs.follows = "nixpkgs"; };
