@@ -474,11 +474,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1686010179,
-        "narHash": "sha256-F9ugXKj7GXxubR6pXL1aUViqOkLLElqpEnMcq1UCQFM=",
+        "lastModified": 1686576995,
+        "narHash": "sha256-eVdclGYMUO9VbHSzhab0sacmluSX/a3lcYMF+wLBZQU=",
         "owner": "Philipp-M",
         "repo": "helix",
-        "rev": "b94045c7e83f6bd661a12618ce055eca30f95b23",
+        "rev": "c532e35cec0591338cf58747445eaa7cc360c397",
         "type": "github"
       },
       "original": {
