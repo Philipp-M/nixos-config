@@ -7,7 +7,7 @@
       enable = true;
       config = {
         x11-netwm = "yes"; # necessary for xmonads fullscreen
-        gpu-api="vulkan";
+        # gpu-api="vulkan";
         profile = "gpu-high";
         # video-sync = "audio";
         af = "scaletempo2";
@@ -45,7 +45,7 @@
           ytdl-format = "bestvideo+bestaudio/best";
           x11-bypass-compositor = "yes";
           # glsl-shader = "" + builtins.path { path = ./FSRCNN_x2_r2_32-0-2.glsl; };
-          # glsl-shader = "${mpv-ai-upscale}/mpv user shaders/Photo/4x/AiUpscale_HQ_Sharp_4x_Photo.glsl";
+          glsl-shader = "${mpv-ai-upscale}/mpv user shaders/Photo/4x/AiUpscale_HQ_Sharp_4x_Photo.glsl";
           # glsl-shader = "${mpv-ai-upscale}/mpv user shaders/Photo/2x/AiUpscale_Fast_Sharp_2x_Photo.glsl";
         };
         gpu-low = {
