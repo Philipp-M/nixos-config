@@ -45,6 +45,10 @@ in
               export __GLX_VENDOR_LIBRARY_NAME=nvidia
               export WLR_NO_HARDWARE_CURSORS=1
             ''}
+            ${lib.optionalString (config.modules.cli.ssh.enable) ''
+              export SSH_AUTH_SOCK=/run/user/$(id -u)/keyring/ssh
+            ''}
+
             export XDG_SESSION_TYPE=wayland
             # export GTK_USE_PORTAL=1
             export MOZ_GLX_TEST_EARLY_WL_ROUNDTRIP=1

@@ -352,6 +352,7 @@
   programs.steam.enable = true;
 
   services.gnome.gnome-keyring.enable = true;
+  security.pam.services.gdm.enableGnomeKeyring = true;
   programs.seahorse.enable = true;
 
   # List packages installed in system profile. To search, run:
