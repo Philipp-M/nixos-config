@@ -37,18 +37,18 @@
           ];
         }
       );
-      firefox = prev.wrapFirefox
-        (prev.firefox-unwrapped.overrideAttrs (
-          old: {
-            patches = old.patches ++ [
-              (builtins.fetchurl {
-                url = "https://phabricator.services.mozilla.com/D164578?download=true";
-                sha256 = "sha256:0g576pjsh6shd53414ram44b7vyd4r9h1y3cah2dgzgf3hx4kvpx";
-              })
-            ];
-          }
-        ))
-        { };
+      # firefox = prev.wrapFirefox
+      #   (prev.firefox-unwrapped.overrideAttrs (
+      #     old: {
+      #       patches = old.patches ++ [
+      #         (builtins.fetchurl {
+      #           url = "https://phabricator.services.mozilla.com/D164578?download=true";
+      #           sha256 = "sha256:0g576pjsh6shd53414ram44b7vyd4r9h1y3cah2dgzgf3hx4kvpx";
+      #         })
+      #       ];
+      #     }
+      #   ))
+      #   { };
       rofi-wayland-unwrapped = prev.rofi-wayland-unwrapped.overrideAttrs
         (old: {
           src = prev.fetchFromGitHub {
@@ -76,6 +76,17 @@
         }
       );
     })
+    (final: prev: {
+      bitwig-studio = prev.bitwig-studio.overrideAttrs (
+        old: {
+          version = "5.0.11";
+          src = builtins.fetchurl {
+            url = "https://downloads.bitwig.com/5.0%20Beta%2011/bitwig-studio-5.0-beta-11.deb";
+            sha256 = "sha256:1nidazcav73mg1naavi0par6cj0ada7l77ca3yhkd7sy98gmkz36";
+          };
+        }
+      );
+    })
   ];
 
   nixpkgs.hostPlatform = "x86_64-linux";
@@ -87,6 +98,7 @@
 
     settings = {
       auto-optimise-store = true;
+      keep-failed = true;
       trusted-users = [ "root" "@wheel" ];
       substituters = [ "https://nix-cache.mildenberger.me" "https://cache.nixos.org/" "https://hyprland.cachix.org" "https://cache.ngi0.nixos.org" "https://cache.iog.io" ];
       trusted-public-keys = [
@@ -364,6 +376,7 @@
     python3Full
     python3Packages.pip
     python3Packages.setuptools
+    poetry
     elixir
     gcc10
     gdb
@@ -568,10 +581,16 @@
   ];
 
   # TODO put these in home-manager?
-  fonts.fonts = with pkgs; [
-    font-awesome
-    nerdfonts
-    google-fonts
-    material-symbols
-  ];
+  fonts = {
+    fontconfig.enable = true;
+    fontDir.enable = true;
+    enableGhostscriptFonts = true;
+    fonts = with pkgs; [
+      font-awesome
+      emojione
+      nerdfonts
+      google-fonts
+      material-symbols
+    ];
+  };
 }

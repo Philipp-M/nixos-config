@@ -33,11 +33,12 @@ let
             cargoSha256 = "sha256-RegLIYddogLPjzt/xpEio25jaOJ9g+OxmFyYXgwLHbY=";
             buildFeatures = [ "lsp" ];
           })
+          # solc, kinda broken currently
+          vscode-extensions.llvm-org.lldb-vscode
           pgformatter
           kotlin-language-server
-          nickel
+          nls
           topiary
-          # nickel.packages.${pkgs.system}.default
           (python3.withPackages (ps: with ps; [ python-lsp-server ] ++ python-lsp-server.optional-dependencies.all))
           nodePackages.bash-language-server
           nodePackages.dockerfile-language-server-nodejs
@@ -223,6 +224,19 @@ in
                 procMacro.enable = true;
                 lens = { references = true; methodReferences = true; };
                 completion.autoimport.enable = true;
+                completion.snippets.custom = {
+                  "thread spawn" = {
+                    prefix = [ "spawn" "tspawn" ];
+                    body = [
+                      "thread::spawn(move || {"
+                      "\t$0"
+                      "});"
+                    ];
+                    description = "Insert a thread::spawn call";
+                    requires = "std::thread";
+                    scope = "expr";
+                  };
+                };
                 experimental.procAttrMacros = true;
               };
             };
@@ -263,6 +277,7 @@ in
           lsp.display-messages = true;
           # lsp.inline-diagnostics.other-lines = [];
           completion-trigger-len = 1;
+          completion-replace = true;
           line-number = "relative";
           search.smart-case = false;
           scrolloff = 0;
