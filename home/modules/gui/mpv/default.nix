@@ -44,16 +44,13 @@
           tscale = "oversample";
           ytdl-format = "bestvideo+bestaudio/best";
           x11-bypass-compositor = "yes";
-          # glsl-shader = "" + builtins.path { path = ./FSRCNN_x2_r2_32-0-2.glsl; };
           glsl-shader = "${mpv-ai-upscale}/mpv user shaders/Photo/4x/AiUpscale_HQ_Sharp_4x_Photo.glsl";
-          # glsl-shader = "${mpv-ai-upscale}/mpv user shaders/Photo/2x/AiUpscale_Fast_Sharp_2x_Photo.glsl";
         };
         gpu-low = {
           vo = "gpu-next";
           profile = "gpu-hq";
           video-sync = "display-resample";
           ytdl-format = "bestvideo+bestaudio/best";
-          glsl-shader = "" + builtins.path { path = ./FSRCNNX_x2_8-0-4-1.glsl; };
           x11-bypass-compositor = "yes";
         };
         xv-high = {
