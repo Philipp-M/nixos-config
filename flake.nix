@@ -2,6 +2,9 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs";
     # nixpkgs.url = "git+file:///home/philm/dev/personal/nix/nixpkgs";
+    flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
+    nix-index-database = { url = "github:Mic92/nix-index-database"; inputs.nixpkgs.follows = "nixpkgs"; };
+    deploy-rs = { url = "github:serokell/deploy-rs"; inputs.nixpkgs.follows = "nixpkgs"; inputs.flake-compat.follows = "flake-compat"; };
     devenv = { url = "github:cachix/devenv/latest"; inputs.nixpkgs.follows = "nixpkgs"; inputs.flake-compat.follows = "flake-compat"; };
     impermanence.url = "github:nix-community/impermanence";
     helix = { url = "github:Philipp-M/helix/personal"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
@@ -9,15 +12,11 @@
     nil = { url = "github:oxalica/nil"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
     musnix = { url = "github:Philipp-M/musnix/fix-zfs-gpl-issue"; inputs.nixpkgs.follows = "nixpkgs"; };
     agenix = { url = "github:ryantm/agenix"; inputs = { nixpkgs.follows = "nixpkgs"; home-manager.follows = "home-manager"; }; };
-    flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
     taplo = { url = "github:tamasfe/taplo"; flake = false; };
     rycee-nur-expressions = { url = "gitlab:rycee/nur-expressions"; flake = false; };
     comma = { url = "github:nix-community/comma"; inputs = { nixpkgs.follows = "nixpkgs"; flake-compat.follows = "flake-compat"; }; };
     home-manager = { url = "github:Philipp-M/home-manager/personal"; inputs.nixpkgs.follows = "nixpkgs"; };
     # home-manager = { url = "git+file:///home/philm/dev/personal/desktop-environment/home-manager"; inputs.nixpkgs.follows = "nixpkgs"; };
-
-    nix-index-database = { url = "github:Mic92/nix-index-database"; inputs.nixpkgs.follows = "nixpkgs"; };
-
     # kanata = { url = "github:jtroo/kanata"; flake = false; };
     eww = { url = "github:Philipp-M/eww/fix-nix-flake"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; flake-compat.follows = "flake-compat"; }; };
     # eww = { url = "git+file:///home/philm/dev/personal/rust/eww"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; flake-compat.follows = "flake-compat"; }; };
@@ -51,6 +50,7 @@
             nix-zsh-completions
             git-crypt
             inputs.agenix.packages.${system}.default
+            inputs.deploy-rs.packages."${system}".default
             nixos-install-tools
             nixBin
             (nixos { nix.package = nixFlakes; }).nixos-rebuild
