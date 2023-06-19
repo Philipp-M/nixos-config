@@ -406,8 +406,10 @@
     nodejs_latest
     nodePackages.node2nix
     pkg-config
-    rust-bin.nightly.latest.default
-    rust-bin.nightly.latest.rust-analyzer
+    (pkgs.rust-bin.nightly.latest.default.override {
+      extensions = [ "rustfmt" "rust-analyzer" ];
+      targets = [ "x86_64-unknown-linux-gnu" "wasm32-unknown-unknown" "x86_64-pc-windows-gnu" ];
+    })
     cargo-flamegraph
     trunk
     sqlitebrowser
