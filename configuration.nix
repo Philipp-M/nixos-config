@@ -406,7 +406,10 @@
     nodejs_latest
     nodePackages.node2nix
     pkg-config
-    # rustup
+    rust-bin.nightly.latest.default
+    rust-bin.nightly.latest.rust-analyzer
+    cargo-flamegraph
+    trunk
     sqlitebrowser
     zig
     wasm-pack
@@ -575,9 +578,6 @@
     adb-sync
     udiskie
     tree-sitter
-    rust-bin.nightly.latest.default
-    rust-bin.nightly.latest.rust-analyzer
-    cargo-flamegraph
   ];
 
   # TODO put these in home-manager?
