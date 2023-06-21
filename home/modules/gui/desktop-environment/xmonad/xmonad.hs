@@ -72,6 +72,7 @@ myKeybindings =
     ("M-f", sendMessage $ Toggle NBFULL),
     ("M-n", sendMessage NextLayout),
     ("M-i", spawn "toggle-light"),
+    ("M-b", spawn "toggle-bright-light"),
     ("M-p", promote),
     ("M-=", nextScreen),
     ("M-S-=", shiftNextScreen),

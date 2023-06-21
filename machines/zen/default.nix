@@ -386,6 +386,7 @@
 
   environment.systemPackages = with pkgs; [
     (import ../../secrets/nix-expressions/toggle-light.nix { inherit pkgs; })
+    (import ../../secrets/nix-expressions/toggle-bright-light.nix { inherit pkgs; })
     qjackctl
     libjack2
     guitarix
