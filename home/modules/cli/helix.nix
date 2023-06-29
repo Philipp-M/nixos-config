@@ -277,7 +277,7 @@ in
           lsp.display-messages = true;
           # lsp.inline-diagnostics.other-lines = [];
           completion-trigger-len = 1;
-          completion-replace = true;
+          # completion-replace = true;
           line-number = "relative";
           search.smart-case = false;
           scrolloff = 0;

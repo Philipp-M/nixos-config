@@ -78,11 +78,12 @@
     })
     (final: prev: {
       bitwig-studio = prev.bitwig-studio.overrideAttrs (
-        old: {
-          version = "5.0.11";
+        old: rec {
+          pname = "bitwig-studio";
+          version = "5.0";
           src = builtins.fetchurl {
-            url = "https://downloads.bitwig.com/5.0%20Beta%2011/bitwig-studio-5.0-beta-11.deb";
-            sha256 = "sha256:1nidazcav73mg1naavi0par6cj0ada7l77ca3yhkd7sy98gmkz36";
+            url = "https://downloads.bitwig.com/stable/${version}/${pname}-${version}.deb";
+            sha256 = "sha256-0/S/aNoQA1nAdnr8nUWVLwzrDm+MHqmGIIjPW5YIr7s=";
           };
         }
       );
