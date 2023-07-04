@@ -341,7 +341,10 @@
   home-manager.useUserPackages = true;
   home-manager.useGlobalPkgs = true;
   home-manager.users.philm = {
-    imports = builtins.attrValues inputs.self.homeManagerModules ++ [ inputs.nix-index-database.hmModules.nix-index ];
+    imports = builtins.attrValues inputs.self.homeManagerModules ++ [
+      inputs.nix-index-database.hmModules.nix-index
+      (import ./secrets/nix-expressions/firefox.nix inputs)
+    ];
     programs.home-manager.enable = true;
     nixpkgs.config = import ./nixpkgs-config.nix;
     xdg.configFile."nixpkgs/config.nix".source = ./nixpkgs-config.nix;
