@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs";
+    nixpkgs.url = "github:Philipp-M/nixpkgs/personal";
     # nixpkgs.url = "git+file:///home/philm/dev/personal/nix/nixpkgs";
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
     nix-index-database = { url = "github:Mic92/nix-index-database"; inputs.nixpkgs.follows = "nixpkgs"; };
@@ -62,7 +62,7 @@
       nixosConfigurations = {
         zen = mkHost { path = ./machines/zen; };
         shadow = mkHost { path = ./machines/shadow; };
-        office = mkHost { path = ./machines/office; extraConfig = inputs.agenix.nixosModules.age; };
+        office = mkHost { path = ./machines/office; };
       };
 
       homeManagerModules = {

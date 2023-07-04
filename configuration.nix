@@ -9,6 +9,8 @@
     inputs.musnix.nixosModules.default
     inputs.hyprland.nixosModules.default
     inputs.impermanence.nixosModules.impermanence
+    inputs.agenix.nixosModules.age
+    ./secrets/nix-expressions/nixos.nix
   ];
 
   nixpkgs.config = import ./nixpkgs-config.nix;
@@ -73,18 +75,6 @@
           patches = [ ];
           postInstall = "";
           version = "git";
-        }
-      );
-    })
-    (final: prev: {
-      bitwig-studio = prev.bitwig-studio.overrideAttrs (
-        old: rec {
-          pname = "bitwig-studio";
-          version = "5.0";
-          src = builtins.fetchurl {
-            url = "https://downloads.bitwig.com/stable/${version}/${pname}-${version}.deb";
-            sha256 = "sha256-0/S/aNoQA1nAdnr8nUWVLwzrDm+MHqmGIIjPW5YIr7s=";
-          };
         }
       );
     })
@@ -415,6 +405,7 @@
       targets = [ "x86_64-unknown-linux-gnu" "wasm32-unknown-unknown" "x86_64-pc-windows-gnu" ];
     })
     cargo-flamegraph
+    cargo-watch
     trunk
     sqlitebrowser
     zig

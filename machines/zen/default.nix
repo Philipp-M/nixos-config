@@ -1,4 +1,8 @@
-{ config, lib, pkgs, modulesPath, ... }: {
+{ config, lib, pkgs, modulesPath, ... }:
+let
+  persistent = "/persistent";
+in
+{
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     ../../configuration.nix
@@ -43,7 +47,7 @@
   # root on tmpfs and persistence via impermanence
 
   fileSystems = {
-    "/persistent" = {
+    "${persistent}" = {
       device = "/dev/disk/by-uuid/a0aab361-0865-4b5b-a556-5e2c97ea53d1";
       fsType = "f2fs";
       options = [ "compress_algorithm=lz4" "compress_chksum" "atgc" "gc_merge" "lazytime" ];
@@ -51,9 +55,9 @@
     };
     # impermanence tries to unmount /nix, thus manually bind mount it here
     "/nix" = {
-      device = "/persistent/nix/";
+      device = "${persistent}/nix/";
       options = [ "bind" ];
-      depends = [ "/persistent" ];
+      depends = [ "${persistent}" ];
       neededForBoot = true;
     };
     "/boot" = { device = "/dev/disk/by-uuid/90D9-9D03"; fsType = "vfat"; };
@@ -72,7 +76,7 @@
 
   # persistent state
 
-  environment.persistence."/persistent" = {
+  environment.persistence."${persistent}" = {
     hideMounts = true;
     directories = [
       "/var/log"
@@ -112,6 +116,7 @@
         "SteamLibrary"
         "Calibre Library"
         "Unity"
+        "Arduino"
         { directory = ".gnupg"; mode = "0700"; }
         { directory = ".ssh"; mode = "0700"; }
         { directory = ".local/share/keyrings"; mode = "0700"; }
@@ -191,6 +196,11 @@
   # disable virtualbox as it has problems with the rt kernel
   virtualisation.virtualbox.host.enable = lib.mkForce false;
   virtualisation.docker.enableNvidia = true;
+
+  services.openssh.hostKeys = [
+    { path = "${persistent}/etc/ssh/ssh_host_rsa_key"; bits = 4096; type = "rsa"; }
+    { path = "${persistent}/etc/ssh/ssh_host_ed25519_key"; type = "ed25519"; }
+  ];
 
   services.kanata.keyboards.redox.devices = [
     "/dev/input/by-id/usb-Falbatech_The_Redox_Keyboard-event-kbd" # redox keyboard
@@ -353,7 +363,7 @@
         --exclude /home/philm/.xmonad \
         --filter=':- .gitignore' \
         --filter=':- .npmignore' \
-        --filter=':- .ignore' /persistent/ \
+        --filter=':- .ignore' ${persistent}/ \
         /data/backup/zen/ 2>&1 >> /var/log/backup-persistent.log
       printf "Finished Backup at $(date)\n\n" >> /var/log/backup-persistent.log
     '';
