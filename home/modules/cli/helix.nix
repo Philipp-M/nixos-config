@@ -30,7 +30,7 @@ let
             version = "0.8.0-git";
             src = taplo;
             # cargoSha256 = ""; # when updating the flake input, necessary for new hash...
-            cargoSha256 = "sha256-RegLIYddogLPjzt/xpEio25jaOJ9g+OxmFyYXgwLHbY=";
+            cargoSha256 = "sha256-8oc3biaDWC6Wxg30gFV2U9hagBzPD90Fp0EChz2kjhc=";
             buildFeatures = [ "lsp" ];
           })
           # solc, kinda broken currently

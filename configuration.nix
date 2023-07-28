@@ -10,6 +10,7 @@
     inputs.hyprland.nixosModules.default
     inputs.impermanence.nixosModules.impermanence
     inputs.agenix.nixosModules.age
+    "${inputs.nixpkgs}/nixos/modules/services/desktops/pipewire/filter.nix"
     ./secrets/nix-expressions/nixos.nix
   ];
 
@@ -26,57 +27,7 @@
           cp ${prev.writeShellScriptBin "xdg-open" "${prev.handlr}/bin/handlr open \"$@\""}/bin/xdg-open $out/bin/xdg-open
         '';
       });
-    })
-    (final: prev: {
-      shntool = prev.shntool.overrideAttrs (
-        old: {
-          version = "24-bit";
-          patches = [
-            (builtins.fetchurl {
-              url = "https://salsa.debian.org/debian/shntool/-/raw/57efcd7b34c2107dd785c11d79dfcd4520b2bc41/debian/patches/950803.patch?inline=false";
-              sha256 = "sha256:0rlybjm6qf3ydqr44ns4yg4hwi4jhq237a5p6ph2v7s0630c90i9";
-            })
-          ];
-        }
-      );
-      # firefox = prev.wrapFirefox
-      #   (prev.firefox-unwrapped.overrideAttrs (
-      #     old: {
-      #       patches = old.patches ++ [
-      #         (builtins.fetchurl {
-      #           url = "https://phabricator.services.mozilla.com/D164578?download=true";
-      #           sha256 = "sha256:0g576pjsh6shd53414ram44b7vyd4r9h1y3cah2dgzgf3hx4kvpx";
-      #         })
-      #       ];
-      #     }
-      #   ))
-      #   { };
-      rofi-wayland-unwrapped = prev.rofi-wayland-unwrapped.overrideAttrs
-        (old: {
-          src = prev.fetchFromGitHub {
-            owner = "lbonn";
-            repo = "rofi";
-            rev = "f8bec1453c94a114f366efbfab12fb3b7856a1ab";
-            fetchSubmodules = true;
-            sha256 = "sha256-+aLQjLPRaJY2+/Ilc76u52U561pI2Ta0GvfirhLJP8U=";
-          };
-          version = "1.7.6+wayland1-git";
-        });
-    })
-    (final: prev: {
-      youtube-dl = prev.youtube-dl.overrideAttrs (
-        old: {
-          src = prev.fetchFromGitHub {
-            owner = "ytdl-org";
-            repo = "youtube-dl";
-            rev = "fe7e13066c20b10fe48bc154431440da36baec53";
-            sha256 = "sha256-suGzr/R0FbYrIS+aKAaQ9E8C6ssUZIIM7mq3QXiC1s4=";
-          };
-          patches = [ ];
-          postInstall = "";
-          version = "git";
-        }
-      );
+      docker = prev.docker_24_0;
     })
   ];
 
@@ -141,6 +92,7 @@
     pulse.enable = true;
     jack.enable = true;
   };
+  # services.pipewire.deepfilter.enable = true;
 
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
   # Per-interface useDHCP will be mandatory in the future, so this generated config
@@ -186,11 +138,16 @@
 
   # List of systemwide services
 
-  virtualisation.docker.enable = true;
-  virtualisation.virtualbox.host = {
-    enable = true;
-    enableHardening = false;
-    enableExtensionPack = true;
+  virtualisation = {
+    docker = {
+      enable = true;
+      daemon.settings.features.buildkit = true;
+    };
+    virtualbox.host = {
+      enable = true;
+      enableHardening = false;
+      enableExtensionPack = true;
+    };
   };
 
   # Enable the OpenSSH daemon.
@@ -222,6 +179,7 @@
     libinput.enable = true;
     displayManager.gdm.enable = true;
     displayManager.gdm.debug = true;
+    displayManager.gdm.wayland = true;
 
     displayManager = {
       sessionPackages = [ config.home-manager.users.philm.modules.gui.desktop-environment.hyprland-session-wrapper ];
@@ -303,6 +261,7 @@
   programs.command-not-found.enable = false;
 
   # allow no password for sudo (dangerous...)
+  security.polkit.enable = true;
   security.sudo.enable = true;
   security.sudo.wheelNeedsPassword = false;
 
@@ -352,7 +311,7 @@
 
   programs.gnupg.agent = {
     enable = true;
-    pinentryFlavor = "curses";
+    pinentryFlavor = "tty";
   };
 
   programs.steam.enable = true;
@@ -406,6 +365,7 @@
     })
     cargo-flamegraph
     cargo-watch
+    cargo-leptos
     trunk
     sqlitebrowser
     zig
@@ -439,6 +399,7 @@
     lshw
     pciutils
     ripgrep
+    ripgrep-all
     fd
     tokei
     gitAndTools.gh
@@ -582,7 +543,7 @@
     fontconfig.enable = true;
     fontDir.enable = true;
     enableGhostscriptFonts = true;
-    fonts = with pkgs; [
+    packages = with pkgs; [
       font-awesome
       emojione
       nerdfonts
