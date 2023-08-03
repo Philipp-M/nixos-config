@@ -180,6 +180,7 @@
     displayManager.gdm.enable = true;
     displayManager.gdm.debug = true;
     displayManager.gdm.wayland = true;
+    displayManager.gdm.autoSuspend = false; # for ssh connections mostly
 
     displayManager = {
       sessionPackages = [ config.home-manager.users.philm.modules.gui.desktop-environment.hyprland-session-wrapper ];
@@ -363,6 +364,7 @@
       extensions = [ "rustfmt" "rust-analyzer" ];
       targets = [ "x86_64-unknown-linux-gnu" "wasm32-unknown-unknown" "x86_64-pc-windows-gnu" ];
     })
+    cargo-expand
     cargo-flamegraph
     cargo-watch
     cargo-leptos
