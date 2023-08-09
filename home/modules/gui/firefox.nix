@@ -19,7 +19,7 @@
             "browser.urlbar.speculativeConnect.enabled" = false;
             "devtools.theme" = "${config.theme.base16.kind}";
             "dom.battery.enabled" = false;
-            "dom.event.clipboardevents.enabled" = false;
+            "dom.event.clipboardevents.enabled" = true;
             "dom.webgpu.enabled" = true;
             "extensions.pocket.enabled" = false;
             "general.smoothScroll" = false;
