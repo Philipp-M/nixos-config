@@ -360,6 +360,8 @@
     nodejs_latest
     nodePackages.node2nix
     pkg-config
+
+    # Rust
     (pkgs.rust-bin.nightly.latest.default.override {
       extensions = [ "rustfmt" "rust-analyzer" ];
       targets = [ "x86_64-unknown-linux-gnu" "wasm32-unknown-unknown" "x86_64-pc-windows-gnu" ];
@@ -368,10 +370,15 @@
     cargo-flamegraph
     cargo-watch
     cargo-leptos
+
+    # WASM related
+    binaryen
     trunk
+    twiggy
+    wasm-pack
+
     sqlitebrowser
     zig
-    wasm-pack
     vscode
     glslang
     vulkan-tools

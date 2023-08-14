@@ -20,6 +20,7 @@
         llt = "lsd -Altr --tree";
         lls = "lsd -ArlS --total-size";
         l = "lsd -l";
+        fdh = "fd -HI";
         # package/dependency management
         nx = "NIXPKGS_ALLOW_UNFREE=1 nix-shell --command fish";
         nxd = "NIXPKGS_ALLOW_UNFREE=1 nix develop --command fish";
