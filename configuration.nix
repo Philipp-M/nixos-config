@@ -331,12 +331,21 @@
     python3Packages.pip
     python3Packages.setuptools
     poetry
+    wasm-bindgen-cli
+    graphql-client
+    openapi-generator-cli
+    ruby
+    earthly
+    grpc-client-cli
+    minio-client
+    mongodb-compass
     elixir
     gcc10
     gdb
     meson
     cmake
     dart
+    valgrind
     git
     gti
     git-secret
@@ -394,6 +403,8 @@
     exiv2
     libreoffice
     texlive.combined.scheme-full
+    wkhtmltopdf
+    xournal
     zathura
 
     # TERMINAL/CLI
@@ -436,6 +447,7 @@
     gimp
     inkscape
     exiftool
+    qgis
 
     # AUDIO
     cantata
@@ -505,6 +517,9 @@
     exfat
     rdup
     sanoid
+    rmlint
+    LAStools
+    gparted
     gsettings-desktop-schemas
     appimage-run
     ntfs3g
@@ -535,8 +550,13 @@
     rdfind
     rage
     imagemagick
-    # unityhub
+    guetzli
+    unityhub
+    unixtools.xxd
+    blender
     fira-code
+    openssl
+    rclone
     mpv
     source-code-pro
     transmission-gtk
