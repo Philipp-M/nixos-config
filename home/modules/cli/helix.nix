@@ -53,9 +53,9 @@ let
           ocamlPackages.dune_3
           opam
           ocamlPackages.reason
-          pkgs.dotnet-sdk
-          pkgs.omnisharp-roslyn
-          pkgs.msbuild
+          dotnet-sdk
+          omnisharp-roslyn
+          msbuild
           ripgrep
           rnix-lsp
           java-language-server
@@ -140,7 +140,7 @@ in
             "hint" = gray;
             "debug" = gray;
             "warning" = yellow;
-            "error" = red;
+            "error" = { underline = { color = "red"; style = "line"; }; };
             "tag" = blue;
             "tag.builtin" = orange;
             "markup.heading.marker" = magenta;
@@ -240,7 +240,6 @@ in
                 experimental.procAttrMacros = true;
               };
             };
-            omnisharp = { command = "omnisharp"; args = [ "-l" "Error" "--languageserver" "-z" ]; };
           };
           language =
             let
@@ -259,7 +258,7 @@ in
               { name = "javascript"; language-servers = jsTsWebLanguageServers; }
               { name = "jsx"; language-servers = jsTsWebLanguageServers; }
               { name = "tsx"; language-servers = jsTsWebLanguageServers; }
-              { name = "vue"; language-servers = [{ name = "vuels"; except-features = [ "format" ]; } { name = "efm-lsp-prettier"; } "eslint"]; }
+              { name = "vue"; language-servers = [{ name = "vuels"; except-features = [ "format" ]; } { name = "efm-lsp-prettier"; only-features = [ "format" ]; } "eslint"]; }
               { name = "sql"; formatter.command = "pg_format"; }
               { name = "nix"; language-servers = [ "nil" ]; }
               { name = "json"; language-servers = [{ name = "vscode-json-language-server"; except-features = [ "format" ]; } "efm-lsp-prettier"]; }
