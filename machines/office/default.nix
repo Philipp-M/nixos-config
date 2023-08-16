@@ -3,17 +3,37 @@
 
   networking.hostName = "WS02";
 
-  hardware.enableRedistributableFirmware = true;
+  hardware = {
+    enableRedistributableFirmware = true;
+    nvidia = {
+      package = config.boot.kernelPackages.nvidiaPackages.production;
+      modesetting.enable = true;
+      powerManagement.enable = true;
+      forceFullCompositionPipeline = true;
+    };
+  };
 
   networking.interfaces.enp0s31f6.useDHCP = true;
   networking.interfaces.wlp5s0.useDHCP = false;
   networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
   networking.networkmanager.enable = true;
-  networking.networkmanager.dns = "none";
+  # networking.networkmanager.dns = "none";
 
   boot.kernelParams = [ "nomodeset" "pci=nomsi" ];
+  boot.kernelPackages = pkgs.linuxPackages_6_1;
 
   virtualisation.docker.enableNvidia = true;
+
+  services.kanata.keyboards.redox.devices = [
+    "/dev/input/by-id/usb-Input_Club_Infinity_Ergodox_QMK-event-kbd" # ergodox infinity keyboard
+    "/dev/input/by-id/usb-Logitech_USB_Receiver-if02-event-mouse" # mouse
+  ];
+
+  environment.systemPackages = with pkgs; [ remmina ];
+  environment.etc."resolv.conf".text = ''
+    nameserver 1.1.1.1
+    nameserver 8.8.8.8
+  '';
 
   services.xserver = {
     dpi = 110;

@@ -4,31 +4,34 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
-  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
+  imports =
+    [ (modulesPath + "/installer/scan/not-detected.nix")
+    ];
 
-  boot.initrd.availableKernelModules =
-    [ "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" "sr_mod" ];
+  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "sd_mod" "sr_mod" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
-  fileSystems."/" = {
-    device = "/dev/disk/by-uuid/0b8fdcb9-2105-4a89-80e3-3ccf5305b74b";
-    fsType = "ext4";
-  };
+  fileSystems."/" =
+    { device = "/dev/disk/by-uuid/73460429-94ea-47cb-a5d4-eef3ed6b366d";
+      fsType = "ext4";
+    };
 
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/79ED-1902";
-    fsType = "vfat";
-  };
+  fileSystems."/boot" =
+    { device = "/dev/disk/by-uuid/2B66-0E14";
+      fsType = "vfat";
+    };
 
-  fileSystems."/media/Data" = {
-    device = "/dev/disk/by-uuid/fbf98990-3943-45c2-b11b-6f8bf8db66f5";
-    fsType = "btrfs";
-  };
+  fileSystems."/media/Data" =
+    { device = "/dev/disk/by-uuid/fbf98990-3943-45c2-b11b-6f8bf8db66f5";
+      fsType = "btrfs";
+    };
 
   swapDevices =
-    [{ device = "/dev/disk/by-uuid/6392f44d-8c8b-4684-9de3-6c5167780569"; }];
+    [ { device = "/dev/disk/by-uuid/d853a460-d85f-48c0-9b85-50cc22dcc8c2"; }
+    ];
 
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
+  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }
