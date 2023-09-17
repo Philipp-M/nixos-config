@@ -38,7 +38,7 @@ in
             ("systemctl --user import-environment "
               + toString (lib.unique config.xsession.importedVariables))}
 
-            ${lib.optionalString (config.wayland.windowManager.hyprland.nvidiaPatches) ''            
+            ${lib.optionalString (config.wayland.windowManager.hyprland.enableNvidiaPatches) ''
               export LIBVA_DRIVER_NAME=nvidia
               export GBM_BACKEND=nvidia-drm
               export GDK_BACKEND=wayland
@@ -87,11 +87,11 @@ in
       package = let cfg = config.wayland.windowManager.hyprland; in
         hyprland.packages.${pkgs.system}.default.override {
           enableXWayland = cfg.xwayland.enable;
-          hidpiXWayland = cfg.xwayland.hidpi;
-          nvidiaPatches = cfg.nvidiaPatches;
+          # hidpiXWayland = cfg.xwayland.hidpi;
+          enableNvidiaPatches = cfg.enableNvidiaPatches;
           legacyRenderer = true;
         };
-      nvidiaPatches = true;
+      enableNvidiaPatches = true;
       recommendedEnvironment = false; # environment vars get set in session to not intervene with X11 sessions
       extraConfig =
         let

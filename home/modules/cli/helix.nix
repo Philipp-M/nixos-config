@@ -1,4 +1,4 @@
-{ helix, nil, taplo, ... }:
+{ helix, nil, ... }:
 { pkgs, lib, config, ... }:
 let
   inherit (lib) mkEnableOption mkIf;
@@ -25,14 +25,7 @@ let
           go
           gopls
           texlab
-          (rustPlatform.buildRustPackage {
-            pname = "taplo";
-            version = "0.8.0-git";
-            src = taplo;
-            # cargoSha256 = ""; # when updating the flake input, necessary for new hash...
-            cargoSha256 = "sha256-8oc3biaDWC6Wxg30gFV2U9hagBzPD90Fp0EChz2kjhc=";
-            buildFeatures = [ "lsp" ];
-          })
+          taplo
           # solc, kinda broken currently
           vscode-extensions.llvm-org.lldb-vscode
           pgformatter

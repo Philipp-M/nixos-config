@@ -27,7 +27,7 @@
           cp ${prev.writeShellScriptBin "xdg-open" "${prev.handlr}/bin/handlr open \"$@\""}/bin/xdg-open $out/bin/xdg-open
         '';
       });
-      docker = prev.docker_24_0;
+      docker = prev.docker_24;
     })
   ];
 
@@ -251,9 +251,9 @@
     extraPortals = [
       pkgs.xdg-desktop-portal-gtk
       pkgs.xdg-desktop-portal-kde
-      (inputs.xdph.packages.${pkgs.hostPlatform.system}.default.override {
-        hyprland-share-picker = inputs.xdph.packages.${pkgs.hostPlatform.system}.hyprland-share-picker.override { hyprland = config.home-manager.users.philm.wayland.windowManager.hyprland.package; };
-      })
+      # (inputs.xdph.packages.${pkgs.hostPlatform.system}.default.override {
+      #   hyprland-share-picker = inputs.xdph.packages.${pkgs.hostPlatform.system}.hyprland-share-picker.override { hyprland = config.home-manager.users.philm.wayland.windowManager.hyprland.package; };
+      # })
     ];
   };
 
