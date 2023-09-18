@@ -371,20 +371,23 @@
     pkg-config
 
     # Rust
-    (pkgs.rust-bin.nightly.latest.default.override {
+    (pkgs.rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
       extensions = [ "rustfmt" "rust-analyzer" ];
       targets = [ "x86_64-unknown-linux-gnu" "wasm32-unknown-unknown" "x86_64-pc-windows-gnu" ];
-    })
+    }))
     cargo-expand
+    cargo-make
     cargo-flamegraph
     cargo-watch
     cargo-leptos
+    cargo-llvm-lines
 
     # WASM related
     binaryen
     trunk
     twiggy
     wasm-pack
+    miniserve
 
     sqlitebrowser
     zig
