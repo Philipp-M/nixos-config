@@ -31,6 +31,8 @@
   ];
   hardware.opengl.extraPackages32 = with pkgs.pkgsi686Linux; [ vaapiIntel ];
 
+  services.kanata.keyboards.default.devices = [ "/dev/input/by-path/platform-i8042-serio-0-event-kbd" ];
+
   services.thermald.enable = true;
 
   home-manager.users.philm.services.cbatticon = {

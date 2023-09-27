@@ -24,7 +24,7 @@
 
   virtualisation.docker.enableNvidia = true;
 
-  services.kanata.keyboards.redox.devices = [
+  services.kanata.keyboards.default.devices = [
     "/dev/input/by-id/usb-Input_Club_Infinity_Ergodox_QMK-event-kbd" # ergodox infinity keyboard
     "/dev/input/by-id/usb-Logitech_USB_Receiver-if02-event-mouse" # mouse
   ];

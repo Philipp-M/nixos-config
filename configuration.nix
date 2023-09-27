@@ -211,7 +211,7 @@
     #   cargoHash = "sha256-IW+TjVROjzllQuk5SMCq4O06c1+hAlfRQlRRJ2MFFl0=";
     #   buildFeatures = [ "cmd" ];
     # };
-    keyboards.redox = {
+    keyboards.default = {
       # devices are configured in each /machines/<machine>/default.nix
       # TODO extend kanata to automatically recognize input devices, autorestart/map devices if they connect/disconnect etc.
       config = ''
@@ -227,7 +227,7 @@
           mlft mrgt mmid @metaextra
           esc  1    2    3    4    5    6    7    8    9    0    -    =    bspc
           @xcp q    w    f    p    g    j    l    u    y    ;    [    ]    \
-          caps a    r    s    t    d    h    n    e    i    o    '    ret
+          esc a    r    s    t    d    h    n    e    i    o    '    ret
           lsft z    x    c    v    b    k    m    ,    .    /    rsft
           lctl lmet lalt           spc            ralt rmet cmp rctl
         )

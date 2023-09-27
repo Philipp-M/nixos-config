@@ -202,7 +202,7 @@ in
     { path = "${persistent}/etc/ssh/ssh_host_ed25519_key"; type = "ed25519"; }
   ];
 
-  services.kanata.keyboards.redox.devices = [
+  services.kanata.keyboards.default.devices = [
     "/dev/input/by-id/usb-Falbatech_The_Redox_Keyboard-event-kbd" # redox keyboard
     "/dev/input/by-id/usb-Logitech_USB_Receiver-if02-event-mouse" # mouse
   ];
