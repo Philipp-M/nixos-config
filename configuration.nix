@@ -150,6 +150,10 @@
     };
   };
 
+  systemd.extraConfig = ''
+    DefaultTimeoutStopSec=15s
+  '';
+
   # Enable the OpenSSH daemon.
   services.openssh = {
     enable = true;
