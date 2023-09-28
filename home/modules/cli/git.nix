@@ -3,6 +3,7 @@
   options.modules.cli.git.enable = lib.mkEnableOption "Enable personal git config";
 
   config = lib.mkIf config.modules.cli.git.enable {
+    programs.gitui.enable = true;
     programs.git = {
       enable = true;
       userName = "Philipp Mildenberger";
