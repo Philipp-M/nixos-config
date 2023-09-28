@@ -425,16 +425,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1695000021,
-        "narHash": "sha256-fL5pzWSpacWBdEQfa3GPE8MkPEEgr6/TCiEC5/oXcuo=",
+        "lastModified": 1695900603,
+        "narHash": "sha256-hFEPOPyj2/xH7mLYIMzDHl4sfcsXKuZL8b8gg3kgjKI=",
         "owner": "Philipp-M",
         "repo": "helix",
-        "rev": "a343eca41ed52eebd935c4794909be444bcac99f",
+        "rev": "564bd3956088dee9b55d8e65900d3a4181a71f4a",
         "type": "github"
       },
       "original": {
         "owner": "Philipp-M",
-        "ref": "new-personal",
+        "ref": "personal",
         "repo": "helix",
         "type": "github"
       }

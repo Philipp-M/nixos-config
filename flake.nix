@@ -7,7 +7,7 @@
     deploy-rs = { url = "github:serokell/deploy-rs"; inputs.nixpkgs.follows = "nixpkgs"; inputs.flake-compat.follows = "flake-compat"; };
     devenv = { url = "github:cachix/devenv/latest"; inputs.nixpkgs.follows = "nixpkgs"; inputs.flake-compat.follows = "flake-compat"; };
     impermanence.url = "github:nix-community/impermanence";
-    helix = { url = "github:Philipp-M/helix/new-personal"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
+    helix = { url = "github:Philipp-M/helix/personal"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
     rust-overlay = { url = "github:oxalica/rust-overlay"; inputs.nixpkgs.follows = "nixpkgs"; };
     nil = { url = "github:oxalica/nil"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
     musnix = { url = "github:musnix/musnix"; inputs.nixpkgs.follows = "nixpkgs"; };
