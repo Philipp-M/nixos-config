@@ -151,6 +151,8 @@
   };
 
   systemd.extraConfig = ''
+    DefaultJobTimeoutSec=15s
+    DefaultTimeoutStartSec=15s
     DefaultTimeoutStopSec=15s
   '';
 

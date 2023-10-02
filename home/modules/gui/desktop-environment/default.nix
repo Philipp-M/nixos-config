@@ -11,7 +11,7 @@ in
 {
   imports = [ hyprland.homeManagerModules.default ];
   options.modules.gui.desktop-environment.enable = lib.mkEnableOption ''
-    Enable personal desktop-environment config (xmonad, polybar etc.)
+    Enable personal desktop-environment config (xmonad, eww etc.)
   '';
 
   options.modules.gui.desktop-environment.hyprland-session-wrapper = lib.mkOption {
@@ -289,6 +289,8 @@ in
         };
       };
     };
+
+    home.file.".xmonad/xmonad-x86_64-linux".force = true;
 
     systemd.user.targets.xmonad-session = {
       Unit = {
