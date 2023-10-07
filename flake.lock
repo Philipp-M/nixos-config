@@ -767,7 +767,8 @@
         "rust-overlay": "rust-overlay",
         "rycee-firefox-addons": "rycee-firefox-addons",
         "rycee-nur-expressions": "rycee-nur-expressions",
-        "xdph": "xdph"
+        "xdph": "xdph",
+        "youtube-dl": "youtube-dl"
       }
     },
     "rust-overlay": {
@@ -1009,6 +1010,22 @@
       "original": {
         "owner": "hyprwm",
         "repo": "xdg-desktop-portal-hyprland",
+        "type": "github"
+      }
+    },
+    "youtube-dl": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1695589667,
+        "narHash": "sha256-rvDy1+cKwEDNo7Tb8Ma3fB4BI4qU7DMNoNRuftFzKmQ=",
+        "owner": "ytdl-org",
+        "repo": "youtube-dl",
+        "rev": "00ef748cc0e35ee60efd0f7a00e373ab8d1af86b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ytdl-org",
+        "repo": "youtube-dl",
         "type": "github"
       }
     }

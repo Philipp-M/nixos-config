@@ -29,6 +29,13 @@
       });
       docker = prev.docker_24;
     })
+    (final: prev: {
+      youtube-dl = prev.youtube-dl.overrideAttrs (oldAttrs: {
+        src = inputs.youtube-dl;
+        patches = [];
+        postInstall = "";
+      });
+    })
   ];
 
   nixpkgs.hostPlatform = "x86_64-linux";

@@ -25,6 +25,7 @@
     hyprland = { url = "github:hyprwm/Hyprland"; inputs = { nixpkgs.follows = "nixpkgs"; xdph.follows = "xdph"; }; };
     xdph = { url = "github:hyprwm/xdg-desktop-portal-hyprland"; inputs.nixpkgs.follows = "nixpkgs"; inputs.hyprland-protocols.follows = "hyprland/hyprland-protocols"; };
     mpv-ai-upscale = { url = "github:Alexkral/AviSynthAiUpscale"; flake = false; };
+    youtube-dl = { url = "github:ytdl-org/youtube-dl"; flake = false; };
     fzf-fish = { url = "github:PatrickF1/fzf.fish"; flake = false; };
   };
 
