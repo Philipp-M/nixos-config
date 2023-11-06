@@ -204,7 +204,13 @@ in
               config.rust-analyzer = {
                 cargo.loadOutDirsFromCheck = true;
                 checkOnSave.command = "clippy";
-                procMacro.enable = true;
+                procMacro = {
+                  enable = true;
+                  server = "${(pkgs.rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
+                      extensions = [ "rustfmt" "rust-analyzer" ];
+                      targets = [ "x86_64-unknown-linux-gnu" "wasm32-unknown-unknown" "x86_64-pc-windows-gnu" ];
+                    }))}/libexec/rust-analyzer-proc-macro-srv";
+                };
                 lens = { references = true; methodReferences = true; };
                 completion.autoimport.enable = true;
                 completion.snippets.custom = {
