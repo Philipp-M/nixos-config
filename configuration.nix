@@ -99,6 +99,7 @@
     pulse.enable = true;
     jack.enable = true;
   };
+  sound.mediaKeys.enable = true;
   # services.pipewire.deepfilter.enable = true;
 
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.

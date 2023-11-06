@@ -425,11 +425,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1695900603,
-        "narHash": "sha256-hFEPOPyj2/xH7mLYIMzDHl4sfcsXKuZL8b8gg3kgjKI=",
+        "lastModified": 1698270005,
+        "narHash": "sha256-tAvW4iECvXpRXrorPpP64StM6o1C1G7u8+UurvUvpw8=",
         "owner": "Philipp-M",
         "repo": "helix",
-        "rev": "564bd3956088dee9b55d8e65900d3a4181a71f4a",
+        "rev": "707ac9034ac462f21e0e7bcadf4a49c2a382cd9c",
         "type": "github"
       },
       "original": {
@@ -446,11 +446,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1694884215,
-        "narHash": "sha256-WNWHRUG3WE9JT6GYh8zRZs2F9h34yyvE2A9FtWnN9+g=",
+        "lastModified": 1698270492,
+        "narHash": "sha256-dQYMw04JmWHJ/g+qCJB2W36+Y2/0ybU7nUhRnuNU7jw=",
         "owner": "Philipp-M",
         "repo": "home-manager",
-        "rev": "1a3886365f7f71828e1a3328f3458e29753996ba",
+        "rev": "f7f47ba16c5103fcbc6b61c83b3591f7730631e1",
         "type": "github"
       },
       "original": {

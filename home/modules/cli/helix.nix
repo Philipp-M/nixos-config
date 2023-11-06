@@ -3,65 +3,6 @@
 let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.modules.cli.helix;
-  helixPackage = helix.packages.${pkgs.system}.default.overrideAttrs (self: {
-    makeWrapperArgs = with pkgs;
-      self.makeWrapperArgs or [ ] ++ [
-        "--suffix"
-        "PATH"
-        ":"
-        (lib.makeBinPath [
-          clang-tools
-          cmake-language-server
-          jsonnet-language-server
-          dart
-          xsel
-          haskell-language-server
-          julia-bin
-          luaformatter
-          elixir_ls
-          marksman
-          ltex-ls
-          solargraph
-          go
-          gopls
-          texlab
-          taplo
-          # solc, kinda broken currently
-          vscode-extensions.llvm-org.lldb-vscode
-          pgformatter
-          kotlin-language-server
-          nls
-          topiary
-          (python3.withPackages (ps: with ps; [ python-lsp-server ] ++ python-lsp-server.optional-dependencies.all))
-          nodePackages.bash-language-server
-          nodePackages.dockerfile-language-server-nodejs
-          nodePackages.pyright
-          nodePackages.stylelint
-          nodePackages.svelte-language-server
-          nodePackages.vls
-          nodePackages.vim-language-server
-          nodePackages.vscode-langservers-extracted
-          nodePackages.yaml-language-server
-          ocamlPackages.ocaml-lsp
-          ocamlPackages.dune_3
-          opam
-          ocamlPackages.reason
-          dotnet-sdk
-          omnisharp-roslyn
-          msbuild
-          ripgrep
-          rnix-lsp
-          java-language-server
-          sumneko-lua-language-server
-          yapf
-          zathura
-          zls
-        ])
-        "--set-default"
-        "RUST_SRC_PATH"
-        "${rustPlatform.rustcSrc}/library"
-      ];
-  });
 in
 {
   options.modules.cli.helix.enable = mkEnableOption "Enable personal helix";
@@ -69,7 +10,56 @@ in
   config = mkIf cfg.enable {
     programs.helix = {
       enable = true;
-      package = helixPackage;
+      package = helix.packages.${pkgs.system}.default;
+      extraPackages = with pkgs; [
+        clang-tools
+        cmake-language-server
+        jsonnet-language-server
+        dart
+        xsel
+        haskell-language-server
+        julia-bin
+        luaformatter
+        elixir_ls
+        marksman
+        ltex-ls
+        solargraph
+        go
+        gopls
+        texlab
+        taplo
+        # solc, kinda broken currently
+        vscode-extensions.llvm-org.lldb-vscode
+        pgformatter
+        kotlin-language-server
+        nls
+        topiary
+        (python3.withPackages (ps: with ps; [ python-lsp-server ] ++ python-lsp-server.optional-dependencies.all))
+        nodePackages.bash-language-server
+        nodePackages.dockerfile-language-server-nodejs
+        nodePackages.pyright
+        nodePackages.stylelint
+        nodePackages.svelte-language-server
+        nodePackages.vls
+        nodePackages.vim-language-server
+        nodePackages.vscode-langservers-extracted
+        nodePackages.yaml-language-server
+        ocamlPackages.ocaml-lsp
+        ocamlPackages.dune_3
+        opam
+        ocamlPackages.reason
+        dotnet-sdk
+        omnisharp-roslyn
+        msbuild
+        ripgrep
+        rnix-lsp
+        java-language-server
+        sumneko-lua-language-server
+        yapf
+        zathura
+        zls
+      ];
+
       themes = {
         base16 = with config.theme.base16.colors;
           let
