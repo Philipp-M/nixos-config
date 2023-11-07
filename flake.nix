@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:Philipp-M/nixpkgs/personal-staging";
+    nixpkgs.url = "github:Philipp-M/nixpkgs/personal";
     # nixpkgs.url = "git+file:///home/philm/dev/personal/nix/nixpkgs";
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
     nix-index-database = { url = "github:Mic92/nix-index-database"; inputs.nixpkgs.follows = "nixpkgs"; };
