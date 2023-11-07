@@ -386,7 +386,7 @@
 
     # Rust
     (pkgs.rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
-      extensions = [ "rustfmt" "rust-analyzer" ];
+      extensions = [ "rustfmt" "rust-analyzer" "rust-src" ];
       targets = [ "x86_64-unknown-linux-gnu" "wasm32-unknown-unknown" "x86_64-pc-windows-gnu" ];
     }))
     cargo-expand
