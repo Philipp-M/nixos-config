@@ -257,6 +257,8 @@ in
       settings = {
         theme = "base16";
         editor = {
+          insert-final-newline = false;
+          color-modes = true;
           idle-timeout = 33;
           indent-guides.render = true;
           rainbow-brackets = true;
