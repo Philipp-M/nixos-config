@@ -18,7 +18,6 @@ in
       package = config.boot.kernelPackages.nvidiaPackages.production;
       modesetting.enable = true;
       powerManagement.enable = true;
-      forceFullCompositionPipeline = true;
     };
   };
 
@@ -139,6 +138,7 @@ in
         ".config/gh"
         ".config/heroic"
         ".config/Google"
+        ".config/Slack"
         ".config/BraveSoftware"
         ".config/tree-sitter"
         ".config/obs-studio"
@@ -158,6 +158,7 @@ in
         ".local/state/wireplumber"
         ".BitwigStudio"
         ".cache/nix" # avoid unnecessary fetching
+        ".cache/nvidia" # avoid unnecessary computation
         ".cache/Google" # Android studio takes a long time otherwise
         ".gradle"
         ".android"
@@ -171,7 +172,7 @@ in
         ".wine"
         ".xmonad"
       ];
-      files = [ ".cache/helix/helix.log" ".npmrc" ];
+      files = [ ".cache/helix/helix.log" ".npmrc" ".nvidia-settings-rc" ];
     };
   };
 
@@ -378,7 +379,13 @@ in
     };
   };
 
-  services.xserver = { dpi = 110; videoDrivers = [ "nvidia" ]; };
+  services.xserver = {
+    dpi = 110;
+    videoDrivers = [ "nvidia" ];
+    deviceSection = ''
+      Option "TripleBuffer" "on"
+    '';
+  };
 
   home-manager.users.philm = {
     modules.mpd.enable = true;

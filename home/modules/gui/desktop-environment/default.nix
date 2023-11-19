@@ -518,55 +518,59 @@ in
     };
 
     services.picom = {
-      # enable = true;
+      enable = true;
       # add fancy dual kawase blur to picom
-      package = pkgs.picom.overrideAttrs (
-        old: {
-          src = builtins.fetchGit {
-            shallow = true;
-            url = "https://github.com/Philipp-M/picom/";
-            ref = "customizable-rounded-corners";
-            rev = "2b1d9faf0bf5dfad04a5acf02b34a432368de805";
-          };
-        }
-      );
-      extraArgs = [ "--experimental-backends" ];
+      # package = pkgs.picom.overrideAttrs (
+      #   old: {
+      #     src = builtins.fetchGit {
+      #       shallow = true;
+      #       url = "https://github.com/Philipp-M/picom/";
+      #       ref = "customizable-rounded-corners";
+      #       rev = "2b1d9faf0bf5dfad04a5acf02b34a432368de805";
+      #     };
+      #   }
+      # );
+      package = pkgs.compfy;
+      # extraArgs = [ "--experimental-backends" ];
       settings = {
         # general
         backend = "glx";
         vsync = true;
         refresh-rate = 0;
-        unredir-if-possible = false;
+        unredir-if-possible = true;
         # blur
+        animations = false;
         blur-background = true;
         blur-background-exclude = [ ];
         blur-method = "dual_kawase";
         blur-strength = 10;
+        blur-whitelist = false;
+        corner-radius = 0;
         wintypes = {
           desktop = {
             opacity = builtins.fromJSON config.theme.extraParams.alpha;
-            corner-radius = 0;
-            corner-radius-top-left = 5;
-            corner-radius-top-right = 5;
-            round-borders = 1;
+            # corner-radius = 0;
+            # corner-radius-top-left = 5;
+            # corner-radius-top-right = 5;
+            # round-borders = 1;
           };
-          normal = { round-borders = 1; };
+          # normal = { round-borders = 1; };
         };
-        # rounded corners and alpha-transparency
-        detect-rounded-corners = true;
-        round-borders = 1;
-        corner-radius = 0;
-        corner-radius-bottom-left = 5;
-        corner-radius-bottom-right = 5;
-        rounded-corners-exclude = [
-          "window_type = 'menu'"
-          "window_type = 'dock'"
-          "window_type = 'dropdown_menu'"
-          "window_type = 'popup_menu'"
-          "class_g = 'Polybar'"
-          "class_g = 'Rofi'"
-          "class_g = 'Dunst'"
-        ];
+        ## rounded corners and alpha-transparency
+        # detect-rounded-corners = true;
+        # round-borders = 1;
+        # corner-radius = 0;
+        # corner-radius-bottom-left = 5;
+        # corner-radius-bottom-right = 5;
+        # rounded-corners-exclude = [
+        #   "window_type = 'menu'"
+        #   "window_type = 'dock'"
+        #   "window_type = 'dropdown_menu'"
+        #   "window_type = 'popup_menu'"
+        #   "class_g = 'Polybar'"
+        #   "class_g = 'Rofi'"
+        #   "class_g = 'Dunst'"
+        # ];
         frame-opacity = builtins.fromJSON config.theme.extraParams.alpha;
       };
     };

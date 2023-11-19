@@ -9,7 +9,6 @@
       package = config.boot.kernelPackages.nvidiaPackages.production;
       modesetting.enable = true;
       powerManagement.enable = true;
-      forceFullCompositionPipeline = true;
     };
   };
 
@@ -49,6 +48,9 @@
       Option "BaseMosaic" "off"
     '';
     videoDrivers = [ "nvidia" ];
+    deviceSection = ''
+      Option "TripleBuffer" "on"
+    '';
   };
 
   nix.settings.max-jobs = lib.mkDefault 12;
