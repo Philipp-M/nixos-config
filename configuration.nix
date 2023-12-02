@@ -474,6 +474,8 @@
     ffmpeg_5-full
     flacon
     bitwig-studio
+    renoise
+    qpwgraph
     playerctl
     reaper
 
