@@ -49,12 +49,11 @@
       auto-optimise-store = true;
       keep-failed = true;
       trusted-users = [ "root" "@wheel" ];
-      substituters = [ "https://nix-cache.mildenberger.me" "https://cache.nixos.org/" "https://hyprland.cachix.org" "https://cache.ngi0.nixos.org" "https://cache.iog.io" ];
+      substituters = [ "https://nix-cache.mildenberger.me" "https://cache.nixos.org/" "https://hyprland.cachix.org" ];
       trusted-public-keys = [
         "nix-cache.mildenberger.me:dcNVw3YMUReIGC5JsMN4Ifv9xjbQn7rkDF7gJIO0ZoI="
         "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
         "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
-        "cache.ngi0.nixos.org-1:KqH5CBLNSyX184S9BKZJo1LxrxJ9ltnY2uAs5c/f1MA="
         "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ="
       ];
       experimental-features = [ "nix-command" "flakes" "ca-derivations" ];
@@ -530,7 +529,7 @@
     inputs.comma.packages.${pkgs.system}.default
     inputs.devenv.packages.${pkgs.system}.devenv
     # colmapWithCuda
-    colmap
+    # colmap
     exfat
     rdup
     sanoid

@@ -38,13 +38,11 @@ in
             ("systemctl --user import-environment "
               + toString (lib.unique config.xsession.importedVariables))}
 
-            ${lib.optionalString (config.wayland.windowManager.hyprland.enableNvidiaPatches) ''
               export LIBVA_DRIVER_NAME=nvidia
               export GBM_BACKEND=nvidia-drm
               export GDK_BACKEND=wayland
               export __GLX_VENDOR_LIBRARY_NAME=nvidia
               export WLR_NO_HARDWARE_CURSORS=1
-            ''}
             ${lib.optionalString (config.modules.cli.ssh.enable) ''
               export SSH_AUTH_SOCK=/run/user/$(id -u)/keyring/ssh
             ''}
@@ -88,11 +86,11 @@ in
         hyprland.packages.${pkgs.system}.default.override {
           enableXWayland = cfg.xwayland.enable;
           # hidpiXWayland = cfg.xwayland.hidpi;
-          enableNvidiaPatches = cfg.enableNvidiaPatches;
+          # enableNvidiaPatches = cfg.enableNvidiaPatches;
           legacyRenderer = true;
         };
-      enableNvidiaPatches = true;
-      recommendedEnvironment = false; # environment vars get set in session to not intervene with X11 sessions
+      # enableNvidiaPatches = true;
+      # recommendedEnvironment = false; # environment vars get set in session to not intervene with X11 sessions
       extraConfig =
         let
           pointer = config.home.pointerCursor;
