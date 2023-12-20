@@ -189,7 +189,7 @@ in
 
             typescript-language-server = {
               command = "${nodePackages.typescript-language-server}/bin/typescript-language-server";
-              args = [ "--stdio" "--tsserver-path=${nodePackages.typescript}/lib/node_modules/typescript/lib" ];
+              args = [ "--stdio"  ];
               config.documentFormatting = false;
             };
             nil = {
