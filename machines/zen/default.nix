@@ -326,7 +326,7 @@ in
     drivers = with pkgs; [ hplip ];
   };
   services.avahi.enable = true;
-  services.avahi.nssmdns = true;
+  services.avahi.nssmdns4 = true;
   programs.system-config-printer.enable = true;
 
   networking.hosts = { "127.0.0.1" = [ "syncthing" ]; };

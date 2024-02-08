@@ -82,13 +82,14 @@ in
 
     wayland.windowManager.hyprland = {
       enable = true;
-      package = let cfg = config.wayland.windowManager.hyprland; in
-        hyprland.packages.${pkgs.system}.default.override {
-          enableXWayland = cfg.xwayland.enable;
-          # hidpiXWayland = cfg.xwayland.hidpi;
-          # enableNvidiaPatches = cfg.enableNvidiaPatches;
-          legacyRenderer = true;
-        };
+      package = hyprland.packages.${pkgs.system}.default;
+      # let cfg = config.wayland.windowManager.hyprland; in
+      #.override {
+      # enableXWayland = cfg.xwayland.enable;
+      # hidpiXWayland = cfg.xwayland.hidpi;
+      # enableNvidiaPatches = cfg.enableNvidiaPatches;
+      # legacyRenderer = true;
+      # };
       # enableNvidiaPatches = true;
       # recommendedEnvironment = false; # environment vars get set in session to not intervene with X11 sessions
       extraConfig =

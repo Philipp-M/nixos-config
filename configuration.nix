@@ -32,7 +32,7 @@
     (final: prev: {
       youtube-dl = prev.youtube-dl.overrideAttrs (oldAttrs: {
         src = inputs.youtube-dl;
-        patches = [];
+        patches = [ ];
         postInstall = "";
       });
     })
@@ -187,7 +187,7 @@
     enable = true;
     autoRepeatInterval = 15;
     autoRepeatDelay = 300;
-    xkbVariant = "colemak";
+    xkb.variant = "colemak";
     # Enable touchpad support.
     libinput.enable = true;
     displayManager.gdm.enable = true;
@@ -261,9 +261,14 @@
     enable = true;
     wlr.enable = true; # necessary? as hyprland has its own xdg-portal based on wlr
     xdgOpenUsePortal = true;
+    # TODO configure this correctly
+    config.common.default = "*";
     extraPortals = [
       pkgs.xdg-desktop-portal-gtk
       pkgs.xdg-desktop-portal-kde
+      (inputs.hyprland.packages.${pkgs.hostPlatform.system}.xdg-desktop-portal-hyprland.override {
+        hyprland = config.home-manager.users.philm.wayland.windowManager.hyprland.package;
+      })
       # (inputs.xdph.packages.${pkgs.hostPlatform.system}.default.override {
       #   hyprland-share-picker = inputs.xdph.packages.${pkgs.hostPlatform.system}.hyprland-share-picker.override { hyprland = config.home-manager.users.philm.wayland.windowManager.hyprland.package; };
       # })
@@ -419,7 +424,8 @@
     exiv2
     libreoffice
     texlive.combined.scheme-full
-    wkhtmltopdf
+    # wkhtmltopdf
+
     xournal
     zathura
 

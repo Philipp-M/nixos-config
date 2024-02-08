@@ -15,7 +15,7 @@
     rycee-nur-expressions = { url = "gitlab:rycee/nur-expressions"; flake = false; };
     rycee-firefox-addons = { url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons"; inputs.nixpkgs.follows = "nixpkgs"; };
     comma = { url = "github:nix-community/comma"; inputs = { nixpkgs.follows = "nixpkgs"; flake-compat.follows = "flake-compat"; }; };
-    home-manager = { url = "github:Philipp-M/home-manager/personal-staging"; inputs.nixpkgs.follows = "nixpkgs"; };
+    home-manager = { url = "github:nix-community/home-manager"; inputs.nixpkgs.follows = "nixpkgs"; };
     # home-manager = { url = "git+file:///home/philm/dev/personal/desktop-environment/home-manager"; inputs.nixpkgs.follows = "nixpkgs"; };
     # kanata = { url = "github:jtroo/kanata"; flake = false; };
     eww = { url = "github:Philipp-M/eww/fix-nix-flake"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; flake-compat.follows = "flake-compat"; }; };
