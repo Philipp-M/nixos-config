@@ -36,6 +36,25 @@
         postInstall = "";
       });
     })
+    # temporary until https://github.com/NixOS/nixpkgs/pull/270691 is merged
+    (final: prev: {
+      mpv-unwrapped =
+        prev.mpv-unwrapped.overrideAttrs (oa: rec {
+          version = "0.37.0";
+
+          src = prev.pkgs.fetchFromGitHub {
+            owner = "mpv-player";
+            repo = "mpv";
+            rev = "v${version}";
+            hash = "sha256-izAz9Iiam7tJAWIQkmn2cKOfoaog8oPKq4sOUtp1nvU=";
+          };
+        });
+    })
+    # use same wine version as the system...
+    (final: prev: {
+      yabridgectl = prev.yabridgectl.override { wine = prev.wineWowPackages.stableFull; };
+      yabridge = prev.yabridge.override { wine = prev.wineWowPackages.stableFull; };
+    })
   ];
 
   nixpkgs.hostPlatform = "x86_64-linux";
