@@ -384,16 +384,19 @@
     php
     yarn
     deno
-    nodejs_latest
+    # nodejs_latest
+    nodejs_18
     nodePackages.node2nix
     pkg-config
 
     # Rust
     (pkgs.rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
-      extensions = [ "rustfmt" "rust-analyzer" "rust-src" ];
+      extensions = [ "rustfmt" "rust-analyzer" "rust-src" "miri" ];
       targets = [ "x86_64-unknown-linux-gnu" "wasm32-unknown-unknown" "x86_64-pc-windows-gnu" ];
     }))
     cargo-expand
+    cargo-update
+    cargo-insta
     cargo-make
     cargo-flamegraph
     cargo-watch
@@ -523,7 +526,8 @@
 
     # GAMES
     minecraft
-    wineWowPackages.staging
+    # wine
+    wineWowPackages.stableFull
     winetricks
     protontricks
 

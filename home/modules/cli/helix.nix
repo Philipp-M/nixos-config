@@ -28,7 +28,7 @@ in
         gopls
         texlab
         taplo
-        # solc, kinda broken currently
+        solc
         vscode-extensions.llvm-org.lldb-vscode
         pgformatter
         kotlin-language-server
@@ -189,7 +189,7 @@ in
 
             typescript-language-server = {
               command = "${nodePackages.typescript-language-server}/bin/typescript-language-server";
-              args = [ "--stdio"  ];
+              args = [ "--stdio" ];
               config.documentFormatting = false;
             };
             nil = {
@@ -207,7 +207,7 @@ in
                 procMacro = {
                   enable = true;
                   server = "${(pkgs.rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
-                      extensions = [ "rustfmt" "rust-analyzer" "rust-src" ];
+                      extensions = [ "rustfmt" "rust-analyzer" "rust-src" "miri" ];
                       targets = [ "x86_64-unknown-linux-gnu" "wasm32-unknown-unknown" "x86_64-pc-windows-gnu" ];
                     }))}/libexec/rust-analyzer-proc-macro-srv";
                 };
