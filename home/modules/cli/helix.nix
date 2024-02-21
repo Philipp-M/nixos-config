@@ -243,6 +243,8 @@ in
               { name = "ruby"; file-types = [ "rb" "rake" "rakefile" "irb" "gemfile" "gemspec" "Rakefile" "Gemfile" "Fastfile" "Matchfile" "Pluginfile" "Appfile" ]; }
               { name = "rust"; auto-format = false; file-types = [ "lalrpop" "rs" ]; language-servers = [ "rust-analyzer" ]; }
               { name = "c-sharp"; language-servers = [ "omnisharp" ]; }
+              { name = "xml"; language-servers = [ "vscode-html-language-server" ]; }
+              { name = "html"; auto-format = false; }
               { name = "typescript"; language-servers = jsTsWebLanguageServers; }
               { name = "javascript"; language-servers = jsTsWebLanguageServers; }
               { name = "jsx"; language-servers = jsTsWebLanguageServers; }
@@ -284,10 +286,11 @@ in
               f = ":format";
               c = "toggle_comments";
               t = {
-                t = "goto_definition";
+                d = "goto_type_definition";
                 i = "goto_implementation";
                 r = "goto_reference";
-                d = "goto_type_definition";
+                t = "goto_definition";
+                w = "trim_selections";
               };
               x = ":buffer-close";
               w = ":w";
