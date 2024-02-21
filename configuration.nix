@@ -455,6 +455,7 @@
     fasd
     fzf
     file
+    asciinema
     progress
     htop
     killall
@@ -494,7 +495,9 @@
     qgis
 
     # AUDIO
+    giada
     cantata
+    loopers
     yabridge
     yabridgectl
     pavucontrol
@@ -504,6 +507,7 @@
     bitwig-studio
     renoise
     qpwgraph
+    a2jmidid
     playerctl
     reaper
 
@@ -541,11 +545,11 @@
     xorg.xmessage
     xorg.xkill
     xorg.xwininfo
+    handlr
     deadd-notification-center
 
     # GAMES
     minecraft
-    # wine
     wineWowPackages.stableFull
     winetricks
     protontricks
