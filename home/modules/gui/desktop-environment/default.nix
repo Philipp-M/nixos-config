@@ -139,11 +139,11 @@ in
 
           decoration {
             rounding = 6
-            blur = true
-            blur_size = 8
-            blur_passes = 4
-            blur_new_optimizations = true
-            # inactive_opacity = 0.8
+            blur {
+              size = 8
+              passes = 4
+              # inactive_opacity = 0.8
+            }
             drop_shadow = true
             shadow_ignore_window = true
             shadow_offset = 0 0
@@ -214,6 +214,7 @@ in
           bind = $mod,Return,exec,kitty
           bind = $mod,Space,exec,rofi -show run
           bind = $mod,I,exec,toggle-light
+          bind = $mod,B,exec,toggle-bright-light
           bind = $mod,S,exec,env XDG_CURRENT_DESKTOP=sway XDG_SESSION_DESKTOP=sway QT_QPA_PLATFORM=wayland flameshot gui
           bind = $mod,W,exec,firefox
           bind = $mod,Escape,exec,wlogout -p layer-shell

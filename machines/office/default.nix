@@ -6,11 +6,14 @@
   hardware = {
     enableRedistributableFirmware = true;
     nvidia = {
-      package = config.boot.kernelPackages.nvidiaPackages.production;
+      package = config.boot.kernelPackages.nvidiaPackages.beta;
       modesetting.enable = true;
       powerManagement.enable = true;
+      forceFullCompositionPipeline = true;
     };
   };
+
+  programs.xwayland.enable = true;
 
   networking.interfaces.enp0s31f6.useDHCP = true;
   networking.interfaces.wlp5s0.useDHCP = false;
@@ -57,9 +60,13 @@
   # High-DPI console
   console.font = lib.mkDefault "${pkgs.terminus_font}/share/consolefonts/ter-u28n.psf.gz";
 
-  # overwrite update/upgrade, since the hostname is different
-  home-manager.users.philm.programs.fish.shellAliases = {
-    upgrade = lib.mkForce "nix flake update /home/philm/dev/personal/dotfiles/ && nixos-rebuild switch --use-remote-sudo --flake /home/philm/dev/personal/dotfiles/#office";
-    update = lib.mkForce "nixos-rebuild switch --use-remote-sudo --flake /home/philm/dev/personal/dotfiles/#office";
+  home-manager.users.philm = {
+    services.blueman-applet.enable = true;
+    home.sessionVariables.LIBVA_DRIVER_NAME = "nvidia";
+    programs.fish.shellAliases = {
+      # overwrite update/upgrade, since the hostname is different
+      upgrade = lib.mkForce "nix flake update /home/philm/dev/personal/dotfiles/ && nixos-rebuild switch --use-remote-sudo --flake /home/philm/dev/personal/dotfiles/#office";
+      update = lib.mkForce "nixos-rebuild switch --use-remote-sudo --flake /home/philm/dev/personal/dotfiles/#office";
+    };
   };
 }

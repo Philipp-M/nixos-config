@@ -22,7 +22,7 @@
     # eww = { url = "git+file:///home/philm/dev/personal/rust/eww"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; flake-compat.follows = "flake-compat"; }; };
     ewmh-status-listener = { url = "github:Philipp-M/ewmh-status-listener"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
     chatgpt-tui = { url = "github:Philipp-M/chatgpt-tui"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
-    hyprland = { url = "github:hyprwm/Hyprland"; inputs = { nixpkgs.follows = "nixpkgs"; xdph.follows = "xdph"; }; };
+    hyprland = { url = "github:hyprwm/Hyprland/03ebbe18ed8517ee22591eac82cd54322f42cb7d"; inputs = { nixpkgs.follows = "nixpkgs"; xdph.follows = "xdph"; }; };
     xdph = { url = "github:hyprwm/xdg-desktop-portal-hyprland"; inputs.nixpkgs.follows = "nixpkgs"; inputs.hyprland-protocols.follows = "hyprland/hyprland-protocols"; };
     mpv-ai-upscale = { url = "github:Alexkral/AviSynthAiUpscale"; flake = false; };
     youtube-dl = { url = "github:ytdl-org/youtube-dl"; flake = false; };
