@@ -55,6 +55,12 @@
       yabridgectl = prev.yabridgectl.override { wine = prev.wineWowPackages.stableFull; };
       yabridge = prev.yabridge.override { wine = prev.wineWowPackages.stableFull; };
     })
+    # (final: prev: {
+    #   pipewire = prev.pipewire.overrideAttrs (oa: {
+    #     version = "1.0.0";
+    #     src = inputs.pipewire;
+    #   });
+    # })
   ];
 
   nixpkgs.hostPlatform = "x86_64-linux";
@@ -349,7 +355,8 @@
 
   programs.gnupg.agent = {
     enable = true;
-    pinentryFlavor = "tty";
+    # pinentryFlavor = "tty";
+    pinentryPackage = pkgs.pinentry-curses;
   };
 
   programs.steam.enable = true;
@@ -492,7 +499,7 @@
     gimp
     inkscape
     exiftool
-    qgis
+    # qgis
 
     # AUDIO
     giada
