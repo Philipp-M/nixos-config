@@ -27,7 +27,8 @@ in
     kernelParams = [ "nordrand" "amd_iommu=fullflush" ];
     supportedFilesystems = [ "ntfs" "zfs" ];
     zfs.requestEncryptionCredentials = false;
-    zfs.enableUnstable = true;
+    # zfs.enableUnstable = true;
+    zfs.package = pkgs.zfs_unstable;
     kernelPackages = pkgs.linuxPackages_6_1;
     extraModulePackages = [ config.boot.kernelPackages.zenpower ];
     kernelModules = [ "kvm-amd" "snd-seq" "snd-rawmidi" ];
@@ -219,20 +220,36 @@ in
 
   services.blueman.enable = true;
 
+  # environment.etc."wireplumber/main.lua.d/50-alsa-config.lua".text = ''
+  #   alsa_monitor.rules = { {
+  #     matches = { { { "device.name", "matches", "alsa_card.usb-MOTU_UltraLite-mk5_UL5LFF562C-00" }, }, },
+  #     apply_properties = {
+  #       ["api.alsa.use-acp"] = true,
+  #       ["api.alsa.use-ucm"] = false,
+  #       ["api.acp.auto-profile"] = false,
+  #       ["api.acp.pro-channels"] = 10,
+  #       ["api.acp.probe-rate"] = 176400,
+  #       ["device.profile"] = "pro-audio",
+  #     },
+  #   }, }
+  # '';
+
   # necessary for 172 and 192 kHz sample rate
-  environment.etc."wireplumber/main.lua.d/50-alsa-config.lua".text = ''
-    alsa_monitor.rules = { {
-      matches = { { { "device.name", "matches", "alsa_card.usb-MOTU_UltraLite-mk5_UL5LFF562C-00" }, }, },
-      apply_properties = {
-        ["api.alsa.use-acp"] = true,
-        ["api.alsa.use-ucm"] = false,
-        ["api.acp.auto-profile"] = false,
-        ["api.acp.pro-channels"] = 10,
-        ["api.acp.probe-rate"] = 176400,
-        ["device.profile"] = "pro-audio",
-      },
-    }, }
-  '';
+  services.pipewire.wireplumber.configPackages = [
+    (pkgs.writeTextDir "share/wireplumber/main.lua.d/50-ultralite-pro-audio-176khz-alsa-config.lua" ''
+      alsa_monitor.rules = { {
+        matches = { { { "device.name", "matches", "alsa_card.usb-MOTU_UltraLite-mk5_UL5LFF562C-00" }, }, },
+        apply_properties = {
+          ["api.alsa.use-acp"] = true,
+          ["api.alsa.use-ucm"] = false,
+          ["api.acp.auto-profile"] = false,
+          ["api.acp.pro-channels"] = 10,
+          ["api.acp.probe-rate"] = 176400,
+          ["device.profile"] = "pro-audio",
+        },
+      }, }
+    '')
+  ];
 
   # services.pipewire.config = {
   #   pipewire = {

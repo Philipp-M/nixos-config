@@ -1,19 +1,12 @@
-{ eww, hyprland, ewmh-status-listener, ... }:
-{ pkgs, lib, config, ... }:
-let
-  eww-x11 = eww.packages.${pkgs.hostPlatform.system}.eww-x11;
-  # -wayland.overrideAttrs (_: {
-  #   cargoBuildNoDefaultFeatures = false;
-  #   cargoCheckNoDefaultFeatures = false;
-  # });
-  eww-wayland = eww.packages.${pkgs.hostPlatform.system}.eww-wayland;
-in
-{
+{ hyprland, ewmh-status-listener, ... }:
+{ pkgs, lib, config, ... }: {
   imports = [ hyprland.homeManagerModules.default ];
   options.modules.gui.desktop-environment.enable = lib.mkEnableOption ''
     Enable personal desktop-environment config (xmonad, eww etc.)
   '';
 
+  # ${lib.optionalString (config.wayland.windowManager.hyprland.enableNvidiaPatches) ''
+  # ''}
   options.modules.gui.desktop-environment.hyprland-session-wrapper = lib.mkOption {
     type = with lib.types; nullOr package;
     default = let sessionName = "Hyprland"; in pkgs.writeTextFile
@@ -102,7 +95,7 @@ in
           # set cursor for HL itself
           exec-once = hyprctl setcursor ${pointer.name} ${toString pointer.size}
           # exec-once = killall eww && systemctl restart --user eww && sleep 0.3 && eww open bar
-          exec-once = ${eww-wayland}/bin/eww open bar
+          exec-once = ${pkgs.eww}/bin/eww open bar
 
           misc {
             # disable auto polling for config file changes
@@ -268,7 +261,7 @@ in
         export MOZ_USE_XINPUT2=1
         export XDG_SESSION_TYPE=x11
         export GDK_BACKEND=x11
-        export PATH=${eww-x11}/bin:$PATH
+        export PATH=${pkgs.eww}/bin:$PATH
       '';
       initExtra = ''
         systemctl start --user xmonad-session.target
@@ -395,11 +388,11 @@ in
       in
       # eww unfortunately only works either in X11 or in wayland with the same binary, thus the two different services
       {
-        eww-hyprland = mkEwwService { sessionTarget = "hyprland-session.target"; ewwPackage = eww-wayland; sessionManagerName = "Hyprland"; };
-        eww-xmonad = mkEwwService { sessionTarget = "xmonad-session.target"; ewwPackage = eww-x11; sessionManagerName = "XMonad"; };
+        eww-hyprland = mkEwwService { sessionTarget = "hyprland-session.target"; ewwPackage = pkgs.eww; sessionManagerName = "Hyprland"; };
+        eww-xmonad = mkEwwService { sessionTarget = "xmonad-session.target"; ewwPackage = pkgs.eww; sessionManagerName = "XMonad"; };
         eww-xmonad-statusbar = {
           Unit = { Description = "Eww widgets for xmonad"; PartOf = [ "eww-xmonad.service" ]; };
-          Service = { Type = "oneshot"; ExecStart = "${eww-x11}/bin/eww open xmonadbar"; };
+          Service = { Type = "oneshot"; ExecStart = "${pkgs.eww}/bin/eww open xmonadbar"; };
           Install.WantedBy = [ "eww-xmonad.service" ];
         };
         picom.Unit.BindsTo = [ "xmonad-session.target" ];
