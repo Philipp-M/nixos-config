@@ -52,7 +52,7 @@ in
         omnisharp-roslyn
         msbuild
         ripgrep
-        rnix-lsp
+        # rnix-lsp
         java-language-server
         sumneko-lua-language-server
         yapf

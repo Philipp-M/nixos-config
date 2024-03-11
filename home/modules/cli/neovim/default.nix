@@ -37,7 +37,7 @@ in
         ocamlPackages.ocaml-lsp
         ocamlPackages.reason
         ripgrep
-        rnix-lsp
+        # rnix-lsp
         java-language-server
         sumneko-lua-language-server
         tree-sitter

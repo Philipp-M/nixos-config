@@ -355,7 +355,8 @@
 
   programs.gnupg.agent = {
     enable = true;
-    pinentryFlavor = "tty";
+    # pinentryFlavor = "tty";
+    pinentryPackage = pkgs.pinentry-curses;
   };
 
   programs.steam.enable = true;
@@ -498,7 +499,7 @@
     gimp
     inkscape
     exiftool
-    qgis
+    # qgis
 
     # AUDIO
     giada
