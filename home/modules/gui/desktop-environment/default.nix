@@ -103,6 +103,8 @@
             focus_on_activate = 1
           }
 
+          monitor=,preferred,auto,1
+
           # touchpad gestures
           gestures {
             workspace_swipe = 1
