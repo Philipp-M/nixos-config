@@ -234,22 +234,59 @@ in
   #   }, }
   # '';
 
-  # necessary for 172 and 192 kHz sample rate
-  services.pipewire.wireplumber.configPackages = [
-    (pkgs.writeTextDir "share/wireplumber/main.lua.d/50-ultralite-pro-audio-176khz-alsa-config.lua" ''
-      alsa_monitor.rules = { {
-        matches = { { { "device.name", "matches", "alsa_card.usb-MOTU_UltraLite-mk5_UL5LFF562C-00" }, }, },
-        apply_properties = {
-          ["api.alsa.use-acp"] = true,
-          ["api.alsa.use-ucm"] = false,
-          ["api.acp.auto-profile"] = false,
-          ["api.acp.pro-channels"] = 10,
-          ["api.acp.probe-rate"] = 176400,
-          ["device.profile"] = "pro-audio",
-        },
-      }, }
-    '')
-  ];
+  services.pipewire = {
+    extraConfig = {
+      pipewire."92-low-latency" = {
+        "context.properties" = {
+          "default.clock.rate" = 192000;
+          "default.clock.quantum" = 512;
+          "default.clock.min-quantum" = 32;
+          "default.clock.max-quantum" = 4096;
+        };
+        "context.modules" = [
+          {
+            "name" = "libpipewire-module-rt";
+            "args" = {
+              "rt.prio" = 88;
+              "rlimits.enabled" = true;
+              "rtportal.enabled" = true;
+              "rtkit.enabled" = true;
+            };
+            "flags" = [ "ifexists" "nofail" ];
+          }
+          { "name" = "libpipewire-module-portal"; }
+          { "name" = "libpipewire-module-spa-node-factory"; }
+          { "name" = "libpipewire-module-link-factory"; }
+        ];
+      };
+      jack."92-low-latency" = {
+        "jack.properties" = {
+          "rt.prio" = 88;
+          "node.latency" = "512/192000";
+          "jack.show-monitor" = true;
+          "jack.merge-monitor" = true;
+          "jack.show-midi" = true;
+          "jack.fix-midi-events" = true;
+        };
+      };
+    };
+    wireplumber.configPackages = [
+      (pkgs.writeTextDir "share/wireplumber/main.lua.d/50-ultralite-pro-audio-176khz-alsa-config.lua" ''
+        alsa_monitor.rules = { {
+          matches = { { { "device.name", "matches", "alsa_card.usb-MOTU_UltraLite-mk5_UL5LFF562C-00" }, }, },
+          apply_properties = {
+            ["api.alsa.use-acp"] = true,
+            ["api.alsa.use-ucm"] = false,
+            ["api.acp.auto-profile"] = false,
+            ["api.acp.pro-channels"] = 10,
+            ["api.acp.probe-rate"] = 192000,
+            ["device.profile"] = "pro-audio",
+            ["api.alsa.period-size"]   = 512,
+          },
+        }, }
+      '')
+    ];
+  };
 
   # services.pipewire.config = {
   #   pipewire = {
