@@ -7,7 +7,6 @@
   imports = [
     inputs.home-manager.nixosModules.home-manager
     inputs.musnix.nixosModules.default
-    inputs.hyprland.nixosModules.default
     inputs.impermanence.nixosModules.impermanence
     inputs.agenix.nixosModules.age
     inputs.chaotic.nixosModules.default
@@ -62,6 +61,13 @@
     #     src = inputs.pipewire;
     #   });
     # })
+    (final: prev: {
+      my-rust-toolchain = (pkgs.rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
+        extensions = [ "rustfmt" "rust-analyzer" "rust-src" "miri" ];
+        targets = [ "x86_64-unknown-linux-gnu" "wasm32-unknown-unknown" "x86_64-pc-windows-gnu" "aarch64-linux-android" ];
+      }));
+    })
+    (final: prev: { qemu = prev.qemu.override { smbdSupport = true; }; })
   ];
 
   nixpkgs.hostPlatform = "x86_64-linux";
@@ -75,12 +81,10 @@
       auto-optimise-store = true;
       keep-failed = true;
       trusted-users = [ "root" "@wheel" ];
-      substituters = [ "https://nix-cache.mildenberger.me" "https://cache.nixos.org/" "https://hyprland.cachix.org" ];
+      substituters = [ "https://nix-cache.mildenberger.me" "https://cache.nixos.org/" ];
       trusted-public-keys = [
         "nix-cache.mildenberger.me:dcNVw3YMUReIGC5JsMN4Ifv9xjbQn7rkDF7gJIO0ZoI="
         "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-        "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
-        "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ="
       ];
       experimental-features = [ "nix-command" "flakes" "ca-derivations" ];
     };
@@ -205,9 +209,17 @@
   services.vnstat.enable = true;
 
   environment.sessionVariables = {
-    WLR_NO_HARDWARE_CURSORS = "1";
     EDITOR = "${config.home-manager.users.philm.programs.helix.package}/bin/hx";
   };
+  environment.interactiveShellInit = ''
+    alias google-chrome='google-chrome-stable'
+  '';
+
+  services.displayManager = {
+    # defaultSession = "none+xmonad";
+    defaultSession = "hyprland";
+  };
+  services.libinput.enable = true;
 
   services.xserver = {
     enable = true;
@@ -215,15 +227,11 @@
     autoRepeatDelay = 300;
     xkb.variant = "colemak";
     # Enable touchpad support.
-    libinput.enable = true;
     displayManager.gdm.enable = true;
     displayManager.gdm.debug = true;
     displayManager.gdm.wayland = true;
     displayManager.gdm.autoSuspend = false; # for ssh connections mostly
-
     displayManager = {
-      sessionPackages = [ config.home-manager.users.philm.modules.gui.desktop-environment.hyprland-session-wrapper ];
-      # Use session defined in home.nix
       session = [{
         name = "xmonad";
         manage = "window";
@@ -233,19 +241,11 @@
           waitPID=$!
         '';
       }];
-      defaultSession = "none+xmonad";
     };
   };
 
   services.kanata = {
     enable = true;
-    # package = pkgs.rustPlatform.buildRustPackage {
-    #   pname = "kanata";
-    #   version = "1.3.0-git";
-    #   src = inputs.kanata;
-    #   cargoHash = "sha256-IW+TjVROjzllQuk5SMCq4O06c1+hAlfRQlRRJ2MFFl0=";
-    #   buildFeatures = [ "cmd" ];
-    # };
     keyboards.default = {
       # devices are configured in each /machines/<machine>/default.nix
       # TODO extend kanata to automatically recognize input devices, autorestart/map devices if they connect/disconnect etc.
@@ -292,12 +292,7 @@
     extraPortals = [
       pkgs.xdg-desktop-portal-gtk
       pkgs.xdg-desktop-portal-kde
-      (inputs.hyprland.packages.${pkgs.hostPlatform.system}.xdg-desktop-portal-hyprland.override {
-        hyprland = config.home-manager.users.philm.wayland.windowManager.hyprland.package;
-      })
-      # (inputs.xdph.packages.${pkgs.hostPlatform.system}.default.override {
-      #   hyprland-share-picker = inputs.xdph.packages.${pkgs.hostPlatform.system}.hyprland-share-picker.override { hyprland = config.home-manager.users.philm.wayland.windowManager.hyprland.package; };
-      # })
+      pkgs.xdg-desktop-portal-hyprland
     ];
   };
 
@@ -343,6 +338,7 @@
     nixpkgs.config = import ./nixpkgs-config.nix;
     xdg.configFile."nixpkgs/config.nix".source = ./nixpkgs-config.nix;
     home.stateVersion = "22.05";
+    home.enableNixpkgsReleaseCheck = false;
     modules.cli.enable = true;
     modules.gui.enable = true;
     modules.create-directories.enable = true;
@@ -351,6 +347,8 @@
   # All system wide packages
 
   programs.fish.enable = true;
+  programs.hyprland.enable = true;
+  programs.xwayland.enable = true;
 
   programs.adb.enable = true;
 
@@ -417,10 +415,11 @@
     pkg-config
 
     # Rust
-    (pkgs.rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
-      extensions = [ "rustfmt" "rust-analyzer" "rust-src" "miri" ];
-      targets = [ "x86_64-unknown-linux-gnu" "wasm32-unknown-unknown" "x86_64-pc-windows-gnu" ];
-    }))
+    # (pkgs.rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
+    #   extensions = [ "rustfmt" "rust-analyzer" "rust-src" "miri" ];
+    #   targets = [ "x86_64-unknown-linux-gnu" "wasm32-unknown-unknown" "x86_64-pc-windows-gnu" ];
+    # }))
+    my-rust-toolchain
     cargo-expand
     cargo-update
     cargo-insta
@@ -518,6 +517,7 @@
     a2jmidid
     playerctl
     reaper
+    musescore
 
     # COMMUNICATION
     thunderbird
@@ -565,6 +565,8 @@
     # MISC
     scrcpy
     neovide
+    quickemu
+    spice-gtk
     xorg.xhost
     nix-du
     nix-tree

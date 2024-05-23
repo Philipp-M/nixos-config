@@ -1,6 +1,5 @@
-{ hyprland, ewmh-status-listener, ... }:
+{ ewmh-status-listener, ... }:
 { pkgs, lib, config, ... }: {
-  imports = [ hyprland.homeManagerModules.default ];
   options.modules.gui.desktop-environment.enable = lib.mkEnableOption ''
     Enable personal desktop-environment config (xmonad, eww etc.)
   '';
@@ -35,7 +34,6 @@
               export GBM_BACKEND=nvidia-drm
               export GDK_BACKEND=wayland
               export __GLX_VENDOR_LIBRARY_NAME=nvidia
-              export WLR_NO_HARDWARE_CURSORS=1
             ${lib.optionalString (config.modules.cli.ssh.enable) ''
               export SSH_AUTH_SOCK=/run/user/$(id -u)/keyring/ssh
             ''}
@@ -75,7 +73,6 @@
 
     wayland.windowManager.hyprland = {
       enable = true;
-      package = hyprland.packages.${pkgs.system}.default;
       # let cfg = config.wayland.windowManager.hyprland; in
       #.override {
       # enableXWayland = cfg.xwayland.enable;
@@ -95,7 +92,7 @@
           # set cursor for HL itself
           exec-once = hyprctl setcursor ${pointer.name} ${toString pointer.size}
           # exec-once = killall eww && systemctl restart --user eww && sleep 0.3 && eww open bar
-          exec-once = ${pkgs.eww}/bin/eww open bar
+          exec-once = sleep 2 && ${pkgs.eww}/bin/eww --no-daemonize open bar
 
           misc {
             # disable auto polling for config file changes
@@ -179,6 +176,7 @@
           # windowrulev2 = fullscreen,pin,class:Rofi
           # windowrulev2 = fullscreen,pin,class:Rofi
           windowrulev2 = tile,class:kitty
+          windowrulev2 = float,class:floating
           # mouse movements
           bindm = $mod,mouse:272,movewindow
           bindm = $mod,mouse:273,resizewindow
@@ -423,14 +421,16 @@
           "application/x-bittorrent" = "qbittorent.desktop";
           "x-scheme-handler/magnet" = "qbittorent.desktop";
           "x-scheme-handler/mailto" = "thunderbird.desktop";
+          "x-scheme-handler/terminal" = "kitty.desktop";
         };
       };
       desktopEntries = {
         helix = {
           name = "Helix Editor";
           genericName = "Helix Editor";
-          exec = "alacritty --title Helix --class helix -e hx %F";
-          terminal = false;
+          # exec = "alacritty --title Helix --class helix -e hx %F";
+          exec = "hx %F";
+          terminal = true;
           categories = [ "Application" "Network" "WebBrowser" ];
           # mimeType = [ "text/*" ];
         };
@@ -450,6 +450,8 @@
         "Xft.hintstyle" = "hintslight";
         "Xft.lcdfilter" = "lcddefault";
         "Xft.font" = "xft:${fontname}${xftfontextra}:size=${fontsize}";
+        # since firefox unfortunately doesn't use xdg-open, at least configure xterm to look more uniform
+        "xterm*font" = "xft:${fontname}${xftfontextra}:size=${fontsize}";
 
         "*color0" = "#${base00.hex.rgb}";
         "*color1" = "#${base08.hex.rgb}";
@@ -494,7 +496,7 @@
 
     qt = {
       enable = true;
-      platformTheme = "gtk";
+      platformTheme.name = "gtk";
     };
 
     programs.rofi = {

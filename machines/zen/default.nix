@@ -18,8 +18,11 @@ in
       package = config.boot.kernelPackages.nvidiaPackages.beta;
       modesetting.enable = true;
       powerManagement.enable = true;
+      forceFullCompositionPipeline = true;
     };
   };
+
+  chaotic.scx.enable = true; # by default uses scx_rustland scheduler
 
   boot = {
     initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "uas" "sd_mod" ];
@@ -33,9 +36,9 @@ in
     ];
     supportedFilesystems = [ "ntfs" "zfs" ];
     zfs.requestEncryptionCredentials = false;
-    # zfs.enableUnstable = true;
-    zfs.package = pkgs.zfs_cachyos;
+    # zfs.package = pkgs.zfs_unstable;
     # kernelPackages = pkgs.linuxPackages_6_1;
+    zfs.package = pkgs.zfs_cachyos;
     kernelPackages = pkgs.linuxPackages_cachyos;
     extraModulePackages = [ config.boot.kernelPackages.zenpower ];
     kernelModules = [ "kvm-amd" "snd-seq" "snd-rawmidi" "snd-virmidi" ];
@@ -111,8 +114,11 @@ in
     users.philm = {
       directories = [
         "dev"
+        # tmp folder, persistent, but not backed up
+        "tmp"
         "wallpaper"
         "screenshots"
+        "windows-11"
         "Downloads"
         "Desktop"
         "Pictures"
@@ -131,6 +137,7 @@ in
         ".config/calibre"
         ".config/cantata"
         ".config/chromium"
+        ".config/cosmic"
         ".config/dconf"
         ".config/discord"
         ".config/easyeffects"
@@ -149,6 +156,8 @@ in
         ".config/Google"
         ".config/Slack"
         ".config/BraveSoftware"
+        ".config/Renoise"
+        ".config/loopers"
         ".config/tree-sitter"
         ".config/obs-studio"
         ".config/chatgpt"
@@ -164,15 +173,18 @@ in
         ".local/share/zoxide"
         ".local/share/chatgpt"
         ".local/share/TelegramDesktop"
+        ".local/share/Midinous"
         ".local/state/wireplumber"
         ".BitwigStudio"
         ".cache/nix" # avoid unnecessary fetching
         ".cache/nvidia" # avoid unnecessary computation
         ".cache/Google" # Android studio takes a long time otherwise
+        ".cache/cantata" # avoid redownloading covers
         ".gradle"
         ".android"
         ".var/app"
         ".vst"
+        ".vst3"
         ".gnome"
         ".steam"
         ".cargo"
@@ -202,10 +214,16 @@ in
     };
   };
 
+  services.samba = {
+    enable = true;
+    nsswins = true;
+    enableWinbindd = true;
+  };
 
   # disable virtualbox as it has problems with the rt kernel
   virtualisation.virtualbox.host.enable = lib.mkForce false;
   virtualisation.docker.enableNvidia = true;
+  virtualisation.spiceUSBRedirection.enable = true;
 
   services.openssh.hostKeys = [
     { path = "${persistent}/etc/ssh/ssh_host_rsa_key"; bits = 4096; type = "rsa"; }
@@ -228,20 +246,8 @@ in
 
   services.blueman.enable = true;
 
-  # environment.etc."wireplumber/main.lua.d/50-alsa-config.lua".text = ''
-  #   alsa_monitor.rules = { {
-  #     matches = { { { "device.name", "matches", "alsa_card.usb-MOTU_UltraLite-mk5_UL5LFF562C-00" }, }, },
-  #     apply_properties = {
-  #       ["api.alsa.use-acp"] = true,
-  #       ["api.alsa.use-ucm"] = false,
-  #       ["api.acp.auto-profile"] = false,
-  #       ["api.acp.pro-channels"] = 10,
-  #       ["api.acp.probe-rate"] = 176400,
-  #       ["device.profile"] = "pro-audio",
-  #     },
-  #   }, }
-  # '';
-
+  services.desktopManager.cosmic.enable = true;
+  # services.displayManager.cosmic-greeter.enable = true;
   services.pipewire = {
     extraConfig = {
       pipewire."92-low-latency" = {
@@ -279,71 +285,24 @@ in
       };
     };
     wireplumber.configPackages = [
-      (pkgs.writeTextDir "share/wireplumber/main.lua.d/50-ultralite-pro-audio-176khz-alsa-config.lua" ''
-        alsa_monitor.rules = { {
-          matches = { { { "device.name", "matches", "alsa_card.usb-MOTU_UltraLite-mk5_UL5LFF562C-00" }, }, },
-          apply_properties = {
-            ["api.alsa.use-acp"] = true,
-            ["api.alsa.use-ucm"] = false,
-            ["api.acp.auto-profile"] = false,
-            ["api.acp.pro-channels"] = 10,
-            ["api.acp.probe-rate"] = 192000,
-            ["device.profile"] = "pro-audio",
-            ["api.alsa.period-size"]   = 512,
-          },
-        }, }
+      (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/50-ultralite-pro-audio-176khz-alsa.conf" ''
+        monitor.alsa.rules = [ {
+          matches = [ { device.name = "alsa_card.usb-MOTU_UltraLite-mk5_UL5LFF562C-00" } ]
+          actions = {
+            update-props = {
+              api.alsa.use-acp = true,
+              api.alsa.use-ucm = false,
+              api.alsa.period-size   = 512,
+              api.acp.probe-rate = 192000,
+              api.acp.auto-profile = false
+              api.acp.pro-channels = 10,
+              device.profile = "pro-audio"
+            }
+          }
+        } ]
       '')
     ];
   };
-
-  # services.pipewire.config = {
-  #   pipewire = {
-  #     "context.properties" = {
-  #       "link.max-buffers" = 16;
-  #       "log.level" = 2;
-  #       # "default.clock.allowed-rates" = [ 44100 48000 ];
-  #       "default.clock.allowed-rates" = [ 176400 192000 ];
-  #       "default.clock.rate" = 176400;
-  #       # "default.clock.rate" = 44100;
-  #       "default.clock.quantum" = 1024;
-  #       "default.clock.min-quantum" = 16;
-  #       "default.clock.max-quantum" = 2048;
-  #       "core.daemon" = true;
-  #       "core.name" = "pipewire-0";
-  #     };
-  #     "context.modules" = [
-  #       {
-  #         name = "libpipewire-module-rt";
-  #         args = {
-  #           "nice.level" = 20;
-  #           "rt.prio" = 88;
-  #           "rt.time.soft" = -1;
-  #           "rt.time.hard" = -1;
-  #         };
-  #         flags = [ "ifexists" "nofail" ];
-  #       }
-  #       { name = "libpipewire-module-protocol-native"; }
-  #       { name = "libpipewire-module-profiler"; }
-  #       { name = "libpipewire-module-metadata"; }
-  #       { name = "libpipewire-module-spa-device-factory"; }
-  #       { name = "libpipewire-module-spa-node-factory"; }
-  #       { name = "libpipewire-module-client-node"; }
-  #       { name = "libpipewire-module-client-device"; }
-  #       {
-  #         name = "libpipewire-module-portal";
-  #         flags = [ "ifexists" "nofail" ];
-  #       }
-  #       {
-  #         name = "libpipewire-module-access";
-  #         args = { };
-  #       }
-  #       { name = "libpipewire-module-adapter"; }
-  #       { name = "libpipewire-module-link-factory"; }
-  #       { name = "libpipewire-module-session-manager"; }
-  #     ];
-  #   };
-  #   jack."jack.properties"."node.latency" = "512/96000";
-  # };
 
   # ZFS related
   services.zfs.autoScrub = {
@@ -482,7 +441,7 @@ in
     cuetools
     # arduino-core
     arduino-cli
-    nvtop
+    nvtopPackages.full
     factorio
   ];
 }

@@ -22,12 +22,11 @@
     # eww = { url = "git+file:///home/philm/dev/personal/rust/eww"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; flake-compat.follows = "flake-compat"; }; };
     ewmh-status-listener = { url = "github:Philipp-M/ewmh-status-listener"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
     chatgpt-tui = { url = "github:Philipp-M/chatgpt-tui"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
-    hyprland = { url = "github:hyprwm/Hyprland/c4365f20ed8ff0dd480b7ed7cf1bfff1a0b6911a"; inputs = { nixpkgs.follows = "nixpkgs"; xdph.follows = "xdph"; }; };
-    xdph = { url = "github:hyprwm/xdg-desktop-portal-hyprland"; inputs.nixpkgs.follows = "nixpkgs"; inputs.hyprland-protocols.follows = "hyprland/hyprland-protocols"; };
     mpv-ai-upscale = { url = "github:Alexkral/AviSynthAiUpscale"; flake = false; };
     youtube-dl = { url = "github:ytdl-org/youtube-dl"; flake = false; };
     fzf-fish = { url = "github:PatrickF1/fzf.fish"; flake = false; };
     chaotic = { url = "github:chaotic-cx/nyx"; inputs = { nixpkgs.follows = "nixpkgs"; home-manager.follows = "home-manager"; }; };
+    nixos-cosmic = { url = "git+file:///home/philm/dev/personal/nix/nixos-cosmic"; inputs.nixpkgs.follows = "nixpkgs"; };
     # pipewire = { url = "gitlab:pipewire/pipewire?tag=1.0.0&host=gitlab.freedesktop.org"; flake = false; };
   };
 

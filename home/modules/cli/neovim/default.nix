@@ -20,7 +20,7 @@ in
         haskellPackages.ormolu # haskell formatter
         # julia
         luaformatter
-        nixfmt
+        # nixfmt
         taplo-lsp
         nodePackages.bash-language-server
         nodePackages.dockerfile-language-server-nodejs
