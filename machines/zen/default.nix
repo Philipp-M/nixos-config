@@ -15,7 +15,7 @@ in
     enableRedistributableFirmware = true;
     bluetooth.enable = true;
     nvidia = {
-      package = config.boot.kernelPackages.nvidiaPackages.production;
+      package = config.boot.kernelPackages.nvidiaPackages.beta;
       modesetting.enable = true;
       powerManagement.enable = true;
     };
@@ -24,14 +24,22 @@ in
   boot = {
     initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "uas" "sd_mod" ];
     initrd.checkJournalingFS = false; # fsck.f2fs is broken with extended node bitmap (needed for precious inodes)
-    kernelParams = [ "nordrand" "amd_iommu=fullflush" ];
+    kernelParams = [
+      "nordrand"
+      "amd_iommu=fullflush"
+      "preempt=full"
+      "nvidia.NVreg_EnableGpuFirmware=0"
+      "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
+    ];
     supportedFilesystems = [ "ntfs" "zfs" ];
     zfs.requestEncryptionCredentials = false;
     # zfs.enableUnstable = true;
-    zfs.package = pkgs.zfs_unstable;
-    kernelPackages = pkgs.linuxPackages_6_1;
+    zfs.package = pkgs.zfs_cachyos;
+    # kernelPackages = pkgs.linuxPackages_6_1;
+    kernelPackages = pkgs.linuxPackages_cachyos;
     extraModulePackages = [ config.boot.kernelPackages.zenpower ];
-    kernelModules = [ "kvm-amd" "snd-seq" "snd-rawmidi" ];
+    kernelModules = [ "kvm-amd" "snd-seq" "snd-rawmidi" "snd-virmidi" ];
+    blacklistedKernelModules = [ "snd-pcsp" "snd-hda-intel" ]; # don't use anything else than the audio interface, this just adds up noise...
     loader.systemd-boot.consoleMode = "max";
     # Bluetooth
     extraModprobeConfig = ''

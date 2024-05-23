@@ -10,7 +10,8 @@
     inputs.hyprland.nixosModules.default
     inputs.impermanence.nixosModules.impermanence
     inputs.agenix.nixosModules.age
-    "${inputs.nixpkgs}/nixos/modules/services/desktops/pipewire/filter.nix"
+    inputs.chaotic.nixosModules.default
+    # "${inputs.nixpkgs}/nixos/modules/services/desktops/pipewire/filter.nix"
     ./secrets/nix-expressions/nixos.nix
   ];
 
@@ -66,7 +67,7 @@
   nixpkgs.hostPlatform = "x86_64-linux";
 
   nix = {
-    package = pkgs.nixUnstable;
+    package = pkgs.nixVersions.latest;
     registry.nixpkgs.flake = inputs.nixpkgs;
     nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
 
@@ -556,7 +557,7 @@
     deadd-notification-center
 
     # GAMES
-    minecraft
+    # minecraft
     wineWowPackages.stableFull
     winetricks
     protontricks
@@ -569,7 +570,7 @@
     nix-tree
     nix-query-tree-viewer
     inputs.comma.packages.${pkgs.system}.default
-    inputs.devenv.packages.${pkgs.system}.devenv
+    # inputs.devenv.packages.${pkgs.system}.devenv
     # colmapWithCuda
     # colmap
     exfat
