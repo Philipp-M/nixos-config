@@ -22,7 +22,6 @@ in
     };
   };
 
-  chaotic.scx.enable = true; # by default uses scx_rustland scheduler
 
   boot = {
     initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "uas" "sd_mod" ];
@@ -33,13 +32,12 @@ in
       "preempt=full"
       "nvidia.NVreg_EnableGpuFirmware=0"
       "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
+      "initcall_blacklist=simpledrm_platform_driver_init"
     ];
     supportedFilesystems = [ "ntfs" "zfs" ];
     zfs.requestEncryptionCredentials = false;
-    # zfs.package = pkgs.zfs_unstable;
+    zfs.package = pkgs.zfs_unstable;
     # kernelPackages = pkgs.linuxPackages_6_1;
-    zfs.package = pkgs.zfs_cachyos;
-    kernelPackages = pkgs.linuxPackages_cachyos;
     extraModulePackages = [ config.boot.kernelPackages.zenpower ];
     kernelModules = [ "kvm-amd" "snd-seq" "snd-rawmidi" "snd-virmidi" ];
     blacklistedKernelModules = [ "snd-pcsp" "snd-hda-intel" ]; # don't use anything else than the audio interface, this just adds up noise...
@@ -233,6 +231,7 @@ in
   services.kanata.keyboards.default.devices = [
     "/dev/input/by-id/usb-Falbatech_The_Redox_Keyboard-event-kbd" # redox keyboard
     "/dev/input/by-id/usb-Logitech_USB_Receiver-if02-event-mouse" # mouse
+    "/dev/input/by-id/usb-Gaming_KB_Gaming_KB-event-kbd"
   ];
 
   users = let philm-password = builtins.readFile ../../secrets/philm-password; in {
