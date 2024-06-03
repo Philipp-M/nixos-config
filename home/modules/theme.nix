@@ -31,7 +31,7 @@ let inherit (lib) concatStrings mapAttrsToList mkOption types; in
       '');
     };
     extraParams = mkOption {
-      type = types.attrsOf types.string;
+      type = types.attrsOf types.str;
       default = rec {
         fontname = "Iosevka Kitty";
         xftfontextra = ":style=Regular";

@@ -25,8 +25,7 @@
     mpv-ai-upscale = { url = "github:Alexkral/AviSynthAiUpscale"; flake = false; };
     youtube-dl = { url = "github:ytdl-org/youtube-dl"; flake = false; };
     fzf-fish = { url = "github:PatrickF1/fzf.fish"; flake = false; };
-    chaotic = { url = "github:chaotic-cx/nyx"; inputs = { nixpkgs.follows = "nixpkgs"; home-manager.follows = "home-manager"; }; };
-    nixos-cosmic = { url = "git+file:///home/philm/dev/personal/nix/nixos-cosmic"; inputs.nixpkgs.follows = "nixpkgs"; };
+    nixos-cosmic = { url = "github:Philipp-M/nixos-cosmic/cosmic-comp-different-animations"; inputs.nixpkgs.follows = "nixpkgs"; };
     # pipewire = { url = "gitlab:pipewire/pipewire?tag=1.0.0&host=gitlab.freedesktop.org"; flake = false; };
   };
 
