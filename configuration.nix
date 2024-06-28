@@ -218,7 +218,7 @@
 
   services.displayManager = {
     # defaultSession = "none+xmonad";
-    defaultSession = "hyprland";
+    defaultSession = "cosmic";
   };
   services.libinput.enable = true;
 
