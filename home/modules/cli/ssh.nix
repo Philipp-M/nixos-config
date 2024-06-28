@@ -28,6 +28,8 @@
       extraConfig = ''
         ForwardX11 yes
         ForwardX11Trusted yes
+        Host *
+        AddKeysToAgent yes
       '';
     };
   };

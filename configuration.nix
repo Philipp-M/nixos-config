@@ -356,14 +356,14 @@
 
   programs.gnupg.agent = {
     enable = true;
-    # pinentryFlavor = "tty";
-    pinentryPackage = pkgs.pinentry-curses;
+    pinentryPackage = pkgs.pinentry-tty;
   };
 
   programs.steam.enable = true;
 
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.gdm.enableGnomeKeyring = true;
+  programs.ssh.startAgent = true;
   programs.seahorse.enable = true;
 
   # List packages installed in system profile. To search, run:

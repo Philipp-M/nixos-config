@@ -71,17 +71,11 @@
       x11.enable = true;
     };
 
+    xdg.configFile."cosmic-comp/config.ron".source = ./cosmic-comp-config.ron;
+    xdg.configFile."gtk-4.0/gtk.css".force = true;
+
     wayland.windowManager.hyprland = {
       enable = true;
-      # let cfg = config.wayland.windowManager.hyprland; in
-      #.override {
-      # enableXWayland = cfg.xwayland.enable;
-      # hidpiXWayland = cfg.xwayland.hidpi;
-      # enableNvidiaPatches = cfg.enableNvidiaPatches;
-      # legacyRenderer = true;
-      # };
-      # enableNvidiaPatches = true;
-      # recommendedEnvironment = false; # environment vars get set in session to not intervene with X11 sessions
       extraConfig =
         let
           pointer = config.home.pointerCursor;
@@ -515,7 +509,7 @@
     };
 
     services.picom = {
-      enable = true;
+      # enable = true;
       # add fancy dual kawase blur to picom
       # package = pkgs.picom.overrideAttrs (
       #   old: {
