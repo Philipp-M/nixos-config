@@ -203,6 +203,7 @@ in
             rust-analyzer = {
               config.rust-analyzer = {
                 cargo.loadOutDirsFromCheck = true;
+                cargo.features = "all";
                 checkOnSave.command = "clippy";
                 procMacro = {
                   enable = true;
