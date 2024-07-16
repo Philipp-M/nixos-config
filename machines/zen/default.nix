@@ -245,8 +245,6 @@ in
 
   services.blueman.enable = true;
 
-  services.desktopManager.cosmic.enable = true;
-  # services.displayManager.cosmic-greeter.enable = true;
   services.pipewire = {
     extraConfig = {
       pipewire."92-low-latency" = {

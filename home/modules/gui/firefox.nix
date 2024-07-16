@@ -43,7 +43,7 @@
             "network.http.referer.XOriginTrimmingPolicy" = 2;
             "network.http.referer.trimmingPolicy" = 1;
             "network.prefetch-next" = false;
-            "permissions.default.shortcuts" = 2; # Don't steal my shortcuts!
+            # "permissions.default.shortcuts" = 2; # Don't steal my shortcuts!
             "privacy.donottrackheader.enabled" = true;
             "privacy.donottrackheader.value" = 1;
             "privacy.firstparty.isolate" = true;
