@@ -27,40 +27,12 @@
           cp ${prev.writeShellScriptBin "xdg-open" "${prev.handlr}/bin/handlr open \"$@\""}/bin/xdg-open $out/bin/xdg-open
         '';
       });
-      docker = prev.docker_24;
-    })
-    (final: prev: {
-      youtube-dl = prev.youtube-dl.overrideAttrs (oldAttrs: {
-        src = inputs.youtube-dl;
-        patches = [ ];
-        postInstall = "";
-      });
-    })
-    # temporary until https://github.com/NixOS/nixpkgs/pull/270691 is merged
-    (final: prev: {
-      mpv-unwrapped =
-        prev.mpv-unwrapped.overrideAttrs (oa: rec {
-          version = "0.37.0";
-
-          src = prev.pkgs.fetchFromGitHub {
-            owner = "mpv-player";
-            repo = "mpv";
-            rev = "v${version}";
-            hash = "sha256-izAz9Iiam7tJAWIQkmn2cKOfoaog8oPKq4sOUtp1nvU=";
-          };
-        });
     })
     # use same wine version as the system...
     (final: prev: {
       yabridgectl = prev.yabridgectl.override { wine = prev.wineWowPackages.stableFull; };
       yabridge = prev.yabridge.override { wine = prev.wineWowPackages.stableFull; };
     })
-    # (final: prev: {
-    #   pipewire = prev.pipewire.overrideAttrs (oa: {
-    #     version = "1.0.0";
-    #     src = inputs.pipewire;
-    #   });
-    # })
     (final: prev: {
       my-rust-toolchain = (pkgs.rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
         extensions = [ "rustfmt" "rust-analyzer" "rust-src" "miri" ];
@@ -115,7 +87,6 @@
     # Enable 32-bit dri support for steam
     driSupport32Bit = true;
     extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
-    setLdLibraryPath = true;
   };
 
   # Enable audio
@@ -129,7 +100,6 @@
     pulse.enable = true;
     jack.enable = true;
   };
-  sound.mediaKeys.enable = true;
   # services.pipewire.deepfilter.enable = true;
 
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
@@ -489,7 +459,7 @@
     unzip
     b3sum
     yq
-    youtube-dl
+    yt-dlp
     zip
     unrar
     p7zip
@@ -506,12 +476,12 @@
     # AUDIO
     giada
     cantata
-    loopers
+    # loopers
     yabridge
     yabridgectl
     pavucontrol
     helvum
-    ffmpeg_5-full
+    ffmpeg_7-full
     flacon
     bitwig-studio
     renoise
@@ -547,7 +517,7 @@
     awf
     dolphin
     dzen2
-    gnome3.file-roller
+    file-roller
     dmenu
     wmctrl
     xorg.xev
@@ -622,7 +592,7 @@
     rclone
     mpv
     source-code-pro
-    transmission-gtk
+    transmission_4-gtk
     qbittorrent
     xclip
     adb-sync

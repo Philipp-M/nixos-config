@@ -22,11 +22,11 @@ in
         luaformatter
         # nixfmt
         taplo-lsp
+        pyright
         nodePackages.bash-language-server
         nodePackages.dockerfile-language-server-nodejs
         nodePackages.eslint
         nodePackages.prettier
-        nodePackages.pyright
         nodePackages.stylelint
         nodePackages.svelte-language-server
         nodePackages.typescript-language-server

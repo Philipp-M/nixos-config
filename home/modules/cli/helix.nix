@@ -34,10 +34,10 @@ in
         kotlin-language-server
         nls
         topiary
+        pyright
         (python3.withPackages (ps: with ps; [ python-lsp-server ] ++ python-lsp-server.optional-dependencies.all))
         nodePackages.bash-language-server
         nodePackages.dockerfile-language-server-nodejs
-        nodePackages.pyright
         nodePackages.stylelint
         nodePackages.svelte-language-server
         nodePackages.vls
