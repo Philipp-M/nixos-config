@@ -20,6 +20,7 @@ in
       powerManagement.enable = true;
       forceFullCompositionPipeline = true;
     };
+    nvidia-container-toolkit.enable = true;
   };
 
 
@@ -178,6 +179,8 @@ in
         ".cache/nvidia" # avoid unnecessary computation
         ".cache/Google" # Android studio takes a long time otherwise
         ".cache/cantata" # avoid redownloading covers
+        ".cache/pop-launcher"
+        ".cache/fontconfig"
         ".gradle"
         ".android"
         ".var/app"
@@ -220,7 +223,6 @@ in
 
   # disable virtualbox as it has problems with the rt kernel
   virtualisation.virtualbox.host.enable = lib.mkForce false;
-  virtualisation.docker.enableNvidia = true;
   virtualisation.spiceUSBRedirection.enable = true;
 
   services.openssh.hostKeys = [

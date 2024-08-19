@@ -11,6 +11,7 @@
       powerManagement.enable = true;
       forceFullCompositionPipeline = true;
     };
+    nvidia-container-toolkit.enable = true;
   };
 
   programs.xwayland.enable = true;
@@ -23,8 +24,6 @@
 
   boot.kernelParams = [ "nomodeset" "pci=nomsi" ];
   boot.kernelPackages = pkgs.linuxPackages_6_1;
-
-  virtualisation.docker.enableNvidia = true;
 
   services.kanata.keyboards.default.devices = [
     "/dev/input/by-id/usb-Input_Club_Infinity_Ergodox_QMK-event-kbd" # ergodox infinity keyboard

@@ -81,11 +81,10 @@
 
   # Set your time zone.
   time.timeZone = "Europe/Vienna";
-
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
     # Enable 32-bit dri support for steam
-    driSupport32Bit = true;
+    enable32Bit = true;
     extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
   };
 
@@ -181,6 +180,7 @@
 
   environment.sessionVariables = {
     EDITOR = "${config.home-manager.users.philm.programs.helix.package}/bin/hx";
+    COSMIC_DATA_CONTROL_ENABLED = "1";
   };
   environment.interactiveShellInit = ''
     alias google-chrome='google-chrome-stable'

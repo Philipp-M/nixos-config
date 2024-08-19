@@ -71,7 +71,10 @@
       x11.enable = true;
     };
 
-    xdg.configFile."cosmic-comp/config.ron".source = ./cosmic-comp-config.ron;
+    xdg.configFile."cosmic/com.system76.CosmicSettings.Shortcuts/v1/custom" = {
+      source = ./cosmic-comp-keybindings.ron;
+      force = true;
+    };
     xdg.configFile."gtk-4.0/gtk.css".force = true;
 
     wayland.windowManager.hyprland = {
