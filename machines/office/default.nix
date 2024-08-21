@@ -7,6 +7,7 @@
     enableRedistributableFirmware = true;
     nvidia = {
       package = config.boot.kernelPackages.nvidiaPackages.beta;
+      open = false;
       modesetting.enable = true;
       powerManagement.enable = true;
       forceFullCompositionPipeline = true;
@@ -22,7 +23,12 @@
   networking.networkmanager.enable = true;
   # networking.networkmanager.dns = "none";
 
-  boot.kernelParams = [ "nomodeset" "pci=nomsi" ];
+  boot.kernelParams = [
+    "nomodeset"
+    "pci=nomsi"
+    "nvidia.NVreg_EnableGpuFirmware=0"
+    "initcall_blacklist=simpledrm_platform_driver_init"
+  ];
   boot.kernelPackages = pkgs.linuxPackages_6_1;
 
   services.kanata.keyboards.default.devices = [

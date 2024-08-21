@@ -16,6 +16,7 @@ in
     bluetooth.enable = true;
     nvidia = {
       package = config.boot.kernelPackages.nvidiaPackages.beta;
+      open = false;
       modesetting.enable = true;
       powerManagement.enable = true;
       forceFullCompositionPipeline = true;
@@ -32,7 +33,6 @@ in
       "amd_iommu=fullflush"
       "preempt=full"
       "nvidia.NVreg_EnableGpuFirmware=0"
-      "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
       "initcall_blacklist=simpledrm_platform_driver_init"
     ];
     supportedFilesystems = [ "ntfs" "zfs" ];
