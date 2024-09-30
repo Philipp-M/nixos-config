@@ -26,7 +26,6 @@
   boot.kernelParams = [
     "nomodeset"
     "pci=nomsi"
-    "nvidia.NVreg_EnableGpuFirmware=0"
     "initcall_blacklist=simpledrm_platform_driver_init"
   ];
   boot.kernelPackages = pkgs.linuxPackages_6_1;

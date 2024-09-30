@@ -24,7 +24,6 @@ in
     nvidia-container-toolkit.enable = true;
   };
 
-
   boot = {
     initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "uas" "sd_mod" ];
     initrd.checkJournalingFS = false; # fsck.f2fs is broken with extended node bitmap (needed for precious inodes)
@@ -32,7 +31,6 @@ in
       "nordrand"
       "amd_iommu=fullflush"
       "preempt=full"
-      "nvidia.NVreg_EnableGpuFirmware=0"
       "initcall_blacklist=simpledrm_platform_driver_init"
     ];
     supportedFilesystems = [ "ntfs" "zfs" ];
@@ -218,7 +216,7 @@ in
   services.samba = {
     enable = true;
     nsswins = true;
-    enableWinbindd = true;
+    winbindd.enable = true;
   };
 
   # disable virtualbox as it has problems with the rt kernel
