@@ -279,6 +279,7 @@
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.philm = {
+    uid = 1000;
     isNormalUser = true;
     shell = pkgs.fish;
     extraGroups = [
