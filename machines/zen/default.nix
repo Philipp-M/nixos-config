@@ -88,6 +88,7 @@ in
     hideMounts = true;
     directories = [
       "/var/log"
+      "/var/lib/nixos"
       "/var/lib/blueman"
       "/var/lib/cups/ppd"
       "/var/lib/bluetooth"
@@ -134,6 +135,7 @@ in
         ".config/calibre"
         ".config/cantata"
         ".config/chromium"
+        ".config/google-chrome"
         ".config/cosmic"
         ".config/dconf"
         ".config/discord"
@@ -172,6 +174,7 @@ in
         ".local/share/TelegramDesktop"
         ".local/share/Midinous"
         ".local/state/wireplumber"
+        ".local/state/cosmic-comp"
         ".BitwigStudio"
         ".cache/nix" # avoid unnecessary fetching
         ".cache/nvidia" # avoid unnecessary computation
