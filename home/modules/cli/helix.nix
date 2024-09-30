@@ -253,7 +253,7 @@ in
               { name = "vue"; language-servers = [{ name = "vuels"; except-features = [ "format" ]; } { name = "efm-lsp-prettier"; only-features = [ "format" ]; } "eslint"]; }
               { name = "sql"; formatter.command = "pg_format"; }
               { name = "nix"; language-servers = [ "nil" ]; }
-              { name = "json"; language-servers = [{ name = "vscode-json-language-server"; except-features = [ "format" ]; } "efm-lsp-prettier"]; }
+              { name = "json"; auto-format = false; language-servers = [{ name = "vscode-json-language-server"; except-features = [ "format" ]; } "efm-lsp-prettier"]; }
               { name = "markdown"; language-servers = [{ name = "marksman"; except-features = [ "format" ]; } "ltex-ls" "efm-lsp-prettier"]; }
             ];
         };
