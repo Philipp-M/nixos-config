@@ -263,6 +263,7 @@ in
           insert-final-newline = false;
           color-modes = true;
           idle-timeout = 33;
+          auto-format = false;
           indent-guides.render = true;
           rainbow-brackets = true;
           # sticky-context.enable = true;
