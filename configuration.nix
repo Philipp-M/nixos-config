@@ -499,7 +499,7 @@
     thunderbird
     signal-desktop
     element-desktop
-    qtox
+    # qtox
     discord
     slack
     v4l-utils
@@ -566,7 +566,7 @@
     freecad
     appimage-run
     openvpn
-    openvpn3
+    # openvpn3
     powertop
     usbutils
     cabextract
