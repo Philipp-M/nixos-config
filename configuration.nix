@@ -540,7 +540,6 @@
 
     # MISC
     scrcpy
-    neovide
     quickemu
     spice-gtk
     xorg.xhost
