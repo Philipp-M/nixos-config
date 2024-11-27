@@ -207,10 +207,10 @@ in
                 checkOnSave.command = "clippy";
                 procMacro = {
                   enable = true;
-                  server = "${(pkgs.rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
+                  server = "${pkgs.rust-bin.nightly."2024-11-09".default.override {
                       extensions = [ "rustfmt" "rust-analyzer" "rust-src" "miri" ];
-                      targets = [ "x86_64-unknown-linux-gnu" "wasm32-unknown-unknown" "x86_64-pc-windows-gnu" ];
-                    }))}/libexec/rust-analyzer-proc-macro-srv";
+                      targets = [ "x86_64-unknown-linux-gnu" "wasm32-unknown-unknown" "x86_64-pc-windows-gnu" "aarch64-linux-android" ];
+                    }}/libexec/rust-analyzer-proc-macro-srv";
                 };
                 lens = { references = true; methodReferences = true; };
                 completion.autoimport.enable = true;
