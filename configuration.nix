@@ -365,7 +365,10 @@
     cmake
     dart
     valgrind
+    tracy
     git
+    mercurial
+    mold
     gti
     git-secret
     git-crypt
@@ -441,6 +444,7 @@
     asciinema
     progress
     htop
+    bottom
     killall
     lm_sensors
     lsd
