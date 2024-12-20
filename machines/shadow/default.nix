@@ -99,6 +99,7 @@ in
         { directory = ".local/share/keyrings"; mode = "0700"; }
         ".config/calibre"
         ".config/cantata"
+        ".config/Cantata"
         ".config/chromium"
         ".config/google-chrome"
         ".config/cosmic"

@@ -19,11 +19,13 @@ in
       open = false;
       modesetting.enable = true;
       powerManagement.enable = true;
+      nvidiaPersistenced = true;
       forceFullCompositionPipeline = true;
     };
     nvidia-container-toolkit.enable = true;
   };
 
+  virtualisation.docker.enableNvidia = true;
   boot = {
     initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "uas" "sd_mod" ];
     initrd.checkJournalingFS = false; # fsck.f2fs is broken with extended node bitmap (needed for precious inodes)
@@ -134,6 +136,7 @@ in
         { directory = ".local/share/keyrings"; mode = "0700"; }
         ".config/calibre"
         ".config/cantata"
+        ".config/Cantata"
         ".config/chromium"
         ".config/google-chrome"
         ".config/cosmic"
@@ -253,7 +256,7 @@ in
       pipewire."92-low-latency" = {
         "context.properties" = {
           "default.clock.rate" = 192000;
-          "default.clock.quantum" = 512;
+          "default.clock.quantum" = 2048;
           "default.clock.min-quantum" = 32;
           "default.clock.max-quantum" = 4096;
         };
@@ -276,7 +279,7 @@ in
       jack."92-low-latency" = {
         "jack.properties" = {
           "rt.prio" = 88;
-          "node.latency" = "512/192000";
+          "node.latency" = "2048/192000";
           "jack.show-monitor" = true;
           "jack.merge-monitor" = true;
           "jack.show-midi" = true;
@@ -292,7 +295,7 @@ in
             update-props = {
               api.alsa.use-acp = true,
               api.alsa.use-ucm = false,
-              api.alsa.period-size   = 512,
+              api.alsa.period-size = 2048,
               api.acp.probe-rate = 192000,
               api.acp.auto-profile = false
               api.acp.pro-channels = 10,
