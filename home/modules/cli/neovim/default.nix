@@ -31,7 +31,7 @@ in
         nodePackages.svelte-language-server
         nodePackages.typescript-language-server
         nodePackages.vim-language-server
-        nodePackages.vls
+        # nodePackages.vls
         nodePackages.vscode-langservers-extracted
         nodePackages.yaml-language-server
         ocamlPackages.ocaml-lsp

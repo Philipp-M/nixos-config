@@ -40,7 +40,7 @@ in
         nodePackages.dockerfile-language-server-nodejs
         nodePackages.stylelint
         nodePackages.svelte-language-server
-        nodePackages.vls
+        # nodePackages.vls
         nodePackages.vim-language-server
         nodePackages.vscode-langservers-extracted
         nodePackages.yaml-language-server

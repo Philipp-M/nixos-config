@@ -3,5 +3,5 @@
   cudaSupport = true;
   cudnnSupport = true;
   # cudaCapabilities = [ "8.6" ]; # TODO put this into separate machines...
-  permittedInsecurePackages = [ "libdwarf-20181024" "qtwebkit-5.212.0-alpha4" "electron-24.8.6" ];
+  permittedInsecurePackages = [ "libdwarf-20181024" "qtwebkit-5.212.0-alpha4" "electron-24.8.6" "dotnet-sdk-6.0.428" "dotnet-runtime-6.0.36" ];
 }

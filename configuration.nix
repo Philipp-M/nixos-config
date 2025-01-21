@@ -434,7 +434,7 @@
     texlive.combined.scheme-full
     # wkhtmltopdf
 
-    xournal
+    xournalpp
     zathura
 
     # TERMINAL/CLI
@@ -557,7 +557,7 @@
     exfat
     rdup
     sanoid
-    rmlint
+    # rmlint
     LAStools
     gparted
     gsettings-desktop-schemas
@@ -615,7 +615,7 @@
     packages = with pkgs; [
       font-awesome
       emojione
-      nerdfonts
+      # nerdfonts
       google-fonts
       material-symbols
     ];

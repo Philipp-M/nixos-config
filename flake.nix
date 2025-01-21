@@ -40,7 +40,7 @@
     in
     {
       devShell."${system}" = with inputs.nixpkgs.legacyPackages.${system};
-        let nixBin = writeShellScriptBin "nix" "${nixFlakes}/bin/nix --option experimental-features 'nix-command flakes' \"$@\""; in
+        let nixBin = writeShellScriptBin "nix" "${nixVersions.stable}/bin/nix --option experimental-features 'nix-command flakes' \"$@\""; in
         mkShell {
           buildInputs = [
             f2fs-tools
@@ -52,7 +52,7 @@
             inputs.deploy-rs.packages."${system}".default
             nixos-install-tools
             nixBin
-            (nixos { nix.package = nixFlakes; }).nixos-rebuild
+            (nixos { nix.package = nixVersions.stable; }).nixos-rebuild
           ];
           shellHook = "export FLAKE=\"$(pwd)\"";
         };

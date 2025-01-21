@@ -28,7 +28,7 @@
     "pci=nomsi"
     "initcall_blacklist=simpledrm_platform_driver_init"
   ];
-  boot.kernelPackages = pkgs.linuxPackages_6_1;
+  # boot.kernelPackages = pkgs.linuxPackages_6_1;
 
   services.kanata.keyboards.default.devices = [
     "/dev/input/by-id/usb-Input_Club_Infinity_Ergodox_QMK-event-kbd" # ergodox infinity keyboard
