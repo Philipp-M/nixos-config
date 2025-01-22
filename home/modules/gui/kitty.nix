@@ -18,7 +18,6 @@
           enable_audio_bell = false;
           update_check_interval = 0;
           background_opacity = alpha;
-          linux_display_server = "x11";
         };
         extraConfig = with config.theme.base16.colors;
           ''
