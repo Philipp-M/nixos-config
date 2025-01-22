@@ -15,7 +15,18 @@
     nvidia-container-toolkit.enable = true;
   };
 
-  programs.xwayland.enable = true;
+  boot = {
+    kernelParams = [
+      "pci=nomsi"
+      "nvidia_drm.fbdev=1"
+      "nordrand"
+      "preempt=full"
+      "nomodeset"
+      "nvidia.NVreg_EnableGpuFirmware=0"
+      "initcall_blacklist=simpledrm_platform_driver_init"
+    ];
+    supportedFilesystems = [ "ntfs" ];
+  };
 
   networking.interfaces.enp0s31f6.useDHCP = true;
   networking.interfaces.wlp5s0.useDHCP = false;

@@ -34,10 +34,10 @@
       yabridge = prev.yabridge.override { wine = prev.wineWowPackages.stableFull; };
     })
     (final: prev: {
-      my-rust-toolchain = (pkgs.rust-bin.nightly."2024-11-09".default.override {
+      my-rust-toolchain = (pkgs.rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
         extensions = [ "rustfmt" "rust-analyzer" "rust-src" "miri" ];
         targets = [ "x86_64-unknown-linux-gnu" "wasm32-unknown-unknown" "x86_64-pc-windows-gnu" "aarch64-linux-android" ];
-      });
+      }));
     })
     (final: prev: { qemu = prev.qemu.override { smbdSupport = true; }; })
   ];
@@ -615,7 +615,7 @@
     packages = with pkgs; [
       font-awesome
       emojione
-      # nerdfonts
+      nerd-fonts.symbols-only
       google-fonts
       material-symbols
     ];
