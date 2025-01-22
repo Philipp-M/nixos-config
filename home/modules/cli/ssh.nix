@@ -20,6 +20,9 @@
     programs.fish.shellInit = ''
       set -gx SSH_AUTH_SOCK /run/user/(id -u)/keyring/ssh
     '';
+    programs.bash.profileExtra = ''
+      SSH_AUTH_SOCK=/run/user/(id -u)/keyring/ssh
+    '';
 
     programs.ssh = {
       enable = true;

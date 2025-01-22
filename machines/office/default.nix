@@ -34,15 +34,10 @@
   networking.networkmanager.enable = true;
   # networking.networkmanager.dns = "none";
 
-  boot.kernelParams = [
-    "nomodeset"
-    "pci=nomsi"
-    "initcall_blacklist=simpledrm_platform_driver_init"
-  ];
-  # boot.kernelPackages = pkgs.linuxPackages_6_1;
-
   services.kanata.keyboards.default.devices = [
-    "/dev/input/by-id/usb-Input_Club_Infinity_Ergodox_QMK-event-kbd" # ergodox infinity keyboard
+    "/dev/input/by-id/usb-Logitech_USB_Receiver-if02-event-kbd"
+    # "/dev/input/by-id/usb-Logitech_USB_Keyboard-event-kbd"
+    # "/dev/input/by-id/usb-Input_Club_Infinity_Ergodox_QMK-event-kbd" # ergodox infinity keyboard
     "/dev/input/by-id/usb-Logitech_USB_Receiver-if02-event-mouse" # mouse
   ];
 
