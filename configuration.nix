@@ -371,6 +371,7 @@
     mercurial
     mold
     gti
+    gitui
     git-secret
     git-crypt
     gitAndTools.diff-so-fancy
@@ -389,8 +390,7 @@
     php
     yarn
     deno
-    # nodejs_latest
-    nodejs_18
+    nodejs
     nodePackages.node2nix
     pkg-config
 
@@ -439,6 +439,7 @@
     zathura
 
     # TERMINAL/CLI
+    awscli2
     fasd
     fzf
     file
@@ -478,6 +479,7 @@
     # blender # flatpak version is used due to Optix support
     krita
     gimp
+    rawtherapee
     inkscape
     exiftool
     # qgis
@@ -518,6 +520,7 @@
     google-chrome
     firefox
     firefox-beta-bin
+    firefox-devedition
     (brave.override { vulkanSupport = true; })
     tor-browser-bundle-bin
     ff2mpv
