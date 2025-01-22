@@ -47,6 +47,7 @@
             "privacy.donottrackheader.enabled" = true;
             "privacy.donottrackheader.value" = 1;
             "privacy.firstparty.isolate" = true;
+            "security.fileuri.strict_origin_policy" = false;
             "signon.rememberSignons" = false;
             "svg.context-properties.content.enabled" = true;
             "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
