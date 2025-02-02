@@ -175,7 +175,7 @@
   # Enable the X11 windowing system.
 
   services.autorandr.enable = true;
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
 
   services.vnstat.enable = true;
 
