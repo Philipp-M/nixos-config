@@ -133,13 +133,13 @@
               passes = 4
               # inactive_opacity = 0.8
             }
-            drop_shadow = true
-            shadow_ignore_window = true
-            shadow_offset = 0 0
-            shadow_range = 16
-            shadow_render_power = 2
-            col.shadow = 0x${config.theme.extraParams.alpha-hex}${config.theme.base16.colors.base0D.hex.rgb}
-            col.shadow_inactive = 0xAA000000
+            # drop_shadow = true
+            # shadow_ignore_window = true
+            # shadow_offset = 0 0
+            # shadow_range = 16
+            # shadow_render_power = 2
+            # col.shadow = 0x${config.theme.extraParams.alpha-hex}${config.theme.base16.colors.base0D.hex.rgb}
+            # col.shadow_inactive = 0xAA000000
             blurls = rofi
             blurls = gtk-layer-shell
           }
@@ -154,13 +154,13 @@
 
           master {
             new_on_top = true
-            no_gaps_when_only = true
+            # no_gaps_when_only = true
           }
 
           dwindle {
             pseudotile = 1
             preserve_split = 1
-            no_gaps_when_only = true
+            # no_gaps_when_only = true
           }
 
           misc {
@@ -493,7 +493,7 @@
 
     qt = {
       enable = true;
-      platformTheme.name = "gtk";
+      platformTheme.name = "gtk3";
     };
 
     programs.rofi = {
