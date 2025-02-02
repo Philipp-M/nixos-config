@@ -33,7 +33,7 @@ let inherit (lib) concatStrings mapAttrsToList mkOption types; in
     extraParams = mkOption {
       type = types.attrsOf types.str;
       default = rec {
-        fontname = "Iosevka Kitty";
+        fontname = "Iosevka";
         xftfontextra = ":style=Regular";
         fontsize = "16";
         xcursorSize = "32";
@@ -45,9 +45,7 @@ let inherit (lib) concatStrings mapAttrsToList mkOption types; in
   };
   config = {
     fonts.fontconfig.enable = true;
-    home.packages = lib.mkIf (config.theme.extraParams.fontname == "Iosevka Kitty") [
-      (pkgs.iosevka.override { privateBuildPlan = { family = "Iosevka Kitty"; exportGlyphNames = true; }; set = "kitty"; })
-    ];
+    home.packages = [ pkgs.iosevka ];
     lib.theme.compileTemplate = { name, src }:
       pkgs.runCommandLocal name { } ''
         sed '${
