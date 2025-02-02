@@ -482,6 +482,7 @@
     rawtherapee
     inkscape
     exiftool
+    pitivi
     # qgis
 
     # AUDIO
@@ -499,6 +500,7 @@
     qpwgraph
     a2jmidid
     playerctl
+    picard
     reaper
     musescore
 
@@ -554,6 +556,7 @@
     nix-du
     nix-tree
     nix-query-tree-viewer
+    gnuplot
     inputs.comma.packages.${pkgs.system}.default
     # inputs.devenv.packages.${pkgs.system}.devenv
     # colmapWithCuda
@@ -599,6 +602,7 @@
     unixtools.xxd
     blender
     fira-code
+    reptyr
     openssl
     rclone
     mpv
@@ -609,6 +613,7 @@
     adb-sync
     udiskie
     tree-sitter
+    adwaita-icon-theme
   ];
 
   # TODO put these in home-manager?
