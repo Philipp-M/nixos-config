@@ -39,7 +39,7 @@ in
     networkmanager.enable = true;
   };
 
-  services.xserver.videoDrivers = [ "intel" ];
+  services.xserver.videoDrivers = [ "modesetting" ];
   services.xserver.deviceSection = ''
     Option "DRI" "2"
     Option "TearFree" "true"
