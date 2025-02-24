@@ -133,13 +133,11 @@
               passes = 4
               # inactive_opacity = 0.8
             }
-            # drop_shadow = true
-            # shadow_ignore_window = true
-            # shadow_offset = 0 0
-            # shadow_range = 16
-            # shadow_render_power = 2
-            # col.shadow = 0x${config.theme.extraParams.alpha-hex}${config.theme.base16.colors.base0D.hex.rgb}
-            # col.shadow_inactive = 0xAA000000
+            shadow {
+              color = 0x${config.theme.extraParams.alpha-hex}${config.theme.base16.colors.base0D.hex.rgb}
+              color_inactive = 0xAA000000
+              range = 16
+            }
             blurls = rofi
             blurls = gtk-layer-shell
           }
