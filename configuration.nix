@@ -189,7 +189,8 @@
 
   services.displayManager = {
     # defaultSession = "none+xmonad";
-    defaultSession = "cosmic";
+    # defaultSession = "cosmic";
+    defaultSession = "hyprland-uwsm";
   };
   services.libinput.enable = true;
 
@@ -321,7 +322,10 @@
   # All system wide packages
 
   programs.fish.enable = true;
-  programs.hyprland.enable = true;
+  programs.hyprland = {
+    enable = true;
+    withUWSM = true;
+  };
   programs.xwayland.enable = true;
 
   programs.adb.enable = true;
@@ -469,6 +473,7 @@
     unzip
     b3sum
     yq
+    jaq
     yt-dlp
     zip
     unrar

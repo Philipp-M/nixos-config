@@ -4,62 +4,6 @@
     Enable personal desktop-environment config (xmonad, eww etc.)
   '';
 
-  # ${lib.optionalString (config.wayland.windowManager.hyprland.enableNvidiaPatches) ''
-  # ''}
-  options.modules.gui.desktop-environment.hyprland-session-wrapper = lib.mkOption {
-    type = with lib.types; nullOr package;
-    default = let sessionName = "Hyprland"; in pkgs.writeTextFile
-      {
-        name = sessionName;
-        destination = "/share/wayland-sessions/${sessionName}.desktop";
-        text = ''
-          [Desktop Entry]
-          Version=1.0
-          Name=${sessionName}
-          Type=Application
-          Comment=An intelligent dynamic tiling Wayland compositor
-          Exec=${pkgs.writeShellScriptBin sessionName ''
-            . "${config.home.profileDirectory}/etc/profile.d/hm-session-vars.sh"
-
-            if [ -e "$HOME/.profile" ]; then
-              . "$HOME/.profile"
-            fi
-            systemctl --user stop graphical-session.target graphical-session-pre.target
-
-            ${lib.optionalString (config.xsession.importedVariables != [ ])
-            ("systemctl --user import-environment "
-              + toString (lib.unique config.xsession.importedVariables))}
-
-              export LIBVA_DRIVER_NAME=nvidia
-              export GBM_BACKEND=nvidia-drm
-              export GDK_BACKEND=wayland
-              export __GLX_VENDOR_LIBRARY_NAME=nvidia
-            ${lib.optionalString (config.modules.cli.ssh.enable) ''
-              export SSH_AUTH_SOCK=/run/user/$(id -u)/keyring/ssh
-            ''}
-
-            export XDG_SESSION_TYPE=wayland
-            # export GTK_USE_PORTAL=1
-            export MOZ_GLX_TEST_EARLY_WL_ROUNDTRIP=1
-            export NIXOS_OZONE_WL=1
-            systemctl --user start hm-graphical-session.target
-            systemctl --user start hyprland-session.target
-            ${config.wayland.windowManager.hyprland.package}/bin/Hyprland
-            systemctl --user stop hyprland-session.target
-            systemctl --user stop hm-graphical-session.target
-            systemctl --user stop graphical-session.target
-            systemctl --user stop graphical-session-pre.target
-            unset __HM_SESS_VARS_SOURCED
-          ''}/bin/${sessionName}
-        '';
-      } // {
-      providedSessions = [ sessionName ];
-    };
-    description = ''
-      Hyprland session wrapper which sets some environment vars for desktop use and manages relevant graphical systemd services.
-    '';
-  };
-
   config = lib.mkIf config.modules.gui.desktop-environment.enable {
     home.keyboard.variant = "colemak";
     home.keyboard.layout = "us";
@@ -76,178 +20,160 @@
       force = true;
     };
     xdg.configFile."gtk-4.0/gtk.css".force = true;
+    # home.file.".xmonad/xmonad-x86_64-linux".force = true;
 
     wayland.windowManager.hyprland = {
       enable = true;
-      extraConfig =
-        let
-          pointer = config.home.pointerCursor;
-        in
-        ''
-          $mod = SUPER
+      systemd = {
+        enable = true;
+        enableXdgAutostart = true;
+      };
+      settings = let pointer = config.home.pointerCursor; in {
+        "$mod" = "SUPER";
 
-          # set cursor for HL itself
-          exec-once = hyprctl setcursor ${pointer.name} ${toString pointer.size}
-          # exec-once = killall eww && systemctl restart --user eww && sleep 0.3 && eww open bar
-          exec-once = sleep 2 && ${pkgs.eww}/bin/eww --no-daemonize open bar
+        exec-once = [
+          "hyprctl setcursor ${pointer.name} ${toString pointer.size}"
+          "sleep 2 && ${pkgs.eww}/bin/eww --no-daemonize open bar"
+          "${pkgs.swaybg}/bin/swaybg -i ~/wallpaper/JWST/wallpaper/STScI-01GA76Q01D09HFEV174SVMQDMV.png"
+        ];
 
-          misc {
-            # disable auto polling for config file changes
-            disable_autoreload = 1
-            focus_on_activate = 1
-          }
+        misc = [
+          { disable_autoreload = 1; focus_on_activate = 1; }
+          { disable_hyprland_logo = true; }
+        ];
 
-          monitor=,preferred,auto,1
+        monitor = ",preferred,auto,1";
 
-          # touchpad gestures
-          gestures {
-            workspace_swipe = 1
-            workspace_swipe_forever = 1
-          }
+        gestures = {
+          workspace_swipe = 1;
+          workspace_swipe_forever = 1;
+        };
 
-          general {
-            layout = master
-            gaps_in = 6
-            gaps_out = 6
-            border_size = 0
-          }
+        general = {
+          layout = "master";
+          gaps_in = 6;
+          gaps_out = 6;
+          border_size = 0;
+        };
 
-          input {
-            kb_layout = us
-            kb_variant = colemak
-            repeat_rate = 60
-            repeat_delay = 300
-            # focus change on cursor move
-            follow_mouse = 1
-            accel_profile = flat
-            sensitivity = 1.5
-            touchpad {
-              scroll_factor = 0.3
-            }
-          }
+        input = {
+          kb_layout = "us";
+          kb_variant = "colemak";
+          repeat_rate = 60;
+          repeat_delay = 300;
+          follow_mouse = 1;
+          accel_profile = "flat";
+          sensitivity = 1.5;
+          touchpad = { scroll_factor = 0.3; };
+        };
 
-          decoration {
-            rounding = 6
-            blur {
-              size = 8
-              passes = 4
-              # inactive_opacity = 0.8
-            }
-            shadow {
-              color = 0x${config.theme.extraParams.alpha-hex}${config.theme.base16.colors.base0D.hex.rgb}
-              color_inactive = 0xAA000000
-              range = 16
-            }
-            blurls = rofi
-            blurls = gtk-layer-shell
-          }
+        decoration = {
+          rounding = 6;
+          blur = { size = 8; passes = 4; };
+          shadow = {
+            color = "0x${config.theme.extraParams.alpha-hex}${config.theme.base16.colors.base0D.hex.rgb}";
+            color_inactive = "0xAA000000";
+            range = 16;
+          };
+          blurls = [ "rofi" "gtk-layer-shell" ];
+        };
 
-          animations {
-            enabled = 1
-            animation = border,1,2,default
-            animation = fade,1,4,default
-            animation = windows,1,3,default,popin 80%
-            animation = workspaces,1,2,default,slide
-          }
+        animations = {
+          enabled = 1;
+          animation = [
+            "border,1,2,default"
+            "fade,1,4,default"
+            "windows,1,3,default,popin 80%"
+            "workspaces,1,2,default,slide"
+          ];
+        };
 
-          master {
-            new_on_top = true
-            # no_gaps_when_only = true
-          }
+        master = {
+          new_status = "master";
+          new_on_top = true;
+        };
 
-          dwindle {
-            pseudotile = 1
-            preserve_split = 1
-            # no_gaps_when_only = true
-          }
+        dwindle = {
+          pseudotile = 1;
+          preserve_split = 1;
+        };
 
-          misc {
-            disable_hyprland_logo = true
-          }
+        workspace = [
+          "f[1], gapsout:0, gapsin:0"
+          "w[tv1], gapsout:0, gapsin:0"
+        ];
 
-          exec-once = ${pkgs.swaybg}/bin/swaybg -i ~/wallpaper/JWST/wallpaper/STScI-01GA76Q01D09HFEV174SVMQDMV.png
+        windowrulev2 = [
+          "tile,class:kitty"
+          "float,class:floating"
+        ];
 
-          # windowrules
-          # windowrulev2 = fullscreen,pin,class:Rofi
-          # windowrulev2 = fullscreen,pin,class:Rofi
-          windowrulev2 = tile,class:kitty
-          windowrulev2 = float,class:floating
-          # mouse movements
-          bindm = $mod,mouse:272,movewindow
-          bindm = $mod,mouse:273,resizewindow
-          bindm = $mod ALT,mouse:272,resizewindow
-          # compositor commands
-          bind = $mod SHIFT,Q,exit
-          bind = $mod,Backspace,killactive,
-          bind = $mod,F,fullscreen,1
-          bind = $mod SHIFT,F,fullscreen
-          # bind = $mod,G,togglegroup,
-          bind = $mod SHIFT,N,changegroupactive,f
-          bind = $mod SHIFT,P,changegroupactive,b
-          # bind = $mod,R,togglesplit,
-          bind = $mod,T,togglefloating,
-          # bind = $mod,P,pseudo,
-          bind = $mod,P,layoutmsg,swapwithmaster master
-          bind = $mod,A,layoutmsg,addmaster
-          bind = $mod,R,layoutmsg,removemaster
-          # bind = $mod,N,layoutmsg,cyclenext
-          # bind = $mod,E,layoutmsg,cycleprev
-          bind = $mod,K,layoutmsg,cyclenext
-          bind = $mod,H,layoutmsg,cycleprev
-          bind = $mod ALT,,resizeactive,
-          # utility
-          # bind = $mod,Return,exec,${pkgs.alacritty}/bin/alacritty
-          # bind = $mod,Return,exec,${config.programs.alacritty.package}/bin/alacritty
-          # bind = $mod,Return,exec,hyprctl --batch "keyword windowrule tile,kitty ; dispatch exec ${config.programs.kitty.package}/bin/kitty"
-          bind = $mod,Return,exec,kitty
-          bind = $mod,Space,exec,rofi -show run
-          bind = $mod,I,exec,toggle-light
-          bind = $mod,B,exec,toggle-bright-light
-          bind = $mod,S,exec,env XDG_CURRENT_DESKTOP=sway XDG_SESSION_DESKTOP=sway QT_QPA_PLATFORM=wayland flameshot gui
-          bind = $mod,W,exec,firefox
-          bind = $mod,Escape,exec,wlogout -p layer-shell
-          bind = $mod,L,exec,gtklock
-          # bind = $mod,E,exec,
-          bind = $mod,O,exec,wl-ocr
-          # move focus
-          bind = $mod,J,movefocus,l
-          bind = $mod,L,movefocus,r
-          # bind = $mod,H,movefocus,u
-          # bind = $mod,K,movefocus,d
-          bind = $mod SHIFT,J,movewindow,l
-          bind = $mod SHIFT,L,movewindow,r
-          bind = $mod SHIFT,H,movewindow,u
-          bind = $mod SHIFT,K,movewindow,d
+        bindm = [
+          "$mod,mouse:272,movewindow"
+          "$mod,mouse:273,resizewindow"
+          "$mod ALT,mouse:272,resizewindow"
+        ];
 
-          bind = $mod,1,workspace,1
-          bind = $mod SHIFT,1,movetoworkspacesilent,1
-          bind = $mod,2,workspace,2
-          bind = $mod SHIFT,2,movetoworkspacesilent,2
-          bind = $mod,3,workspace,3
-          bind = $mod SHIFT,3,movetoworkspacesilent,3
-          bind = $mod,4,workspace,4
-          bind = $mod SHIFT,4,movetoworkspacesilent,4
-          bind = $mod,5,workspace,5
-          bind = $mod SHIFT,5,movetoworkspacesilent,5
-          bind = $mod,6,workspace,6
-          bind = $mod SHIFT,6,movetoworkspacesilent,6
-          bind = $mod,7,workspace,7
-          bind = $mod SHIFT,7,movetoworkspacesilent,7
-          bind = $mod,8,workspace,8
-          bind = $mod SHIFT,8,movetoworkspacesilent,8
-          bind = $mod,9,workspace,9
-          bind = $mod SHIFT,9,movetoworkspacesilent,9
-        
-          # media controls
-          bind = ,XF86AudioPlay,exec,mpc toggle
-          bind = ,XF86AudioPrev,exec,mpc prev
-          bind = ,XF86AudioNext,exec,mpc next
-          # volume
-          bindle = ,XF86AudioRaiseVolume,exec,${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%+
-          bindle = ,XF86AudioLowerVolume,exec,${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%-
-          bind = ,XF86AudioMute,exec,${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
-          bind = ,XF86AudioMicMute,exec,${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
-        '';
+        bind = [
+          "$mod SHIFT,Q,exit"
+          "$mod,Backspace,killactive,"
+          "$mod,F,fullscreen,0"
+          "$mod SHIFT,F,fullscreen"
+          "$mod SHIFT,N,changegroupactive,f"
+          "$mod SHIFT,P,changegroupactive,b"
+          "$mod,T,togglefloating,"
+          "$mod,P,layoutmsg,swapwithmaster master"
+          "$mod,A,layoutmsg,addmaster"
+          "$mod,R,layoutmsg,removemaster"
+          "$mod,K,layoutmsg,cyclenext"
+          "$mod,H,layoutmsg,cycleprev"
+          "$mod ALT,,resizeactive,"
+          "$mod,Return,exec,kitty"
+          "$mod,Space,exec,rofi -show run"
+          "$mod,I,exec,toggle-light"
+          "$mod,B,exec,toggle-bright-light"
+          "$mod,S,exec,env XDG_CURRENT_DESKTOP=sway XDG_SESSION_DESKTOP=sway QT_QPA_PLATFORM=wayland flameshot gui"
+          "$mod,W,exec,firefox"
+          "$mod,G,exec,firefox -P geobility"
+          "$mod,Escape,exec,wlogout -p layer-shell"
+          "$mod,L,exec,gtklock"
+          "$mod,O,exec,wl-ocr"
+          "$mod,J,movefocus,l"
+          "$mod,L,movefocus,r"
+          "$mod SHIFT,J,movewindow,l"
+          "$mod SHIFT,L,movewindow,r"
+          "$mod SHIFT,H,movewindow,u"
+          "$mod SHIFT,K,movewindow,d"
+          "$mod,1,workspace,1"
+          "$mod SHIFT,1,movetoworkspacesilent,1"
+          "$mod,2,workspace,2"
+          "$mod SHIFT,2,movetoworkspacesilent,2"
+          "$mod,3,workspace,3"
+          "$mod SHIFT,3,movetoworkspacesilent,3"
+          "$mod,4,workspace,4"
+          "$mod SHIFT,4,movetoworkspacesilent,4"
+          "$mod,5,workspace,5"
+          "$mod SHIFT,5,movetoworkspacesilent,5"
+          "$mod,6,workspace,6"
+          "$mod SHIFT,6,movetoworkspacesilent,6"
+          "$mod,7,workspace,7"
+          "$mod SHIFT,7,movetoworkspacesilent,7"
+          "$mod,8,workspace,8"
+          "$mod SHIFT,8,movetoworkspacesilent,8"
+          "$mod,9,workspace,9"
+          "$mod SHIFT,9,movetoworkspacesilent,9"
+          ",XF86AudioPlay,exec,mpc toggle"
+          ",XF86AudioPrev,exec,mpc prev"
+          ",XF86AudioNext,exec,mpc next"
+          ",XF86AudioMute,exec,${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+          ",XF86AudioMicMute,exec,${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
+        ];
+
+        bindle = [
+          ",XF86AudioRaiseVolume,exec,${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%+"
+          ",XF86AudioLowerVolume,exec,${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%-"
+        ];
+      };
     };
 
     xsession = {
