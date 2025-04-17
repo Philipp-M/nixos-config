@@ -28,6 +28,7 @@ in
   virtualisation.docker.enableNvidia = true;
   boot = {
     initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "uas" "sd_mod" ];
+    kernel.sysctl."vm.swappiness" = lib.mkForce 0;
     kernelParams = [
       "nordrand"
       "amd_iommu=fullflush"
