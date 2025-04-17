@@ -214,6 +214,33 @@
         "type": "github"
       }
     },
+    "eww": {
+      "inputs": {
+        "flake-compat": [
+          "flake-compat"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-overlay": [
+          "rust-overlay"
+        ]
+      },
+      "locked": {
+        "lastModified": 1742493865,
+        "narHash": "sha256-ERI0satbxrSVKZcTcex+fg70asc4z3U0FFcZjrHjUUo=",
+        "owner": "bkueng",
+        "repo": "eww",
+        "rev": "b0bc46162ebdad5b01dcb1f1e744a3a7efe20ac3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "bkueng",
+        "ref": "improve_multi_monitor_wayland",
+        "repo": "eww",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -722,6 +749,7 @@
         "deploy-rs": "deploy-rs",
         "devenv": "devenv",
         "ewmh-status-listener": "ewmh-status-listener",
+        "eww": "eww",
         "flake-compat": "flake-compat",
         "fzf-fish": "fzf-fish",
         "helix": "helix",
