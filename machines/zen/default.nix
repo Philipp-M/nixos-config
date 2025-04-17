@@ -28,7 +28,6 @@ in
   virtualisation.docker.enableNvidia = true;
   boot = {
     initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "uas" "sd_mod" ];
-    initrd.checkJournalingFS = false; # fsck.f2fs is broken with extended node bitmap (needed for precious inodes)
     kernelParams = [
       "nordrand"
       "amd_iommu=fullflush"
