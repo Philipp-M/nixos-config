@@ -100,6 +100,12 @@
     pulse.enable = true;
     jack.enable = true;
   };
+  services.udev = {
+    enable = true;
+    extraRules = ''
+      DEVPATH=="/devices/virtual/misc/cpu_dma_latency", OWNER="root", GROUP="audio", MODE="0660"
+    '';
+  };
   # services.pipewire.deepfilter.enable = true;
 
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
