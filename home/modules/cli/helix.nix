@@ -33,6 +33,7 @@ in
         pgformatter
         kotlin-language-server
         nls
+        typos-lsp
         topiary
         pyright
         (python3.withPackages (ps: with ps; [ python-lsp-server ] ++ python-lsp-server.optional-dependencies.all))
@@ -145,6 +146,14 @@ in
       languages = with pkgs;
         {
           language-server = {
+            typos-lsp = {
+              command = "typos-lsp";
+              config.config = (pkgs.formats.toml { }).generate "typos-config.toml" {
+                default.extend-words = {
+                  "lod" = "lod";
+                };
+              };
+            };
             efm-lsp-prettier = {
               command = "${efm-langserver}/bin/efm-langserver";
               config = {
@@ -244,11 +253,12 @@ in
                   { name = "typescript-language-server"; except-features = [ "format" ]; }
                   "eslint"
                   { name = "efm-lsp-prettier"; only-features = [ "format" ]; }
+                  "typos-lsp"
                 ];
             in
             [
               { name = "ruby"; file-types = [ "rb" "rake" "rakefile" "irb" "gemfile" "gemspec" "Rakefile" "Gemfile" "Fastfile" "Matchfile" "Pluginfile" "Appfile" ]; }
-              { name = "rust"; auto-format = false; file-types = [ "lalrpop" "rs" ]; language-servers = [ "rust-analyzer" ]; }
+              { name = "rust"; auto-format = false; file-types = [ "lalrpop" "rs" ]; language-servers = [ "rust-analyzer" "typos-lsp" ]; }
               { name = "c-sharp"; language-servers = [ "omnisharp" ]; }
               { name = "xml"; language-servers = [ "vscode-html-language-server" ]; }
               { name = "html"; auto-format = false; }
@@ -260,7 +270,7 @@ in
               { name = "sql"; formatter.command = "pg_format"; }
               { name = "nix"; language-servers = [ "nil" ]; }
               { name = "json"; auto-format = false; language-servers = [{ name = "vscode-json-language-server"; except-features = [ "format" ]; } "efm-lsp-prettier"]; }
-              { name = "markdown"; language-servers = [{ name = "marksman"; except-features = [ "format" ]; } "ltex-ls" "efm-lsp-prettier"]; }
+              { name = "markdown"; language-servers = [{ name = "marksman"; except-features = [ "format" ]; } "ltex-ls" "efm-lsp-prettier" "typos-lsp"]; }
             ];
         };
       settings = {
