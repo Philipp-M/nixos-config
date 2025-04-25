@@ -92,6 +92,8 @@ in
             "ui.help" = { fg = gray; bg = dark-gray; };
             "ui.cursor" = { modifiers = [ "reversed" ]; };
             "ui.virtual.indent-guide" = dark-gray;
+            "ui.virtual.inline-blame" = gray;
+            "ui.virtual.inlay-hint" = med-gray;
             "variable" = red;
             "variable.builtin" = orange;
             "constant.numeric" = orange;
@@ -281,11 +283,14 @@ in
           idle-timeout = 33;
           auto-format = false;
           indent-guides.render = true;
-          rainbow-brackets = true;
+          # rainbow-brackets = true;
           # sticky-context.enable = true;
           auto-pairs = false;
           lsp.display-messages = true;
           # lsp.inline-diagnostics.other-lines = [];
+          lsp.display-inlay-hints = true;
+          end-of-line-diagnostics = "hint";
+          inline-diagnostics.cursor-line = "warning";
           completion-trigger-len = 1;
           # completion-replace = true;
           line-number = "relative";
