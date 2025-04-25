@@ -54,6 +54,9 @@
           gaps_in = 6;
           gaps_out = 6;
           border_size = 0;
+          resize_on_border = true;
+          extend_border_grab_area = 10;
+          hover_icon_on_border = true;
         };
 
         input = {
@@ -62,10 +65,14 @@
           repeat_rate = 60;
           repeat_delay = 300;
           follow_mouse = 1;
+          mouse_refocus = false;
+          float_switch_override_focus = 0;
           accel_profile = "flat";
           sensitivity = 1.5;
           touchpad = { scroll_factor = 0.3; };
         };
+
+        cursor.no_warps = true;
 
         decoration = {
           rounding = 6;
@@ -91,6 +98,7 @@
         master = {
           new_status = "master";
           new_on_top = true;
+          orientation = "right";
         };
 
         dwindle = {
