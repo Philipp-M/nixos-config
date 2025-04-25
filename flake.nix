@@ -24,6 +24,7 @@
     ewmh-status-listener = { url = "github:Philipp-M/ewmh-status-listener"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
     chatgpt-tui = { url = "github:Philipp-M/chatgpt-tui"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
     mpv-ai-upscale = { url = "github:Alexkral/AviSynthAiUpscale"; flake = false; };
+    mpv-default-shader-pack = { url = "github:iwalton3/default-shader-pack"; flake = false; };
     fzf-fish = { url = "github:PatrickF1/fzf.fish"; flake = false; };
     nixos-cosmic = { url = "github:Philipp-M/nixos-cosmic/cosmic-comp-different-animations"; inputs.nixpkgs.follows = "nixpkgs"; };
     # pipewire = { url = "gitlab:pipewire/pipewire?tag=1.0.0&host=gitlab.freedesktop.org"; flake = false; };

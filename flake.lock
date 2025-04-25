@@ -535,6 +535,22 @@
         "type": "github"
       }
     },
+    "mpv-default-shader-pack": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1742242174,
+        "narHash": "sha256-3KafYkiS+7cpV376oj8E9qiJZ+wkmZh3c4UojO9gSZk=",
+        "owner": "iwalton3",
+        "repo": "default-shader-pack",
+        "rev": "0fdea2adb33ae7112fac190eb826615622b08333",
+        "type": "github"
+      },
+      "original": {
+        "owner": "iwalton3",
+        "repo": "default-shader-pack",
+        "type": "github"
+      }
+    },
     "musnix": {
       "inputs": {
         "nixpkgs": [
@@ -756,6 +772,7 @@
         "home-manager": "home-manager",
         "impermanence": "impermanence",
         "mpv-ai-upscale": "mpv-ai-upscale",
+        "mpv-default-shader-pack": "mpv-default-shader-pack",
         "musnix": "musnix",
         "nil": "nil",
         "nix-index-database": "nix-index-database",
