@@ -9,6 +9,12 @@
       profiles = {
         default = {
           isDefault = true;
+          userChrome = ''
+            /* Don't hide my booksmark bar in fullscreen! */
+            #PersonalToolbar {
+                visibility: unset !important;
+            }
+          '';
           settings = {
             "beacon.enabled" = false;
             "browser.safebrowsing.appRepURL" = "";
