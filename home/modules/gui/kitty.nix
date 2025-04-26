@@ -18,6 +18,7 @@
           enable_audio_bell = false;
           update_check_interval = 0;
           background_opacity = alpha;
+          scrollback_fill_enlarged_window = true;
         };
         extraConfig = with config.theme.base16.colors;
           ''
