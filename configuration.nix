@@ -272,7 +272,7 @@
     config.common.default = "*";
     extraPortals = [
       pkgs.xdg-desktop-portal-gtk
-      pkgs.xdg-desktop-portal-kde
+      pkgs.kdePackages.xdg-desktop-portal-kde
       pkgs.xdg-desktop-portal-hyprland
     ];
   };
@@ -541,7 +541,7 @@
 
     # XORG/DESKTOP ENVIRONMENT
     awf
-    dolphin
+    kdePackages.dolphin
     dzen2
     file-roller
     dmenu
@@ -604,7 +604,7 @@
     filezilla
     scrot
     feh # to view images in terminal wrapped in home.packages with a script for svg support
-    gwenview
+    kdePackages.gwenview
     smartmontools
     rdfind
     rage
