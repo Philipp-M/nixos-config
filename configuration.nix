@@ -29,10 +29,10 @@
       });
     })
     # use same wine version as the system...
-    (final: prev: {
-      yabridgectl = prev.yabridgectl.override { wine = prev.wineWowPackages.stableFull; };
-      yabridge = prev.yabridge.override { wine = prev.wineWowPackages.stableFull; };
-    })
+    # (final: prev: {
+    #   yabridgectl = prev.yabridgectl.override { wine = prev.wineWowPackages.stableFull; };
+    #   yabridge = prev.yabridge.override { wine = prev.wineWowPackages.stableFull; };
+    # })
     (final: prev: {
       my-rust-toolchain = (pkgs.rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
         extensions = [ "rustfmt" "rust-analyzer" "rust-src" "miri" ];
@@ -556,7 +556,7 @@
 
     # GAMES
     # minecraft
-    wineWowPackages.stableFull
+    wineWowPackages.yabridge
     winetricks
     protontricks
 
