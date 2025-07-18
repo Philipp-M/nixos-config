@@ -72,6 +72,11 @@
           touchpad = { scroll_factor = 0.3; };
         };
 
+        ecosystem = {
+          no_update_news = true;
+          no_donation_nag = true;
+        };
+
         cursor.no_warps = true;
 
         decoration = {
