@@ -51,6 +51,7 @@ in
         ocamlPackages.reason
         dotnet-sdk
         omnisharp-roslyn
+        wgsl-analyzer
         msbuild
         ripgrep
         # rnix-lsp
