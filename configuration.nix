@@ -565,19 +565,23 @@
     quickemu
     spice-gtk
     xorg.xhost
+    nextcloud-client
+    parallel
     nix-du
     nix-tree
     nix-query-tree-viewer
     gnuplot
     inputs.comma.packages.${pkgs.system}.default
     # inputs.devenv.packages.${pkgs.system}.devenv
-    # colmapWithCuda
+    colmapWithCuda
     # colmap
     exfat
     rdup
     sanoid
     # rmlint
     LAStools
+    cloudcompare
+    gdal
     gparted
     gsettings-desktop-schemas
     appimage-run
