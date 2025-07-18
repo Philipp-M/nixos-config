@@ -20,6 +20,7 @@
             "browser.safebrowsing.appRepURL" = "";
             "browser.send_pings" = false;
             "browser.startup.page" = 3;
+            "browser.fullscreen.autohide" = false;
             "browser.tabs.closeWindowWithLastTab" = true;
             "browser.tabs.tabMinWidth" = 30;
             "browser.urlbar.speculativeConnect.enabled" = false;
@@ -33,7 +34,7 @@
             "gfx.webrender.all" = true;
             "gfx.webrender.precache-shaders" = true;
             "gfx.webrender.compositor" = true;
-            "gfx.webrender.compositor.force-enabled" = true;
+            # "gfx.webrender.compositor.force-enabled" = true;
             "gfx.webrender.program-binary-disk" = true;
             "layout.css.devPixelsPerPx" = "1.25";
             "media.gpu-process-decoder" = true;
