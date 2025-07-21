@@ -349,7 +349,7 @@
 
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.gdm.enableGnomeKeyring = true;
-  programs.ssh.startAgent = true;
+  # programs.ssh.startAgent = true;
   programs.seahorse.enable = true;
 
   # List packages installed in system profile. To search, run:
@@ -525,7 +525,7 @@
     slack
     v4l-utils
     zoom-us
-    skypeforlinux
+    # skypeforlinux
     fractal
     tdesktop
 
@@ -552,7 +552,7 @@
     xorg.xkill
     xorg.xwininfo
     handlr
-    deadd-notification-center
+    # deadd-notification-center
 
     # GAMES
     # minecraft
@@ -573,7 +573,7 @@
     gnuplot
     inputs.comma.packages.${pkgs.system}.default
     # inputs.devenv.packages.${pkgs.system}.devenv
-    colmapWithCuda
+    # colmapWithCuda
     # colmap
     exfat
     rdup
