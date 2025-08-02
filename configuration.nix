@@ -349,6 +349,7 @@
 
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.gdm.enableGnomeKeyring = true;
+  services.gnome.gcr-ssh-agent.enable = true;
   # programs.ssh.startAgent = true;
   programs.seahorse.enable = true;
 
