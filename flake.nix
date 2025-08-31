@@ -23,6 +23,7 @@
     # eww = { url = "git+file:///home/philm/dev/personal/rust/eww"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; flake-compat.follows = "flake-compat"; }; };
     ewmh-status-listener = { url = "github:Philipp-M/ewmh-status-listener"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
     chatgpt-tui = { url = "github:Philipp-M/chatgpt-tui"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
+    hyprland = { url = "github:hyprwm/Hyprland"; inputs = { nixpkgs.follows = "nixpkgs"; };  };
     mpv-ai-upscale = { url = "github:Alexkral/AviSynthAiUpscale"; flake = false; };
     mpv-default-shader-pack = { url = "github:iwalton3/default-shader-pack"; flake = false; };
     fzf-fish = { url = "github:PatrickF1/fzf.fish"; flake = false; };

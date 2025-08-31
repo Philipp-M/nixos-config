@@ -15,10 +15,16 @@
       x11.enable = true;
     };
 
+    home.sessionVariables.ELECTRON_OZONE_PLATFORM_HINT = "wayland";
+
     xdg.configFile."cosmic/com.system76.CosmicSettings.Shortcuts/v1/custom" = {
       source = ./cosmic-comp-keybindings.ron;
       force = true;
     };
+    xdg.configFile."uwsm/env".text = ''
+      source /etc/profile
+      source ${config.home.sessionVariablesPackage}/etc/profile.d/hm-session-vars.sh
+    '';
     xdg.configFile."gtk-4.0/gtk.css".force = true;
     # home.file.".xmonad/xmonad-x86_64-linux".force = true;
 
@@ -44,10 +50,7 @@
 
         monitor = ",preferred,auto,1";
 
-        gestures = {
-          workspace_swipe = 1;
-          workspace_swipe_forever = 1;
-        };
+        gestures.workspace_swipe_forever = 1;
 
         general = {
           layout = "master";

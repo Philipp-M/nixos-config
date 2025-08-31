@@ -41,6 +41,7 @@
     })
     (final: prev: { qemu = prev.qemu.override { smbdSupport = true; }; })
     inputs.eww.overlays.default
+    inputs.hyprland.overlays.default
   ];
 
   nixpkgs.hostPlatform = "x86_64-linux";
