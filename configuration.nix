@@ -165,11 +165,11 @@
     };
   };
 
-  systemd.extraConfig = ''
-    DefaultJobTimeoutSec=15s
-    DefaultTimeoutStartSec=15s
-    DefaultTimeoutStopSec=15s
-  '';
+  # systemd.extraConfig = ''
+  #   DefaultJobTimeoutSec=15s
+  #   DefaultTimeoutStartSec=15s
+  #   DefaultTimeoutStopSec=15s
+  # '';
 
   # Enable the OpenSSH daemon.
   services.openssh = {
@@ -360,7 +360,7 @@
     # DEVELOPMENT
     ## compilers and dev environment
     # clang_10 # conflicts with gcc
-    python3Full
+    python3
     python3Packages.pip
     python3Packages.setuptools
     poetry
@@ -373,7 +373,7 @@
     minio-client
     mongodb-compass
     elixir
-    gcc10
+    gcc
     gdb
     meson
     cmake
@@ -601,7 +601,7 @@
     patchelf
     qdirstat
     borgbackup
-    electrum
+    # electrum
     monero-gui
     keepassxc
     memtester

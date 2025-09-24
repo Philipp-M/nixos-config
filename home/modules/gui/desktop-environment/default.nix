@@ -438,7 +438,6 @@
     };
 
     programs.rofi = {
-      package = pkgs.rofi-wayland;
       enable = true;
       enableBase16Theme = false;
       theme = builtins.toPath (
