@@ -78,6 +78,8 @@ in
     users.philm = {
       directories = [
         "dev"
+        # tmp folder, persistent, but not backed up
+        "tmp"
         "wallpaper"
         "screenshots"
         "windows-11"

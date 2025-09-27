@@ -14,6 +14,7 @@ in
     cpu.amd.updateMicrocode = true;
     enableRedistributableFirmware = true;
     bluetooth.enable = true;
+    xpadneo.enable = true;
     nvidia = {
       package = config.boot.kernelPackages.nvidiaPackages.beta;
       open = true;
@@ -117,7 +118,7 @@ in
         # tmp folder, persistent, but not backed up
         "tmp"
         "wallpaper"
-        "screenshots"
+        "Screenshots"
         "windows-11"
         "Downloads"
         "Desktop"

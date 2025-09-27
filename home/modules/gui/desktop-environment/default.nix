@@ -1,5 +1,8 @@
 { ewmh-status-listener, ... }:
 { pkgs, lib, config, ... }: {
+
+  imports = [ (import ./niri.nix) ];
+
   options.modules.gui.desktop-environment.enable = lib.mkEnableOption ''
     Enable personal desktop-environment config (xmonad, eww etc.)
   '';
@@ -15,7 +18,11 @@
       x11.enable = true;
     };
 
-    home.sessionVariables.ELECTRON_OZONE_PLATFORM_HINT = "wayland";
+    home.sessionVariables = {
+      DISPLAY = ":0";
+      ELECTRON_OZONE_PLATFORM_HINT = "wayland";
+      NIXOS_OZONE_WL = "1";
+    };
 
     xdg.configFile."cosmic/com.system76.CosmicSettings.Shortcuts/v1/custom" = {
       source = ./cosmic-comp-keybindings.ron;
@@ -193,6 +200,148 @@
       };
     };
 
+    programs.waybar = {
+      enable = true;
+      systemd = {
+        enable = true;
+        enableDebug = true;
+      };
+      settings = {
+        mainBar = {
+          layer = "top";
+          position = "top";
+          height = 30;
+
+          modules-left = [ "niri/workspaces" "niri/window" ];
+          modules-center = [ "mpd" ];
+          modules-right = [ "tray" "cpu" "wireplumber" "network" "battery" "clock" ];
+
+          "niri/workspaces" = {
+            format = "{icon}";
+            format-icons = {
+              browser = "";
+              discord = "";
+              chat = "<b></b>";
+
+              active = "";
+              default = "";
+            };
+          };
+          "niri/window" = {
+            format = "{}";
+            rewrite = {
+              "(.*) - Mozilla Firefox" = "🌎 $1";
+            };
+          };
+          clock = { format = "{:%Y-%m-%d %H:%M}"; };
+          tray = {
+            icon-size = 21;
+            spacing = 10;
+            icons = {
+              blueman = "bluetooth";
+            };
+          };
+          cpu = {
+            interval = 1;
+            format = "{}% ";
+            max-length = 10;
+          };
+          wireplumber = {
+            format = "{volume}% {icon}";
+            format-muted = "";
+            on-click = "helvum";
+            format-icons = [ "" "" "" ];
+          };
+          network = {
+            format-wifi = " {essid} ({signalStrength}%)";
+            format-ethernet = " : {bandwidthUpBytes} : {bandwidthDownBytes}";
+            format-disconnected = "⚠ Disconnected";
+            interval = 1;
+          };
+          battery = {
+            format = "{capacity}% {icon}";
+            format-icons = [ "" "" "" "" "" ];
+          };
+        };
+      };
+
+      style = ''
+        * {
+          font-family: ${config.theme.extraParams.fontname}, monospace, Symbols Nerd Font;
+          font-size: ${config.theme.extraParams.fontsize}px;
+        }
+        window#waybar {
+          background: #${config.theme.base16.colors.base00.hex.rgb};
+          color: #${config.theme.base16.colors.base07.hex.rgb};
+        }
+        button {
+            /* Use box-shadow instead of border so the text isn't offset */
+            box-shadow: none;
+            /* Avoid rounded borders under each button name */
+            border: none;
+            border-radius: 0;
+            transition-property: none;
+        }
+
+        /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
+        button:hover {
+            background: none;
+            box-shadow: none;
+            text-shadow: none;
+            border: none;
+            -gtk-icon-effect: none;
+            -gtk-icon-shadow: none;
+        }
+
+        #clock {
+          padding: 0 10px;
+          color: #${config.theme.base16.colors.base00.hex.rgb};
+          background-color: #${config.theme.base16.colors.base03.hex.rgb};
+        }
+
+        #network {
+          padding: 0 10px;
+          min-width: 230px;
+          background-color: #${config.theme.base16.colors.base02.hex.rgb};
+        }
+
+        #wireplumber {
+          min-width: 80px;
+          padding: 0 10px;
+          background-color: #${config.theme.base16.colors.base01.hex.rgb};
+        }
+
+        #workspaces {
+          padding-right: 10px;
+        }
+
+        #workspaces button {
+          padding: 0 0;
+          margin: 0 0;
+          /* color: #${config.theme.base16.colors.base07.hex.rgb}; */
+          min-width: 30px;
+        }
+
+        #workspaces button:hover {
+          background-color: #${config.theme.base16.colors.base02.hex.rgb};
+        }
+
+        #workspaces button.active, #workspaces button.focused {
+          background-color: #${config.theme.base16.colors.base04.hex.rgb};
+          color: #${config.theme.base16.colors.base00.hex.rgb};
+        }
+
+        #workspaces button.active:hover {
+          background-color: #${config.theme.base16.colors.base05.hex.rgb};
+        }
+
+        #workspaces button.urgent {
+          background-color: #${config.theme.base16.colors.base0D.hex.rgb};
+          color: #${config.theme.base16.colors.base00.hex.rgb};
+        }
+      '';
+    };
+
     xsession = {
       enable = true;
       profileExtra = ''
@@ -334,7 +483,51 @@
           Install.WantedBy = [ "eww-xmonad.service" ];
         };
         picom.Unit.BindsTo = [ "xmonad-session.target" ];
+        swww = {
+          Unit = {
+            Description = "Background Wallpaper Manager for Wayland";
+            After = [ "graphical-session.target" ];
+            PartOf = [ "graphical-session.target" ];
+          };
+          Service = {
+            ExecStart = "${pkgs.swww}/bin/swww-daemon";
+            Restart = "always";
+            IOSchedulingClass = "idle";
+          };
+        };
+        swww-random-image = {
+          Unit = {
+            Description = "Set random wallpaper using swww";
+            After = [ "swww.service" ];
+            Requires = [ "swww.service" ];
+            PartOf = [ "swww.service" ];
+          };
+
+          Service = {
+            Type = "oneshot";
+            Environment = [
+              "RESIZE_TYPE=crop"
+              "SWWW_TRANSITION=fade"
+              "SWWW_TRANSITION_FPS=120"
+              "SWWW_TRANSITION_STEP=2"
+              "WALLPAPER_PATH=/home/philm/wallpaper/JWST/wallpaper"
+            ];
+            IOSchedulingClass = "idle";
+            ExecStart =
+              "${pkgs.writeShellScriptBin "swww-random-image" ''
+                ${pkgs.swww}/bin/swww img --resize="$RESIZE_TYPE" "$(find "$WALLPAPER_PATH" -type f | shuf -n1)"
+              ''}/bin/swww-random-image";
+          };
+          Install.WantedBy = [ "timers.target" ];
+        };
       };
+
+
+    systemd.user.timers.swww-random-image = {
+      Unit.Description = "Periodically change wallpaper using swww";
+      Timer.OnUnitActiveSec = "5min";
+      Install.WantedBy = [ "timers.target" ];
+    };
 
 
     home.packages = [
@@ -509,6 +702,8 @@
       };
     };
 
+    services.copyq.enable = true;
+
     services.random-background = {
       enable = true;
       imageDirectory = "%h/wallpaper/";
@@ -533,7 +728,7 @@
 
     services.network-manager-applet.enable = true;
 
-    services.flameshot.enable = true;
+    # services.flameshot.enable = true;
 
     services.dunst.enable = true;
 

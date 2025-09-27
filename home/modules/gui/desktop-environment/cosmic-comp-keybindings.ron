@@ -75,7 +75,7 @@
     (modifiers: [Super], key: "b"): Spawn("xdg-open http://"),
     (modifiers: [Super], key: "f"): Maximize,
     //TODO: ability to select default terminal
-    (modifiers: [Super], key: "t"): Spawn("kitty"),
+    (modifiers: [Super], key: "g"): Spawn("firefox -P geobility"),
     (modifiers: [Super], key: "p"): Spawn("cosmic-screenshot"),
     (modifiers: [Super], key: "Return"): Spawn("kitty"),
 

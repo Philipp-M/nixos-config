@@ -42,6 +42,24 @@
     (final: prev: { qemu = prev.qemu.override { smbdSupport = true; }; })
     inputs.eww.overlays.default
     inputs.hyprland.overlays.default
+    (final: prev: {
+      niri = prev.niri.overrideAttrs (finalAttrs: prevAttrs: {
+        cargoHash = "sha256-ZPheI9hJS5KKrZ9mZho+mBeoxBnbc8gdTKjGJTcLopk="; # build and replace this
+        src = prev.fetchFromGitHub {
+          owner = "YaLTeR";
+          repo = "niri";
+          rev = "202da19e80b24517e59e86c5d9b5aa3b9b850c9c";
+          hash = "sha256-JTa8IMcxcxphuEWK8E6VruvbJWTdjs24KfxO/O6CNlM=";
+        };
+        # version = "25.08-202da19e80b24517e59e86c5d9b5aa3b9b850c9c"; # change this
+        # doCheck = false;
+        cargoDeps = prev.rustPlatform.fetchCargoVendor {
+          inherit (finalAttrs) pname src version;
+          hash = finalAttrs.cargoHash;
+        };
+      });
+    })
+
   ];
 
   nixpkgs.hostPlatform = "x86_64-linux";
@@ -198,7 +216,8 @@
   services.displayManager = {
     # defaultSession = "none+xmonad";
     # defaultSession = "cosmic";
-    defaultSession = "hyprland-uwsm";
+    # defaultSession = "hyprland-uwsm";
+    defaultSession = "niri";
   };
   services.libinput.enable = true;
 
@@ -208,22 +227,23 @@
     autoRepeatInterval = 15;
     autoRepeatDelay = 300;
     xkb.variant = "colemak";
+    displayManager.session = [{
+      name = "xmonad";
+      manage = "window";
+      bgSupport = true;
+      start = ''
+        ${pkgs.runtimeShell} $HOME/.xsession &
+        waitPID=$!
+      '';
+    }];
+
     # Enable touchpad support.
-    displayManager.gdm.enable = true;
-    displayManager.gdm.debug = true;
-    displayManager.gdm.wayland = true;
-    displayManager.gdm.autoSuspend = false; # for ssh connections mostly
-    displayManager = {
-      session = [{
-        name = "xmonad";
-        manage = "window";
-        bgSupport = true;
-        start = ''
-          ${pkgs.runtimeShell} $HOME/.xsession &
-          waitPID=$!
-        '';
-      }];
-    };
+  };
+  services.displayManager = {
+    gdm.enable = true;
+    gdm.debug = true;
+    gdm.wayland = true;
+    gdm.autoSuspend = false; # for ssh connections mostly
   };
 
   services.kanata = {
@@ -329,6 +349,7 @@
 
   # All system wide packages
 
+  programs.niri.enable = true;
   programs.fish.enable = true;
   programs.hyprland = {
     enable = true;
@@ -566,6 +587,7 @@
     scrcpy
     quickemu
     spice-gtk
+    xwayland-satellite
     xorg.xhost
     nextcloud-client
     parallel
