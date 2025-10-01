@@ -29,7 +29,7 @@ in
   virtualisation.docker.enableNvidia = true;
   boot = {
     initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "uas" "sd_mod" ];
-    kernel.sysctl."vm.swappiness" = lib.mkForce 0;
+    kernel.sysctl."vm.swappiness" = lib.mkForce 5;
     kernelParams = [
       "nordrand"
       "amd_iommu=fullflush"
@@ -59,9 +59,8 @@ in
 
   fileSystems = {
     "${persistent}" = {
-      device = "/dev/disk/by-uuid/a0aab361-0865-4b5b-a556-5e2c97ea53d1";
-      fsType = "f2fs";
-      options = [ "compress_algorithm=lz4" "compress_chksum" "atgc" "gc_merge" "lazytime" ];
+      device = "/dev/disk/by-uuid/380825df-720f-4f14-bf5e-cf448c723131";
+      fsType = "xfs";
       neededForBoot = true;
     };
     # impermanence tries to unmount /nix, thus manually bind mount it here
@@ -131,7 +130,9 @@ in
         "SteamLibrary"
         "Calibre Library"
         "Unity"
+        "Android"
         "Arduino"
+        "ollama"
         { directory = ".gnupg"; mode = "0700"; }
         { directory = ".ssh"; mode = "0700"; }
         { directory = ".local/share/keyrings"; mode = "0700"; }
@@ -160,6 +161,8 @@ in
         ".config/Slack"
         ".config/BraveSoftware"
         ".config/Renoise"
+        ".config/REAPER"
+        ".config/Ryujinx"
         ".config/loopers"
         ".config/tree-sitter"
         ".config/obs-studio"
@@ -199,7 +202,12 @@ in
         ".wine"
         ".xmonad"
       ];
-      files = [ ".cache/helix/helix.log" ".npmrc" ".nvidia-settings-rc" ];
+      files = [
+        ".cache/helix/helix.log"
+        ".npmrc"
+        ".nvidia-settings-rc"
+        ".netrc"
+      ];
     };
   };
 
@@ -231,7 +239,7 @@ in
   virtualisation.spiceUSBRedirection.enable = true;
 
   services.openssh.hostKeys = [
-    { path = "${persistent}/etc/ssh/ssh_host_rsa_key"; bits = 4096; type = "rsa"; }
+    { path = "${persistent}/etc/ssh/ssh_host_rsa_key"; bits = 2048; type = "rsa"; }
     { path = "${persistent}/etc/ssh/ssh_host_ed25519_key"; type = "ed25519"; }
   ];
 
@@ -256,10 +264,10 @@ in
     extraConfig = {
       pipewire."92-low-latency" = {
         "context.properties" = {
-          "default.clock.rate" = 192000;
-          "default.clock.quantum" = 2048;
+          "default.clock.rate" = 44100;
+          "default.clock.quantum" = 512;
           "default.clock.min-quantum" = 32;
-          "default.clock.max-quantum" = 4096;
+          "default.clock.max-quantum" = 8192;
         };
         "context.modules" = [
           {
@@ -280,7 +288,7 @@ in
       jack."92-low-latency" = {
         "jack.properties" = {
           "rt.prio" = 88;
-          "node.latency" = "2048/192000";
+          "node.latency" = "512/44100";
           "jack.show-monitor" = true;
           "jack.merge-monitor" = true;
           "jack.show-midi" = true;
@@ -288,6 +296,7 @@ in
         };
       };
     };
+
     wireplumber.configPackages = [
       (pkgs.writeTextDir "share/wireplumber/wireplumber.conf.d/50-ultralite-pro-audio-176khz-alsa.conf" ''
         monitor.alsa.rules = [ {
@@ -296,8 +305,8 @@ in
             update-props = {
               api.alsa.use-acp = true,
               api.alsa.use-ucm = false,
-              api.alsa.period-size = 2048,
-              api.acp.probe-rate = 192000,
+              api.alsa.period-size = 512,
+              api.acp.probe-rate = 44100,
               api.acp.auto-profile = false
               api.acp.pro-channels = 10,
               device.profile = "pro-audio"
