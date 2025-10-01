@@ -475,8 +475,8 @@
 
         Mod+Shift+Page_Down { move-workspace-down; }
         Mod+Shift+Page_Up   { move-workspace-up; }
-        Mod+Shift+U         { move-workspace-down; }
-        Mod+Shift+I         { move-workspace-up; }
+        Mod+Shift+I         { move-workspace-down; }
+        Mod+Shift+U         { move-workspace-up; }
 
         // You can bind mouse wheel scroll ticks using the following syntax.
         // These binds will change direction based on the natural-scroll setting.
