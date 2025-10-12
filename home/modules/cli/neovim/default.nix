@@ -19,7 +19,7 @@ in
         xsel
         haskellPackages.ormolu # haskell formatter
         # julia
-        luaformatter
+        # luaformatter
         # nixfmt
         taplo-lsp
         pyright

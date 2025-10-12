@@ -44,12 +44,12 @@
     inputs.hyprland.overlays.default
     (final: prev: {
       niri = prev.niri.overrideAttrs (finalAttrs: prevAttrs: {
-        cargoHash = "sha256-ZPheI9hJS5KKrZ9mZho+mBeoxBnbc8gdTKjGJTcLopk="; # build and replace this
+        cargoHash = "sha256-3A37vUNv37IKAm9MdlfVMkuTd/HZSkPO+gv1m23qJvo=";
         src = prev.fetchFromGitHub {
           owner = "YaLTeR";
           repo = "niri";
-          rev = "202da19e80b24517e59e86c5d9b5aa3b9b850c9c";
-          hash = "sha256-JTa8IMcxcxphuEWK8E6VruvbJWTdjs24KfxO/O6CNlM=";
+          rev = "e52b6ec78a31c39b0b188256d70ec4d1f9a0c9bf";
+          hash = "sha256-W5dDEPDma3/JGvQONw/S14aSBTfRjlQkyUw/dY0mdDc=";
         };
         # version = "25.08-202da19e80b24517e59e86c5d9b5aa3b9b850c9c"; # change this
         # doCheck = false;
@@ -604,7 +604,7 @@
     sanoid
     # rmlint
     LAStools
-    cloudcompare
+    # cloudcompare
     gdal
     gparted
     gsettings-desktop-schemas

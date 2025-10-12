@@ -19,7 +19,7 @@ in
         xsel
         haskell-language-server
         julia-bin
-        luaformatter
+        # luaformatter
         elixir_ls
         marksman
         ltex-ls
