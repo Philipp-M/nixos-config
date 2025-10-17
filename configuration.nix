@@ -430,6 +430,8 @@
     git
     mercurial
     mold
+    lldb
+    ryubing
     gti
     gitui
     git-secret
@@ -450,7 +452,7 @@
     php
     yarn
     deno
-    nodejs
+    nodejs_24
     nodePackages.node2nix
     pkg-config
 
@@ -623,7 +625,7 @@
     gnuplot
     inputs.comma.packages.${pkgs.system}.default
     # inputs.devenv.packages.${pkgs.system}.devenv
-    # colmapWithCuda
+    colmapWithCuda
     # colmap
     exfat
     rdup
