@@ -8,8 +8,9 @@
     devenv = { url = "github:cachix/devenv/latest"; inputs.nixpkgs.follows = "nixpkgs"; inputs.flake-compat.follows = "flake-compat"; };
     impermanence.url = "github:nix-community/impermanence";
     helix = { url = "github:Philipp-M/helix/personal-staging"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
+    nix-snapd = { url = "github:nix-community/nix-snapd"; inputs = { nixpkgs.follows = "nixpkgs"; flake-compat.follows = "flake-compat"; flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs"; }; };
     rust-overlay = { url = "github:oxalica/rust-overlay"; inputs.nixpkgs.follows = "nixpkgs"; };
-    nil = { url = "github:oxalica/nil"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
+    nil = { url = "github:oxalica/nil"; inputs = { nixpkgs.follows = "nixpkgs"; }; };
     musnix = { url = "github:musnix/musnix"; inputs.nixpkgs.follows = "nixpkgs"; };
     agenix = { url = "github:ryantm/agenix"; inputs = { nixpkgs.follows = "nixpkgs"; home-manager.follows = "home-manager"; }; };
     rycee-nur-expressions = { url = "gitlab:rycee/nur-expressions"; flake = false; };

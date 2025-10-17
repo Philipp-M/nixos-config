@@ -96,6 +96,7 @@ in
         "Calibre Library"
         "Unity"
         "Arduino"
+        "snap"
         { directory = ".gnupg"; mode = "0700"; }
         { directory = ".ssh"; mode = "0700"; }
         { directory = ".local/share/keyrings"; mode = "0700"; }
@@ -176,6 +177,10 @@ in
       "/var/lib/bluetooth"
       "/var/lib/systemd/coredump"
       "/var/lib/docker"
+      "/var/lib/snapd"
+      "/var/lib/snap"
+      "/var/snap"
+      "/snap"
       "/var/lib/teamviewer"
       "/var/lib/NetworkManager"
       "/var/lib/flatpak"

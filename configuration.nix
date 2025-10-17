@@ -5,6 +5,7 @@
 { config, pkgs, lib, inputs, ... }:
 {
   imports = [
+    inputs.nix-snapd.nixosModules.default
     inputs.home-manager.nixosModules.home-manager
     inputs.musnix.nixosModules.default
     inputs.impermanence.nixosModules.impermanence
@@ -299,6 +300,7 @@
   };
 
   services.flatpak.enable = true;
+  services.snap.enable = true;
   services.teamviewer.enable = true;
   programs.command-not-found.enable = false;
 
