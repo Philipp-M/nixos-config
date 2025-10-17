@@ -15,6 +15,9 @@
     };
 
     # too small for dedicated module
-    programs.obs-studio.enable = true;
+    programs.obs-studio = {
+      enable = true;
+      plugins = [ pkgs.obs-studio-plugins.wlrobs pkgs.obs-studio-plugins.obs-pipewire-audio-capture pkgs.obs-studio-plugins.droidcam-obs ];
+    };
   };
 }
