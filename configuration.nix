@@ -49,8 +49,8 @@
         src = prev.fetchFromGitHub {
           owner = "YaLTeR";
           repo = "niri";
-          rev = "e52b6ec78a31c39b0b188256d70ec4d1f9a0c9bf";
-          hash = "sha256-W5dDEPDma3/JGvQONw/S14aSBTfRjlQkyUw/dY0mdDc=";
+          rev = "2776005c5fc4fbb85636672213b8b84a319dfb01";
+          hash = "sha256-hcyRViwdsrNUjHTcY0VGygcAawcyU4zYEq7ZZObFwkw=";
         };
         # version = "25.08-202da19e80b24517e59e86c5d9b5aa3b9b850c9c"; # change this
         # doCheck = false;
@@ -377,6 +377,30 @@
   # programs.ssh.startAgent = true;
   programs.seahorse.enable = true;
 
+  environment.etc."nvidia-application-profiles-rc.d/50-limit-free-buffer-pool-in-wayland-compositors.json".text = ''
+    {
+        "rules": [
+            {
+                "pattern": {
+                    "feature": "procname",
+                    "matches": "niri"
+                },
+                "profile": "Limit Free Buffer Pool On Wayland Compositors"
+            }
+        ],
+        "profiles": [
+            {
+                "name": "Limit Free Buffer Pool On Wayland Compositors",
+                "settings": [
+                    {
+                        "key": "GLVidHeapReuseRatio",
+                        "value": 0
+                    }
+                ]
+            }
+        ]
+    }
+  '';
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
