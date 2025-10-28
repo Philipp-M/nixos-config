@@ -41,7 +41,10 @@
     "/dev/input/by-id/usb-Logitech_USB_Receiver-if02-event-mouse" # mouse
   ];
 
-  environment.systemPackages = with pkgs; [ remmina ];
+  environment.systemPackages = with pkgs; [
+    remmina
+    (pkgs.callPackage ./claude-code/package.nix {})
+  ];
   environment.etc."resolv.conf".text = ''
     nameserver 1.1.1.1
     nameserver 8.8.8.8
