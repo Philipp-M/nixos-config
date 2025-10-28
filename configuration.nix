@@ -546,7 +546,12 @@
     inkscape
     exiftool
     pitivi
-    # qgis
+
+    # GIS
+    LAStools
+    cloudcompare
+    qgis
+    gdal
 
     # AUDIO
     giada
@@ -631,7 +636,6 @@
     rdup
     sanoid
     # rmlint
-    LAStools
     # cloudcompare
     gdal
     gparted
