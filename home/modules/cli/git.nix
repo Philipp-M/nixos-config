@@ -9,7 +9,7 @@
       userName = "Philipp Mildenberger";
       userEmail = "philipp@mildenberger.me";
       lfs.enable = true;
-      difftastic.enable = true;
+      diff-so-fancy.enable = true;
       extraConfig = {
         safe.directory = "*";
         pull.rebase = true;
