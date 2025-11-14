@@ -203,6 +203,7 @@ in
               command = "${nodePackages.typescript-language-server}/bin/typescript-language-server";
               args = [ "--stdio" ];
               config.documentFormatting = false;
+              config.tsserver.path = "${nodePackages.typescript}/lib/node_modules/typescript/lib";
             };
             nil = {
               command = "${nil.packages.x86_64-linux.default}/bin/nil";
