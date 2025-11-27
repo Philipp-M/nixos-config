@@ -21,7 +21,7 @@ in
         # julia
         # luaformatter
         # nixfmt
-        taplo-lsp
+        taplo
         pyright
         nodePackages.bash-language-server
         nodePackages.dockerfile-language-server-nodejs
@@ -39,7 +39,7 @@ in
         ripgrep
         # rnix-lsp
         java-language-server
-        sumneko-lua-language-server
+        lua-language-server
         tree-sitter
         yapf
         zathura

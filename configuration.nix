@@ -11,7 +11,6 @@
     inputs.impermanence.nixosModules.impermanence
     inputs.agenix.nixosModules.age
     # "${inputs.nixpkgs}/nixos/modules/services/desktops/pipewire/filter.nix"
-    inputs.nixos-cosmic.nixosModules.default
     ./secrets/nix-expressions/nixos.nix
   ];
 
@@ -41,19 +40,15 @@
       }));
     })
     (final: prev: { qemu = prev.qemu.override { smbdSupport = true; }; })
-    inputs.eww.overlays.default
-    inputs.hyprland.overlays.default
     (final: prev: {
       niri = prev.niri.overrideAttrs (finalAttrs: prevAttrs: {
-        cargoHash = "sha256-3A37vUNv37IKAm9MdlfVMkuTd/HZSkPO+gv1m23qJvo=";
+        cargoHash = "sha256-EgvBaGQpP6iJbGAI46CdWDSf/XUZ0EgmvOFX4lx8Zb4=";
         src = prev.fetchFromGitHub {
           owner = "YaLTeR";
           repo = "niri";
-          rev = "2776005c5fc4fbb85636672213b8b84a319dfb01";
-          hash = "sha256-hcyRViwdsrNUjHTcY0VGygcAawcyU4zYEq7ZZObFwkw=";
+          rev = "54c7fdcd1adcfade596aca1070062f3f0fb5d4d0";
+          hash = "sha256-XFSR43nAKXDMhtNa+V2sd6Url/bCPGwawkmCqUKKRfI=";
         };
-        # version = "25.08-202da19e80b24517e59e86c5d9b5aa3b9b850c9c"; # change this
-        # doCheck = false;
         cargoDeps = prev.rustPlatform.fetchCargoVendor {
           inherit (finalAttrs) pname src version;
           hash = finalAttrs.cargoHash;
@@ -436,7 +431,7 @@
     gitui
     git-secret
     git-crypt
-    gitAndTools.diff-so-fancy
+    diff-so-fancy
     pijul
     gnumake
     jdk
@@ -518,8 +513,8 @@
     ripgrep-all
     fd
     tokei
-    gitAndTools.gh
-    du-dust
+    gh
+    dust
     bat
     zoxide
     bandwhich
@@ -583,7 +578,7 @@
     zoom-us
     # skypeforlinux
     fractal
-    tdesktop
+    telegram-desktop
 
     # WEB
     chromium
@@ -592,11 +587,10 @@
     firefox-beta-bin
     firefox-devedition
     (brave.override { vulkanSupport = true; })
-    tor-browser-bundle-bin
+    tor-browser
     ff2mpv
 
     # XORG/DESKTOP ENVIRONMENT
-    awf
     kdePackages.dolphin
     dzen2
     file-roller
@@ -643,7 +637,7 @@
     appimage-run
     ntfs3g
     woeusb
-    ipfs
+    kubo
     acpi
     freecad
     appimage-run
@@ -695,7 +689,6 @@
     enableGhostscriptFonts = true;
     packages = with pkgs; [
       font-awesome
-      emojione
       nerd-fonts.symbols-only
       google-fonts
       material-symbols

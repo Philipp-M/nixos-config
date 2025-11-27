@@ -20,7 +20,7 @@ in
         haskell-language-server
         julia-bin
         # luaformatter
-        elixir_ls
+        elixir-ls
         marksman
         ltex-ls
         solargraph
@@ -56,7 +56,7 @@ in
         ripgrep
         # rnix-lsp
         java-language-server
-        sumneko-lua-language-server
+        lua-language-server
         yapf
         zathura
         zls

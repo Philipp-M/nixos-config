@@ -447,7 +447,7 @@ in
     libjack2
     guitarix
     lingot
-    mpc_cli
+    mpc
     carla
     jack2
     blender
