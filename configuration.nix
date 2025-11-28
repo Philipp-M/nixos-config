@@ -49,6 +49,19 @@
           rev = "54c7fdcd1adcfade596aca1070062f3f0fb5d4d0";
           hash = "sha256-XFSR43nAKXDMhtNa+V2sd6Url/bCPGwawkmCqUKKRfI=";
         };
+        buildInputs = with prev; [
+          libdisplay-info
+          libglvnd # For libEGL
+          libinput
+          libxkbcommon
+          libgbm
+          pango
+          seatd
+          wayland # For libwayland-client
+          dbus
+          pipewire
+          systemd # Includes libudev
+        ];
         cargoDeps = prev.rustPlatform.fetchCargoVendor {
           inherit (finalAttrs) pname src version;
           hash = finalAttrs.cargoHash;
