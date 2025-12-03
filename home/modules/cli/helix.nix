@@ -252,13 +252,9 @@ in
           };
           language =
             let
-              jsTsWebLanguageServers =
-                [
-                  { name = "typescript-language-server"; except-features = [ "format" ]; }
-                  "eslint"
-                  { name = "efm-lsp-prettier"; only-features = [ "format" ]; }
-                  "typos-lsp"
-                ];
+              jsTsWebLanguageServers = [{ name = "typescript-language-server"; except-features = [ "format" ]; } "eslint" "typos-lsp"];
+              biomeFormatter = { command = "${biome}/bin/biome"; args = [ "format" "--stdin-file-path" " %{buffer_name}" ]; };
+              commonJsTs = { language-servers = jsTsWebLanguageServers; formatter = biomeFormatter; };
             in
             [
               { name = "ruby"; file-types = [ "rb" "rake" "rakefile" "irb" "gemfile" "gemspec" "Rakefile" "Gemfile" "Fastfile" "Matchfile" "Pluginfile" "Appfile" ]; }
@@ -266,14 +262,14 @@ in
               { name = "c-sharp"; language-servers = [ "omnisharp" ]; }
               { name = "xml"; language-servers = [ "vscode-html-language-server" ]; }
               { name = "html"; auto-format = false; }
-              { name = "typescript"; language-servers = jsTsWebLanguageServers; }
-              { name = "javascript"; language-servers = jsTsWebLanguageServers; }
-              { name = "jsx"; language-servers = jsTsWebLanguageServers; }
-              { name = "tsx"; language-servers = jsTsWebLanguageServers; }
+              ({ name = "typescript"; } // commonJsTs)
+              ({ name = "javascript"; } // commonJsTs)
+              ({ name = "jsx"; } // commonJsTs)
+              ({ name = "tsx"; } // commonJsTs)
               { name = "vue"; language-servers = [{ name = "vuels"; except-features = [ "format" ]; } { name = "efm-lsp-prettier"; only-features = [ "format" ]; } "eslint"]; }
               { name = "sql"; formatter.command = "pg_format"; }
               { name = "nix"; language-servers = [ "nil" ]; }
-              { name = "json"; auto-format = false; language-servers = [{ name = "vscode-json-language-server"; except-features = [ "format" ]; } "efm-lsp-prettier"]; }
+              { name = "json"; auto-format = false; language-servers = [{ name = "vscode-json-language-server"; except-features = [ "format" ]; }]; formatter = biomeFormatter; }
               { name = "markdown"; language-servers = [{ name = "marksman"; except-features = [ "format" ]; } "ltex-ls" "efm-lsp-prettier" "typos-lsp"]; }
             ];
         };
