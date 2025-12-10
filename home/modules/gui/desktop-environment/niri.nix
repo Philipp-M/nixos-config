@@ -80,7 +80,7 @@
     // Find more information on the wiki:
     // https://github.com/YaLTeR/niri/wiki/Configuration:-Outputs
     // Remember to uncomment the node by removing "/-"!
-    /-output "eDP-1" {
+    output "eDP-1" {
         // Uncomment this line to disable this output.
         // off
 
@@ -90,10 +90,10 @@
         // for the resolution.
         // If the mode is omitted altogether or is invalid, niri will pick one automatically.
         // Run `niri msg outputs` while inside a niri instance to list all outputs and their modes.
-        mode "1920x1080@120.030"
+        mode "2880x1800@120.000"
 
         // You can use integer or fractional scale, for example use 1.5 for 150% scale.
-        scale 2
+        scale 1.25
 
         // Transform allows to rotate the output counter-clockwise, valid values are:
         // normal, 90, 180, 270, flipped, flipped-90, flipped-180 and flipped-270.
@@ -108,7 +108,7 @@
         // so to put another output directly adjacent to it on the right, set its x to 1920.
         // If the position is unset or results in an overlap, the output is instead placed
         // automatically.
-        position x=1280 y=0
+        // position x=1280 y=0
     }
 
     // Settings that influence how windows are positioned and sized.
