@@ -10,6 +10,7 @@
     inputs.musnix.nixosModules.default
     inputs.impermanence.nixosModules.impermanence
     inputs.agenix.nixosModules.age
+    inputs.niri.nixosModules.niri
     # "${inputs.nixpkgs}/nixos/modules/services/desktops/pipewire/filter.nix"
     ./secrets/nix-expressions/nixos.nix
   ];
@@ -40,35 +41,7 @@
       }));
     })
     (final: prev: { qemu = prev.qemu.override { smbdSupport = true; }; })
-    (final: prev: {
-      niri = prev.niri.overrideAttrs (finalAttrs: prevAttrs: {
-        cargoHash = "sha256-EgvBaGQpP6iJbGAI46CdWDSf/XUZ0EgmvOFX4lx8Zb4=";
-        src = prev.fetchFromGitHub {
-          owner = "YaLTeR";
-          repo = "niri";
-          rev = "54c7fdcd1adcfade596aca1070062f3f0fb5d4d0";
-          hash = "sha256-XFSR43nAKXDMhtNa+V2sd6Url/bCPGwawkmCqUKKRfI=";
-        };
-        buildInputs = with prev; [
-          libdisplay-info
-          libglvnd # For libEGL
-          libinput
-          libxkbcommon
-          libgbm
-          pango
-          seatd
-          wayland # For libwayland-client
-          dbus
-          pipewire
-          systemd # Includes libudev
-        ];
-        cargoDeps = prev.rustPlatform.fetchCargoVendor {
-          inherit (finalAttrs) pname src version;
-          hash = finalAttrs.cargoHash;
-        };
-      });
-    })
-
+    inputs.niri.overlays.niri
   ];
 
   nixpkgs.hostPlatform = "x86_64-linux";
@@ -227,6 +200,12 @@
     # defaultSession = "cosmic";
     # defaultSession = "hyprland-uwsm";
     defaultSession = "niri";
+    gdm = {
+      enable = true;
+      debug = true;
+      wayland = true;
+      autoSuspend = false; # for ssh connections mostly
+    };
   };
   services.libinput.enable = true;
 
@@ -245,14 +224,6 @@
         waitPID=$!
       '';
     }];
-
-    # Enable touchpad support.
-  };
-  services.displayManager = {
-    gdm.enable = true;
-    gdm.debug = true;
-    gdm.wayland = true;
-    gdm.autoSuspend = false; # for ssh connections mostly
   };
 
   services.kanata = {
@@ -296,14 +267,20 @@
 
   xdg.portal = {
     enable = true;
-    wlr.enable = true; # necessary? as hyprland has its own xdg-portal based on wlr
     xdgOpenUsePortal = true;
     # TODO configure this correctly
-    config.common.default = "*";
+    config = {
+      common.default = [ "gtk" ];
+      niri = {
+        default = [ "gtk" "gnome" ];
+        "org.freedesktop.impl.portal.ScreenCast" = [ "gnome" ];
+        "org.freedesktop.impl.portal.Screenshot" = [ "gnome" ];
+      };
+    };
     extraPortals = [
       pkgs.xdg-desktop-portal-gtk
+      pkgs.xdg-desktop-portal-gnome
       pkgs.kdePackages.xdg-desktop-portal-kde
-      pkgs.xdg-desktop-portal-hyprland
     ];
   };
 
