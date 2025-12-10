@@ -438,6 +438,7 @@
     yarn
     deno
     nodejs_24
+    biome
     nodePackages.node2nix
     pkg-config
 
