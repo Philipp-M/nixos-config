@@ -60,6 +60,7 @@
 
       nixosConfigurations = {
         zen = mkHost { path = ./machines/zen; };
+        aura = mkHost { path = ./machines/aura; };
         shadow = mkHost { path = ./machines/shadow; };
         office = mkHost { path = ./machines/office; };
       };

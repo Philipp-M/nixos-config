@@ -8,9 +8,7 @@ in
   nix.settings.max-jobs = lib.mkDefault 4;
 
   boot = {
-    supportedFilesystems = [ "zfs" ];
-    zfs.requestEncryptionCredentials = false;
-    initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usbhid" "ata_piix" "uas" "sd_mod" "rtsx_pci_sdmmc" ];
+    initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" ];
     kernelModules = [ "kvm-intel" ];
   };
 
@@ -18,22 +16,19 @@ in
     enableRedistributableFirmware = true;
     opengl = {
       extraPackages = with pkgs; [
-        intel-media-driver # LIBVA_DRIVER_NAME=iHD
-        vaapiIntel # LIBVA_DRIVER_NAME=i965 (older but works better for Firefox/Chromium)
-        vaapiVdpau
+        intel-media-driver
         libvdpau-va-gl
       ];
-      extraPackages32 = with pkgs.pkgsi686Linux; [ vaapiIntel ];
+      extraPackages32 = with pkgs.pkgsi686Linux; [ intel-media-driver ];
     };
     cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
   };
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
   networking = {
-    hostId = "4ae8e232";
-    hostName = "shadow";
-    interfaces.enp2s0.useDHCP = true;
-    interfaces.wlp3s0.useDHCP = true;
+    hostId = "4f842b6c";
+    hostName = "aura";
+    interfaces.wlp0s20f3.useDHCP = true;
     nameservers = [ "1.1.1.1" "8.8.8.8" ];
     # networkmanager.dns = "none";
     networkmanager.enable = true;
@@ -45,49 +40,71 @@ in
     Option "TearFree" "true"
   '';
 
-  fileSystems = {
-    ${persistent} = {
-      device = "rpool/persistent";
-      fsType = "zfs";
-      neededForBoot = true;
-    };
-    "/home-persistent" = {
-      device = "rpool/safe/home";
-      fsType = "zfs";
-      neededForBoot = true;
-    };
-    # root on tmpfs
-    "/" = { device = "none"; fsType = "tmpfs"; options = [ "defaults" "size=8G" "mode=755" ]; };
-    "/nix" = {
-      device = "rpool/local/nix";
-      fsType = "zfs";
-    };
-    "/boot" = {
-      device = "/dev/disk/by-uuid/00F8-62D4";
-      fsType = "vfat";
-    };
+  environment.sessionVariables = {
+    LIBVA_DRIVER_NAME = "iHD";
   };
 
-  swapDevices = [
-    { device = "/dev/disk/by-uuid/e1408d0d-f5c2-424b-8e00-67e6d7e6c454"; }
-    { device = "/dev/disk/by-uuid/70f599a3-fdca-419d-8283-6dac988f0dd1"; }
-  ];
+  fileSystems = {
+    "${persistent}" = {
+      device = "/dev/disk/by-uuid/0dd94b8f-2cb0-40cc-b444-e301efe30f12";
+      fsType = "xfs";
+      neededForBoot = true;
+    };
+    # impermanence tries to unmount /nix, thus manually bind mount it here
+    "/nix" = {
+      device = "${persistent}/nix/";
+      options = [ "bind" ];
+      depends = [ "${persistent}" ];
+      neededForBoot = true;
+    };
+    "/boot" = { device = "/dev/disk/by-uuid/CB84-48C8"; fsType = "vfat"; };
+    # root on tmpfs
+    "/" = { device = "none"; fsType = "tmpfs"; options = [ "defaults" "size=32G" "mode=755" ]; };
+  };
 
-  environment.persistence."/home-persistent" = {
+  # persistent state
+
+  environment.persistence."${persistent}" = {
     hideMounts = true;
+    directories = [
+      "/var/log"
+      "/var/lib/nixos"
+      "/var/lib/blueman"
+      "/var/lib/cups/ppd"
+      "/var/lib/bluetooth"
+      "/var/lib/systemd/coredump"
+      "/var/lib/docker"
+      "/var/lib/snapd"
+      "/var/lib/snap"
+      "/var/snap"
+      "/snap"
+      "/var/lib/teamviewer"
+      "/var/lib/NetworkManager"
+      "/var/lib/flatpak"
+      "/var/lib/vnstat"
+      "/etc/NetworkManager/system-connections"
+    ];
+    files = [
+      "/etc/machine-id"
+      "/etc/ssh/ssh_host_ed25519_key"
+      "/etc/ssh/ssh_host_rsa_key"
+      "/etc/ssh/ssh_host_ed25519_key.pub"
+      "/etc/ssh/ssh_host_rsa_key.pub"
+      "/var/lib/cups/subscriptions.conf"
+      "/var/lib/cups/printers.conf"
+    ];
     users.philm = {
       directories = [
         "dev"
         # tmp folder, persistent, but not backed up
         "tmp"
         "wallpaper"
-        "screenshots"
+        "Screenshots"
         "windows-11"
         "Downloads"
         "Desktop"
         "Pictures"
         "Documents"
-        "Music"
         "Videos"
         "Audio"
         "VirtualBox VMs"
@@ -95,7 +112,9 @@ in
         "SteamLibrary"
         "Calibre Library"
         "Unity"
+        "Android"
         "Arduino"
+        "ollama"
         "snap"
         { directory = ".gnupg"; mode = "0700"; }
         { directory = ".ssh"; mode = "0700"; }
@@ -125,6 +144,8 @@ in
         ".config/Slack"
         ".config/BraveSoftware"
         ".config/Renoise"
+        ".config/REAPER"
+        ".config/Ryujinx"
         ".config/loopers"
         ".config/tree-sitter"
         ".config/obs-studio"
@@ -146,6 +167,7 @@ in
         ".local/state/cosmic-comp"
         ".BitwigStudio"
         ".cache/nix" # avoid unnecessary fetching
+        ".cache/nvidia" # avoid unnecessary computation
         ".cache/Google" # Android studio takes a long time otherwise
         ".cache/cantata" # avoid redownloading covers
         ".cache/pop-launcher"
@@ -163,39 +185,12 @@ in
         ".wine"
         ".xmonad"
       ];
-      files = [ ".cache/helix/helix.log" ".npmrc" ];
+      files = [
+        ".cache/helix/helix.log"
+        ".npmrc"
+        ".netrc"
+      ];
     };
-  };
-
-  environment.persistence.${persistent} = {
-    hideMounts = true;
-    directories = [
-      "/var/log"
-      "/var/lib/nixos"
-      "/var/lib/blueman"
-      "/var/lib/cups/ppd"
-      "/var/lib/bluetooth"
-      "/var/lib/systemd/coredump"
-      "/var/lib/docker"
-      "/var/lib/snapd"
-      "/var/lib/snap"
-      "/var/snap"
-      "/snap"
-      "/var/lib/teamviewer"
-      "/var/lib/NetworkManager"
-      "/var/lib/flatpak"
-      "/var/lib/vnstat"
-      "/etc/NetworkManager/system-connections"
-    ];
-    files = [
-      "/etc/machine-id"
-      "/etc/ssh/ssh_host_ed25519_key"
-      "/etc/ssh/ssh_host_rsa_key"
-      "/etc/ssh/ssh_host_ed25519_key.pub"
-      "/etc/ssh/ssh_host_rsa_key.pub"
-      "/var/lib/cups/subscriptions.conf"
-      "/var/lib/cups/printers.conf"
-    ];
   };
 
   services.kanata.keyboards.default.devices = [ "/dev/input/by-path/platform-i8042-serio-0-event-kbd" ];
@@ -204,36 +199,6 @@ in
     { path = "${persistent}/etc/ssh/ssh_host_rsa_key"; bits = 4096; type = "rsa"; }
     { path = "${persistent}/etc/ssh/ssh_host_ed25519_key"; type = "ed25519"; }
   ];
-
-  # ZFS related
-  services.zfs.autoScrub.enable = true;
-  services.sanoid =
-    let
-      # templates not working correctly because of kinda broken sanoid config
-      # (default values, which aren't overwritten by templates)
-      default-dataset = {
-        daily = 7;
-        hourly = 48;
-        monthly = 5;
-        yearly = 0;
-      };
-      default-settings = {
-        frequent_period = 2;
-        frequently = 60;
-      };
-    in
-    {
-      enable = true;
-      interval = "minutely";
-      settings = {
-        "rpool/safe/root" = default-settings;
-        "rpool/safe/home" = default-settings;
-      };
-      datasets = {
-        "rpool/safe/root" = default-dataset;
-        "rpool/safe/home" = default-dataset;
-      };
-    };
 
   services.thermald.enable = true;
   services.upower.enable = true;
@@ -244,6 +209,7 @@ in
       STOP_CHARGE_THRESH_BAT0 = 80;
     };
   };
+
 
   users = let philm-password = builtins.readFile ../../secrets/philm-password; in {
     mutableUsers = false;
@@ -258,3 +224,4 @@ in
   home-manager.users.philm.services.xembed-sni-proxy.enable = true;
   home-manager.users.philm.programs.mpv.config.profile = lib.mkForce "gpu-low";
 }
+
