@@ -33,6 +33,7 @@
             natural-scroll
             accel-speed 0.4
             accel-profile "flat"
+            scroll-factor 2.0
             // scroll-method "two-finger"
             // disabled-on-external-mouse
         }
@@ -268,8 +269,8 @@
     // See the binds section below for more spawn examples.
 
     spawn-at-startup "systemctl" "--user" "start" "swww-random-image.service"
-    spawn-at-startup "systemctl" "--user" "reset-failed" "waybar.service"
-    spawn-at-startup "systemctl" "--user" "restart" "waybar.service"
+    // spawn-at-startup "systemctl" "--user" "reset-failed" "waybar.service"
+    // spawn-at-startup "systemctl" "--user" "restart" "waybar.service"
 
     xwayland-satellite {
         path "${pkgs.xwayland-satellite}/bin/xwayland-satellite"
@@ -381,16 +382,19 @@
         Mod+Return { spawn "kitty"; }
         Mod+W { spawn "firefox"; }
         Mod+G { spawn "firefox" "-P" "geobility"; }
+        Mod+Shift+C { spawn "google-chrome-stable" "--ignore-certificate-errors" "--disable-web-security" "--unsafely-treat-insecure-origin-as-secure=https://local.geobility.systems:3000"; }
         Mod+I { spawn "toggle-light"; }
         Mod+B { spawn "toggle-bright-light"; }
 
 
         // Example volume keys mappings for PipeWire & WirePlumber.
         // The allow-when-locked=true property makes them work even when the session is locked.
-        XF86AudioRaiseVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "1%+"; }
-        XF86AudioLowerVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "1%-"; }
-        XF86AudioMute        allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
-        XF86AudioMicMute     allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
+        XF86AudioRaiseVolume allow-when-locked=true { spawn "${pkgs.wireplumber}/bin/wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "1%+"; }
+        XF86AudioLowerVolume allow-when-locked=true { spawn "${pkgs.wireplumber}/bin/wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "1%-"; }
+        XF86AudioMute        allow-when-locked=true { spawn "${pkgs.wireplumber}/bin/wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+        XF86AudioMicMute     allow-when-locked=true { spawn "${pkgs.wireplumber}/bin/wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
+        XF86MonBrightnessUp  allow-when-locked=true { spawn "${pkgs.brightnessctl}/bin/brightnessctl" "--min-value=1" "set" "+5%"; }
+        XF86MonBrightnessDown  allow-when-locked=true { spawn "${pkgs.brightnessctl}/bin/brightnessctl" "--min-value=1" "set" "5%-"; }
 
         XF86AudioPlay allow-when-locked=true { spawn "mpc" "toggle"; }
         XF86AudioPrev allow-when-locked=true { spawn "mpc" "prev"; }
@@ -602,6 +606,7 @@
         // Mod+Shift+Space { switch-layout "prev"; }
 
         Print { screenshot; }
+        XF86SelectiveScreenshot { screenshot; }
         Mod+S { screenshot; }
         Ctrl+Print { screenshot-screen; }
         Alt+Print { screenshot-window; }

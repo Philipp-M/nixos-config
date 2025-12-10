@@ -515,20 +515,18 @@
             IOSchedulingClass = "idle";
             ExecStart =
               "${pkgs.writeShellScriptBin "swww-random-image" ''
-                ${pkgs.swww}/bin/swww img --resize="$RESIZE_TYPE" "$(find "$WALLPAPER_PATH" -type f | shuf -n1)"
+                ${pkgs.swww}/bin/swww img --resize="$RESIZE_TYPE" "$(${pkgs.findutils}/bin/find "$WALLPAPER_PATH" -type f | ${pkgs.coreutils}/bin/shuf -n1)"
               ''}/bin/swww-random-image";
           };
           Install.WantedBy = [ "timers.target" ];
         };
       };
 
-
     systemd.user.timers.swww-random-image = {
       Unit.Description = "Periodically change wallpaper using swww";
       Timer.OnUnitActiveSec = "5min";
       Install.WantedBy = [ "timers.target" ];
     };
-
 
     home.packages = [
       (lib.mkIf config.wayland.windowManager.hyprland.enable pkgs.wl-clipboard)
