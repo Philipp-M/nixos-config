@@ -32,6 +32,7 @@ in
     nameservers = [ "1.1.1.1" "8.8.8.8" ];
     # networkmanager.dns = "none";
     networkmanager.enable = true;
+    hosts = { "127.0.0.1" = [ "syncthing" ]; };
   };
 
   services.xserver.videoDrivers = [ "modesetting" ];
@@ -191,6 +192,18 @@ in
         ".netrc"
       ];
     };
+  };
+
+  services.syncthing = {
+    enable = true;
+    user = "philm";
+    dataDir = "/home/philm/";
+    configDir = "/home/philm/.config/syncthing";
+  };
+
+  services.nginx.virtualHosts."syncthing".locations."/" = {
+    proxyPass = "http://localhost:8384";
+    proxyWebsockets = true;
   };
 
   services.kanata.keyboards.default.devices = [ "/dev/input/by-path/platform-i8042-serio-0-event-kbd" ];
