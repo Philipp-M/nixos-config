@@ -344,7 +344,7 @@
   };
   programs.xwayland.enable = true;
 
-  programs.adb.enable = true;
+  # programs.adb.enable = true;
 
   programs.gnupg.agent = {
     enable = true;
@@ -561,7 +561,7 @@
     # COMMUNICATION
     thunderbird
     signal-desktop
-    element-desktop
+    # element-desktop
     # qtox
     discord
     slack

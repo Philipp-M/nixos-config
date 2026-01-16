@@ -452,7 +452,7 @@ in
     jack2
     blender
     nvidia-vaapi-driver
-    heroic
+    # heroic
     arduino
     shntool
     flac
