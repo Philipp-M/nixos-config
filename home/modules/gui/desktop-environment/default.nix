@@ -233,7 +233,7 @@
               "(.*) - Mozilla Firefox" = "🌎 $1";
             };
           };
-          clock = { format = "{:%Y-%m-%d %H:%M}"; };
+          clock = { format = "{:%Y-%m-%d %H:%M:%S}"; interval = 1; };
           tray = {
             icon-size = 21;
             spacing = 10;
