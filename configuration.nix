@@ -41,6 +41,7 @@
       }));
     })
     (final: prev: { qemu = prev.qemu.override { smbdSupport = true; }; })
+    (final: prev: { gimp = prev.gimp.overrideAttrs (oldAttrs: { buildInputs = oldAttrs.buildInputs ++ [ final.darktable ]; }); })
     inputs.niri.overlays.niri
   ];
 
@@ -416,12 +417,15 @@
     mercurial
     mold
     lldb
+    wild
+    hotspot
     ryubing
     gti
     gitui
     git-secret
     git-crypt
     diff-so-fancy
+    difftastic
     pijul
     gnumake
     jdk
@@ -528,9 +532,10 @@
     # blender # flatpak version is used due to Optix support
     krita
     gimp
-    rawtherapee
+    darktable
     inkscape
     exiftool
+    realesrgan-ncnn-vulkan
     pitivi
 
     # GIS
