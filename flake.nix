@@ -27,6 +27,7 @@
     mpv-ai-upscale = { url = "github:Alexkral/AviSynthAiUpscale"; flake = false; };
     mpv-default-shader-pack = { url = "github:iwalton3/default-shader-pack"; flake = false; };
     fzf-fish = { url = "github:PatrickF1/fzf.fish"; flake = false; };
+    codex = { url = "github:Philipp-M/codex/fix-build"; inputs.nixpkgs.follows = "nixpkgs"; };
     # pipewire = { url = "gitlab:pipewire/pipewire?tag=1.0.0&host=gitlab.freedesktop.org"; flake = false; };
   };
 

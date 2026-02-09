@@ -520,6 +520,7 @@
     wget
     unzip
     b3sum
+    inputs.codex.packages.${pkgs.system}.default
     yq
     jaq
     yt-dlp
