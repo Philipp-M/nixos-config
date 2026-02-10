@@ -12,6 +12,7 @@ in
       enable = true;
       package = helix.packages.${pkgs.system}.default;
       extraPackages = with pkgs; [
+        astro-language-server
         clang-tools
         cmake-language-server
         jsonnet-language-server
@@ -52,6 +53,7 @@ in
         dotnet-sdk
         omnisharp-roslyn
         wgsl-analyzer
+        glsl_analyzer
         msbuild
         ripgrep
         # rnix-lsp
