@@ -302,6 +302,23 @@
         slowdown 0.75
     }
 
+    blur {
+        // off
+        passes 4
+        offset 3
+        noise 0.02
+        saturation 1.5
+    }
+
+    layer-rule {
+        match namespace="^rofi$"
+
+        background-effect {
+            blur true
+            xray false
+        }
+    }
+
     // Make the wallpaper stationary, rather than moving with workspaces.
     layer-rule {
         // This is for swww; change for other wallpaper tools.
@@ -322,6 +339,15 @@
         // You can get away with just app-id="wezterm" if you want.
         match app-id=r#"^org\.wezfurlong\.wezterm$"#
         default-column-width {}
+    }
+
+    window-rule {
+        match app-id=r#"^kitty$"#
+
+        background-effect {
+            blur true
+            xray false
+        }
     }
 
     overview {

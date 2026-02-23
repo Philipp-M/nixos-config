@@ -18,7 +18,8 @@
           enable_audio_bell = false;
           update_check_interval = 0;
           # background_opacity = alpha;
-          background_opacity = 0.95;
+          background_opacity = 0.85;
+          background_blur = 1;
           scrollback_fill_enlarged_window = true;
           shell_integration = "no-rc no-cursor no-prompt-mark";
           symbol_map = "U+23FB-U+23FE,U+2630,U+2665,U+26A1,U+276C-U+2771,U+2B58,U+E000-U+E00A,U+E0A0-U+E0A3,U+E0B0-U+E0C8,U+E0CA,U+E0CC-U+E0D2,U+E0D4,U+E0D6-U+E0D7,U+E200-U+E2A9,U+E300-U+E3E3,U+E5FA-U+E6B8,U+E700-U+E8EF,U+EA60-U+EA88,U+EA8A-U+EA8C,U+EA8F-U+EAC7,U+EAC9,U+EACC-U+EB09,U+EB0B-U+EB4E,U+EB50-U+EC1E,U+ED00-U+EFCE,U+F000-U+F381,U+F400-U+F533,U+F0001-U+F1AF0 Symbols Nerd Font";
