@@ -520,6 +520,75 @@
           };
           Install.WantedBy = [ "timers.target" ];
         };
+
+        # This seems to be necessary, as the background is gone after shutting off a monitor
+        restart-swww-random-image-on-output-change = {
+          Unit = {
+            Description = "Reapply swww wallpaper when Niri adds an output";
+            After = [ "niri.service" "graphical-session.target" ];
+            Requires = [ "niri.service" ];
+            PartOf = [ "niri.service" "graphical-session.target" ];
+            ConditionEnvironment = "NIRI_SOCKET";
+          };
+          Service = {
+            ExecStart =
+              "${pkgs.writeShellScriptBin "restart-swww-random-image-on-output-change" ''
+                set -eu
+
+                has_new_output() {
+                  local previous="$1"
+                  local current="$2"
+                  local output
+
+                  while IFS= read -r output; do
+                    [ -n "$output" ] || continue
+
+                    if ! ${pkgs.coreutils}/bin/grep -Fxq -- "$output" <<< "$previous"; then
+                      return 0
+                    fi
+                  done <<< "$current"
+
+                  return 1
+                }
+
+                previous_outputs=""
+
+                printf '"EventStream"\n' | ${pkgs.netcat-openbsd}/bin/nc -U "$NIRI_SOCKET" | while IFS= read -r line; do
+                  current_outputs="$(
+                    printf '%s\n' "$line" | ${pkgs.jaq}/bin/jaq -r '
+                      if .WorkspacesChanged? then
+                        .WorkspacesChanged.workspaces
+                        | map(.output)
+                        | sort
+                        | unique
+                        | .[]
+                      else
+                        empty
+                      end
+                    '
+                  )"
+
+                  [ -n "$current_outputs" ] || continue
+
+                  if [ -z "$previous_outputs" ]; then
+                    previous_outputs="$current_outputs"
+                    continue
+                  fi
+
+                  if [ "$current_outputs" != "$previous_outputs" ] && [ "$current_outputs" != "null" ] && has_new_output "$previous_outputs" "$current_outputs"; then
+                    ${pkgs.coreutils}/bin/sleep 3
+                    ${pkgs.systemd}/bin/systemctl --user restart swww-random-image.service
+                  fi
+
+                  previous_outputs="$current_outputs"
+                done
+              ''}/bin/restart-swww-random-image-on-output-change";
+            IOSchedulingClass = "idle";
+            Restart = "always";
+            RestartSec = 1;
+          };
+          Install.WantedBy = [ "graphical-session.target" ];
+        };
       };
 
     systemd.user.timers.swww-random-image = {
@@ -702,10 +771,10 @@
 
     services.copyq.enable = true;
 
-    services.random-background = {
-      enable = true;
-      imageDirectory = "%h/wallpaper/";
-    };
+    # services.random-background = {
+    #   enable = true;
+    #   imageDirectory = "%h/wallpaper/JWST/wallpaper";
+    # };
 
     services.gammastep = {
       enable = true;
