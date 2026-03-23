@@ -427,7 +427,6 @@
           ewmh-status-listener.packages.${pkgs.system}.default
           bash
           bc
-          blueberry
           bluez
           coreutils
           dbus
@@ -439,7 +438,6 @@
           imagemagick
           iwgtk
           jaq
-          light
           vnstat
           networkmanager
           networkmanagerapplet

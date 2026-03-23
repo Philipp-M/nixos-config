@@ -56,11 +56,10 @@
       auto-optimise-store = true;
       keep-failed = true;
       trusted-users = [ "root" "@wheel" ];
-      substituters = [ "https://nix-cache.mildenberger.me" "https://cache.nixos.org/" "https://cosmic.cachix.org/" ];
+      substituters = [ "https://nix-cache.mildenberger.me" "https://cache.nixos.org/" ];
       trusted-public-keys = [
         "nix-cache.mildenberger.me:dcNVw3YMUReIGC5JsMN4Ifv9xjbQn7rkDF7gJIO0ZoI="
         "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-        "cosmic.cachix.org-1:Dya9IyXD4xdBehWjrkPv6rtxpmMdRel02smYzA85dPE="
       ];
       experimental-features = [ "nix-command" "flakes" "ca-derivations" ];
     };
@@ -198,7 +197,6 @@
 
   services.displayManager = {
     # defaultSession = "none+xmonad";
-    # defaultSession = "cosmic";
     # defaultSession = "hyprland-uwsm";
     defaultSession = "niri";
     gdm = {
@@ -210,7 +208,6 @@
   };
   services.libinput.enable = true;
 
-  services.desktopManager.cosmic.enable = true;
   services.xserver = {
     enable = true;
     autoRepeatInterval = 15;
@@ -443,7 +440,6 @@
     deno
     nodejs_24
     biome
-    nodePackages.node2nix
     pkg-config
 
     # Rust
@@ -552,7 +548,7 @@
     yabridge
     yabridgectl
     pavucontrol
-    helvum
+    crosspipe
     ffmpeg_7-full
     flacon
     bitwig-studio
@@ -581,8 +577,6 @@
     chromium
     google-chrome
     firefox
-    firefox-beta-bin
-    firefox-devedition
     (brave.override { vulkanSupport = true; })
     tor-browser
     ff2mpv
