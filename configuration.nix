@@ -189,15 +189,12 @@
 
   environment.sessionVariables = {
     EDITOR = "${config.home-manager.users.philm.programs.helix.package}/bin/hx";
-    COSMIC_DATA_CONTROL_ENABLED = "1";
   };
   environment.interactiveShellInit = ''
     alias google-chrome='google-chrome-stable'
   '';
 
   services.displayManager = {
-    # defaultSession = "none+xmonad";
-    # defaultSession = "hyprland-uwsm";
     defaultSession = "niri";
     gdm = {
       enable = true;
@@ -334,13 +331,11 @@
 
   # All system wide packages
 
-  programs.niri.enable = true;
-  programs.fish.enable = true;
-  programs.hyprland = {
+  programs.niri = {
+    package = pkgs.niri-unstable;
     enable = true;
-    withUWSM = true;
   };
-  programs.xwayland.enable = true;
+  programs.fish.enable = true;
 
   # programs.adb.enable = true;
 

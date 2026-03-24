@@ -1,4 +1,4 @@
-{ chatgpt-tui, fzf-fish, ... }:
+{ fzf-fish, ... }:
 { pkgs, lib, config, ... }: {
   options.modules.cli.fish.enable = lib.mkEnableOption "Enable personal fish config";
 
@@ -20,12 +20,15 @@
         llt = "lsd -Altr --tree";
         lls = "lsd -ArlS --total-size";
         l = "lsd -l";
+        o = "xdg-open";
         fdh = "fd -HI";
         # package/dependency management
         nx = "NIXPKGS_ALLOW_UNFREE=1 nix-shell --command fish";
         nxd = "NIXPKGS_ALLOW_UNFREE=1 nix develop --command fish";
-        upgrade = "nix flake update /home/philm/dev/personal/dotfiles/ && nixos-rebuild switch --use-remote-sudo --flake /home/philm/dev/personal/dotfiles/";
-        update = "nixos-rebuild switch --use-remote-sudo --flake /home/philm/dev/personal/dotfiles/";
+        upgrade = "nix flake update /home/philm/dev/personal/dotfiles/ && nixos-rebuild switch --sudo --flake /home/philm/dev/personal/dotfiles/";
+        update = "nixos-rebuild switch --sudo --flake /home/philm/dev/personal/dotfiles/";
+        update-boot = "nixos-rebuild boot --sudo --flake /home/philm/dev/personal/dotfiles/";
+        enter = "cd"; # TODO make this fancy with nix-shell and nix develop
         # shortcuts for changing the directory
         cdate = "date +%Y%m%d%H%M";
         # useful shortcuts
@@ -34,7 +37,6 @@
         sudoe = "sudo -E";
         tree = "tree -C";
         gdiff = "git diff --no-index";
-        chat = "${chatgpt-tui.packages.${pkgs.system}.default}/bin/chatgpt-tui";
       };
     };
   };
