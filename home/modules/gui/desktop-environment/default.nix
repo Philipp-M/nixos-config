@@ -279,6 +279,7 @@
         };
         Install.WantedBy = [ "graphical-session.target" ];
       };
+    };
 
     systemd.user.timers.swww-random-image = {
       Unit.Description = "Periodically change wallpaper using swww";

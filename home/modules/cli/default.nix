@@ -26,5 +26,7 @@
     programs.zoxide.enable = true;
 
     programs.bat.enable = true;
+
+    programs.zellij.enable = true;
   };
 }

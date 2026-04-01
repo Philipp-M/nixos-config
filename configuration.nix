@@ -436,6 +436,7 @@
     nodejs_24
     biome
     pkg-config
+    android-tools
 
     # Rust
     # (pkgs.rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
@@ -666,6 +667,7 @@
     udiskie
     tree-sitter
     adwaita-icon-theme
+    wl-clipboard-rs
   ];
 
   # TODO put these in home-manager?
