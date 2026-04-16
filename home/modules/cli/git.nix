@@ -1,5 +1,5 @@
 { ... }:
-{ lib, config, ... }: {
+{ pkgs, lib, config, ... }: {
   options.modules.cli.git.enable = lib.mkEnableOption "Enable personal git config";
 
   config = lib.mkIf config.modules.cli.git.enable {
@@ -21,6 +21,7 @@
       aliases = {
         pushall = "!git remote | xargs -L1 git push --all";
         c = "commit -v";
+        difft = "!DFT_BACKGROUND=light git -c diff.external=${lib.getExe pkgs.difftastic} diff";
       };
     };
   };
