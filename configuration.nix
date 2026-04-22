@@ -583,11 +583,11 @@
     file-roller
     dmenu
     wmctrl
-    xorg.xev
-    xorg.xinit
-    xorg.xmessage
-    xorg.xkill
-    xorg.xwininfo
+    xev
+    xinit
+    xmessage
+    xkill
+    xwininfo
     handlr
     # deadd-notification-center
 
@@ -602,7 +602,7 @@
     quickemu
     spice-gtk
     xwayland-satellite
-    xorg.xhost
+    xhost
     nextcloud-client
     parallel
     nix-du

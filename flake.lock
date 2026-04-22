@@ -116,30 +116,6 @@
         "type": "github"
       }
     },
-    "chatgpt-tui": {
-      "inputs": {
-        "flake-utils": "flake-utils",
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "rust-overlay": [
-          "rust-overlay"
-        ]
-      },
-      "locked": {
-        "lastModified": 1684209533,
-        "narHash": "sha256-khbMktDhX5g0li4Y3HB/VjWFocywgjNIle+1bFeYZZ8=",
-        "owner": "Philipp-M",
-        "repo": "chatgpt-tui",
-        "rev": "5cbe84e9686bc7bda6dd3712cdad34dd85f09e6a",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Philipp-M",
-        "repo": "chatgpt-tui",
-        "type": "github"
-      }
-    },
     "codex": {
       "inputs": {
         "nixpkgs": [
@@ -150,17 +126,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1773965284,
-        "narHash": "sha256-+QbO0qX8nXJEZpTjadnrxMTsiRAuioQVYBlc/qvyeL4=",
-        "owner": "openai",
+        "lastModified": 1777036220,
+        "narHash": "sha256-AYjg02KUU533dxoGKa36JqI3zrvpuqJvLloP52k11zw=",
+        "owner": "Philipp-M",
         "repo": "codex",
-        "rev": "403b397e4e1d1830a5848367fe05096f8b41faac",
+        "rev": "582e3179f4e55df9325baf494a63bf7f9430bf79",
         "type": "github"
       },
       "original": {
-        "owner": "openai",
+        "owner": "Philipp-M",
+        "ref": "fix-nix-build",
         "repo": "codex",
-        "rev": "403b397e4e1d1830a5848367fe05096f8b41faac",
         "type": "github"
       }
     },
@@ -371,7 +347,7 @@
     },
     "ewmh-status-listener": {
       "inputs": {
-        "flake-utils": "flake-utils_2",
+        "flake-utils": "flake-utils",
         "nixpkgs": [
           "nixpkgs"
         ],
@@ -562,24 +538,6 @@
       }
     },
     "flake-utils": {
-      "inputs": {
-        "systems": "systems_2"
-      },
-      "locked": {
-        "lastModified": 1681202837,
-        "narHash": "sha256-H+Rh19JDwRtpVPAWp64F+rlEtxUWBAQW28eAi3SRSzg=",
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "rev": "cfacdce06f30d2b68473a46042957675eebb3401",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "type": "github"
-      }
-    },
-    "flake-utils_2": {
       "locked": {
         "lastModified": 1676283394,
         "narHash": "sha256-XX2f9c3iySLCw54rJ/CZs+ZK6IQy7GXNY4nSOyu2QG4=",
@@ -1354,7 +1312,6 @@
     "root": {
       "inputs": {
         "agenix": "agenix",
-        "chatgpt-tui": "chatgpt-tui",
         "codex": "codex",
         "comma": "comma",
         "deploy-rs": "deploy-rs",
@@ -1519,21 +1476,6 @@
         "type": "github"
       }
     },
-    "systems_4": {
-      "locked": {
-        "lastModified": 1681028828,
-        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
-        "owner": "nix-systems",
-        "repo": "default",
-        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-systems",
-        "repo": "default",
-        "type": "github"
-      }
-    },
     "treefmt-nix": {
       "inputs": {
         "nixpkgs": [
@@ -1558,7 +1500,7 @@
     },
     "utils": {
       "inputs": {
-        "systems": "systems_3"
+        "systems": "systems_2"
       },
       "locked": {
         "lastModified": 1731533236,
@@ -1576,7 +1518,7 @@
     },
     "utils_2": {
       "inputs": {
-        "systems": "systems_4"
+        "systems": "systems_3"
       },
       "locked": {
         "lastModified": 1731533236,
