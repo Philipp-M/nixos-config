@@ -6,6 +6,10 @@
     programs.fish = {
       enable = true;
       plugins = [{ name = "fzf"; src = fzf-fish; }];
+      functions.spawn = ''
+        nohup $argv >/dev/null 2>&1 </dev/null &
+        disown $last_pid
+      '';
       shellInit = ''
         set fish_greeting ""
 
