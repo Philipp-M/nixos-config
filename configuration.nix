@@ -403,6 +403,7 @@
     meson
     cmake
     dart
+    perf
     valgrind
     tracy
     git
@@ -480,7 +481,6 @@
     # wkhtmltopdf
 
     xournalpp
-    zathura
 
     # TERMINAL/CLI
     awscli2
@@ -556,9 +556,9 @@
     picard
     reaper
     musescore
+    lilypond-with-fonts
 
     # COMMUNICATION
-    thunderbird
     signal-desktop
     # element-desktop
     # qtox
@@ -599,6 +599,7 @@
     protontricks
 
     # MISC
+    android-tools
     scrcpy
     quickemu
     spice-gtk
@@ -627,7 +628,7 @@
     woeusb
     kubo
     acpi
-    freecad
+    (pkgs.freecad.overrideAttrs (old: { nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.wrapGAppsHook3 ]; }))
     appimage-run
     openvpn
     # openvpn3

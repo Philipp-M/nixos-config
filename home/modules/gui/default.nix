@@ -19,5 +19,12 @@
       enable = true;
       plugins = [ pkgs.obs-studio-plugins.wlrobs pkgs.obs-studio-plugins.obs-pipewire-audio-capture pkgs.obs-studio-plugins.droidcam-obs ];
     };
+    programs.zathura = {
+      enable = true;
+      options = {
+        page-cache-size = 50;
+        page-thumbnail-size = 16777216;
+      };
+    };
   };
 }
