@@ -1,4 +1,4 @@
-{ ewmh-status-listener, ... }:
+{ ... }:
 { pkgs, lib, config, ... }: {
 
   imports = [ (import ./niri.nix) ];

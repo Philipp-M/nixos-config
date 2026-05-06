@@ -512,7 +512,8 @@
     wget
     unzip
     b3sum
-    inputs.codex.packages.${pkgs.system}.default
+    inputs.llm-agents.packages.${pkgs.system}.codex
+    inputs.llm-agents.packages.${pkgs.system}.opencode
     yq
     jaq
     yt-dlp

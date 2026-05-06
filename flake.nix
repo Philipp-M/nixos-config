@@ -3,31 +3,29 @@
     nixpkgs.url = "github:Philipp-M/nixpkgs/personal-staging";
     # nixpkgs.url = "git+file:///home/philm/dev/personal/nix/nixpkgs";
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
+    flake-parts = { url = "github:hercules-ci/flake-parts"; inputs.nixpkgs-lib.follows = "nixpkgs"; };
+    flake-utils = { url = "github:numtide/flake-utils"; inputs.systems.follows = "systems"; };
+    systems.url = "github:nix-systems/default";
     nix-index-database = { url = "github:Mic92/nix-index-database"; inputs.nixpkgs.follows = "nixpkgs"; };
-    deploy-rs = { url = "github:serokell/deploy-rs"; inputs.nixpkgs.follows = "nixpkgs"; inputs.flake-compat.follows = "flake-compat"; };
-    devenv = { url = "github:cachix/devenv/latest"; inputs.nixpkgs.follows = "nixpkgs"; inputs.flake-compat.follows = "flake-compat"; };
-    impermanence.url = "github:nix-community/impermanence";
+    deploy-rs = { url = "github:serokell/deploy-rs"; inputs.nixpkgs.follows = "nixpkgs"; inputs.flake-compat.follows = "flake-compat"; inputs.utils.follows = "flake-utils"; };
+    impermanence = { url = "github:nix-community/impermanence"; inputs.nixpkgs.follows = "nixpkgs"; inputs.home-manager.follows = "home-manager"; };
     helix = { url = "github:Philipp-M/helix/personal-staging"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
-    nix-snapd = { url = "github:nix-community/nix-snapd"; inputs = { nixpkgs.follows = "nixpkgs"; flake-compat.follows = "flake-compat"; flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs"; }; };
+    nix-snapd = { url = "github:nix-community/nix-snapd"; inputs = { nixpkgs.follows = "nixpkgs"; flake-compat.follows = "flake-compat"; flake-parts.follows = "flake-parts"; }; };
     rust-overlay = { url = "github:oxalica/rust-overlay"; inputs.nixpkgs.follows = "nixpkgs"; };
     nil = { url = "github:oxalica/nil"; inputs = { nixpkgs.follows = "nixpkgs"; }; };
     musnix = { url = "github:musnix/musnix"; inputs.nixpkgs.follows = "nixpkgs"; };
-    agenix = { url = "github:ryantm/agenix"; inputs = { nixpkgs.follows = "nixpkgs"; home-manager.follows = "home-manager"; }; };
+    agenix = { url = "github:ryantm/agenix"; inputs = { nixpkgs.follows = "nixpkgs"; home-manager.follows = "home-manager"; systems.follows = "systems"; }; };
     rycee-nur-expressions = { url = "gitlab:rycee/nur-expressions"; flake = false; };
     rycee-firefox-addons = { url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons"; inputs.nixpkgs.follows = "nixpkgs"; };
-    comma = { url = "github:nix-community/comma"; inputs = { nixpkgs.follows = "nixpkgs"; flake-compat.follows = "flake-compat"; }; };
+    comma = { url = "github:nix-community/comma"; inputs = { nixpkgs.follows = "nixpkgs"; flake-compat.follows = "flake-compat"; utils.follows = "flake-utils"; }; };
     home-manager = { url = "github:nix-community/home-manager"; inputs.nixpkgs.follows = "nixpkgs"; };
     # home-manager = { url = "git+file:///home/philm/dev/personal/desktop-environment/home-manager"; inputs.nixpkgs.follows = "nixpkgs"; };
     # kanata = { url = "github:jtroo/kanata"; flake = false; };
-    # eww = { url = "github:Philipp-M/eww/fix-nix-flake"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; flake-compat.follows = "flake-compat"; }; };
-    # eww = { url = "git+file:///home/philm/dev/personal/rust/eww"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; flake-compat.follows = "flake-compat"; }; };
-    ewmh-status-listener = { url = "github:Philipp-M/ewmh-status-listener"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
     niri = { url = "github:sodiboo/niri-flake"; inputs = { nixpkgs.follows = "nixpkgs"; niri-unstable.url = "github:YaLTeR/niri/wip/branch"; }; };
     mpv-ai-upscale = { url = "github:Alexkral/AviSynthAiUpscale"; flake = false; };
     mpv-default-shader-pack = { url = "github:iwalton3/default-shader-pack"; flake = false; };
     fzf-fish = { url = "github:PatrickF1/fzf.fish"; flake = false; };
-    codex = { url = "github:Philipp-M/codex/fix-nix-build"; inputs = { nixpkgs.follows = "nixpkgs"; rust-overlay.follows = "rust-overlay"; }; };
-    # pipewire = { url = "gitlab:pipewire/pipewire?tag=1.0.0&host=gitlab.freedesktop.org"; flake = false; };
+    llm-agents = { url = "github:numtide/llm-agents.nix"; inputs = { nixpkgs.follows = "nixpkgs"; flake-parts.follows = "flake-parts"; systems.follows = "systems"; }; };
   };
 
   outputs = inputs:
@@ -81,7 +79,7 @@
         alacritty = importHomeModule ./home/modules/gui/alacritty;
         kitty = importHomeModule ./home/modules/gui/kitty.nix;
         autorandr = importHomeModule ./home/modules/gui/autorandr.nix;
-        desktop-environment = importHomeModule ./home/modules/gui/desktop-environment; # pretty much everything that is necessary to run xmonad and hyprland as "desktop-environment"
+        desktop-environment = importHomeModule ./home/modules/gui/desktop-environment; # pretty much everything that is necessary to run niri as "desktop-environment"
         mpv = importHomeModule ./home/modules/gui/mpv;
         theme = importHomeModule ./home/modules/theme.nix;
         mpd = importHomeModule ./home/modules/mpd.nix;
