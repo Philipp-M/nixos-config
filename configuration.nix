@@ -524,6 +524,8 @@
 
     # GRAPHICS
     # blender # flatpak version is used due to Optix support
+    # TODO: not strictly a module (yet)
+    (import ./home/modules/gui/blender.nix { inherit pkgs; })
     krita
     gimp
     darktable
@@ -655,7 +657,6 @@
     guetzli
     unityhub
     unixtools.xxd
-    blender
     fira-code
     reptyr
     openssl
