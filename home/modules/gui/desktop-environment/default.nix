@@ -426,7 +426,10 @@
 
     services.network-manager-applet.enable = true;
 
-    services.swaync.enable = true;
+    services.swaync = {
+      enable = true;
+      settings.keyboard-shortcuts = false;
+    };
 
     # services.unclutter.enable = true;
 
