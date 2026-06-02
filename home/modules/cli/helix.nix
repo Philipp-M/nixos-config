@@ -38,14 +38,14 @@ in
         topiary
         pyright
         (python3.withPackages (ps: with ps; [ python-lsp-server ] ++ python-lsp-server.optional-dependencies.all))
-        nodePackages.bash-language-server
-        nodePackages.dockerfile-language-server-nodejs
-        nodePackages.stylelint
-        nodePackages.svelte-language-server
-        # nodePackages.vls
-        nodePackages.vim-language-server
-        nodePackages.vscode-langservers-extracted
-        nodePackages.yaml-language-server
+        bash-language-server
+        dockerfile-language-server-nodejs
+        stylelint
+        svelte-language-server
+        # vls
+        vim-language-server
+        vscode-langservers-extracted
+        yaml-language-server
         ocamlPackages.ocaml-lsp
         ocamlPackages.dune_3
         opam
@@ -164,7 +164,7 @@ in
               config = {
                 documentFormatting = true;
                 languages = lib.genAttrs [ "typescript" "javascript" "typescriptreact" "javascriptreact" "vue" "json" "markdown" ] (_: [{
-                  formatCommand = "${nodePackages.prettier}/bin/prettier --stdin-filepath \${INPUT}";
+                  formatCommand = "${prettier}/bin/prettier --stdin-filepath \${INPUT}";
                   formatStdin = true;
                 }]);
               };
@@ -202,10 +202,10 @@ in
             };
 
             typescript-language-server = {
-              command = "${nodePackages.typescript-language-server}/bin/typescript-language-server";
+              command = "${typescript-language-server}/bin/typescript-language-server";
               args = [ "--stdio" ];
               config.documentFormatting = false;
-              config.tsserver.path = "${nodePackages.typescript}/lib/node_modules/typescript/lib";
+              config.tsserver.path = "${typescript}/lib/node_modules/typescript/lib";
             };
             nil = {
               command = "${nil.packages.x86_64-linux.default}/bin/nil";

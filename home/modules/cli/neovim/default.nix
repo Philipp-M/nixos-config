@@ -23,17 +23,17 @@ in
         # nixfmt
         taplo
         pyright
-        nodePackages.bash-language-server
-        nodePackages.dockerfile-language-server-nodejs
-        nodePackages.eslint
-        nodePackages.prettier
-        nodePackages.stylelint
-        nodePackages.svelte-language-server
-        nodePackages.typescript-language-server
-        nodePackages.vim-language-server
-        # nodePackages.vls
-        nodePackages.vscode-langservers-extracted
-        nodePackages.yaml-language-server
+        bash-language-server
+        dockerfile-language-server-nodejs
+        eslint
+        prettier
+        stylelint
+        svelte-language-server
+        typescript-language-server
+        vim-language-server
+        # vls
+        vscode-langservers-extracted
+        yaml-language-server
         ocamlPackages.ocaml-lsp
         ocamlPackages.reason
         ripgrep

@@ -6,7 +6,7 @@
   hardware = {
     enableRedistributableFirmware = true;
     nvidia = {
-      package = config.boot.kernelPackages.nvidiaPackages.beta;
+      package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
       open = false;
       modesetting.enable = true;
       powerManagement.enable = true;
@@ -45,10 +45,6 @@
     remmina
     (pkgs.callPackage ./claude-code/package.nix {})
   ];
-  environment.etc."resolv.conf".text = ''
-    nameserver 1.1.1.1
-    nameserver 8.8.8.8
-  '';
 
   services.xserver = {
     dpi = 110;

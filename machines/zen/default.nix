@@ -66,6 +66,7 @@ in
     # impermanence tries to unmount /nix, thus manually bind mount it here
     "/nix" = {
       device = "${persistent}/nix/";
+      fsType = "none";
       options = [ "bind" ];
       depends = [ "${persistent}" ];
       neededForBoot = true;
@@ -73,13 +74,13 @@ in
     "/boot" = { device = "/dev/disk/by-uuid/90D9-9D03"; fsType = "vfat"; };
     "/data/music" = { device = "data/music"; fsType = "zfs"; };
     # impermanence doesn't support yet direct bind mounts (without the path prefix on the persistent device)
-    "/home/philm/Music" = { device = "/data/music"; options = [ "bind" ]; depends = [ "/data/music" ]; };
+    "/home/philm/Music" = { device = "/data/music"; fsType = "none"; options = [ "bind" ]; depends = [ "/data/music" ]; };
     "/data/games" = { device = "data/games"; fsType = "zfs"; };
     "/data/media" = { device = "data/media"; fsType = "zfs"; };
     "/data/backup" = { device = "data/backup"; fsType = "zfs"; };
     "/data/audio" = { device = "data/audio"; fsType = "zfs"; };
     "/data/photos" = { device = "data/photos"; fsType = "zfs"; };
-    "/home/philm/Photos" = { device = "/data/photos"; options = [ "bind" ]; depends = [ "/data/photos" ]; };
+    "/home/philm/Photos" = { device = "/data/photos"; fsType = "none"; options = [ "bind" ]; depends = [ "/data/photos" ]; };
     # root on tmpfs
     "/" = { device = "none"; fsType = "tmpfs"; options = [ "defaults" "size=64G" "mode=755" ]; };
   };

@@ -199,7 +199,6 @@
     gdm = {
       enable = true;
       debug = true;
-      wayland = true;
       autoSuspend = false; # for ssh connections mostly
     };
   };
