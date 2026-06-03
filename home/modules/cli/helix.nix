@@ -1,4 +1,4 @@
-{ helix, nil, ... }:
+{ helix, ... }:
 { pkgs, lib, config, ... }:
 let
   inherit (lib) mkEnableOption mkIf;
@@ -22,6 +22,7 @@ in
         julia-bin
         # luaformatter
         elixir-ls
+        nixd
         marksman
         ltex-ls
         solargraph
@@ -207,12 +208,10 @@ in
               config.documentFormatting = false;
               config.tsserver.path = "${typescript}/lib/node_modules/typescript/lib";
             };
-            nil = {
-              command = "${nil.packages.x86_64-linux.default}/bin/nil";
-              config.nil = {
-                formatting.command = [ "${nixpkgs-fmt}/bin/nixpkgs-fmt" ];
-                nix.flake.autoEvalInputs = true;
-              };
+            nixd = {
+              command = "nixd";
+              args = [ "--semantic-tokens=true" ];
+              config.nixd.formatting.command = [ "${nixpkgs-fmt}/bin/nixpkgs-fmt" ];
             };
             ltex-ls.command = "ltex-ls";
             rust-analyzer =
@@ -270,7 +269,7 @@ in
               ({ name = "tsx"; } // commonJsTs)
               { name = "vue"; language-servers = [{ name = "vuels"; except-features = [ "format" ]; } { name = "efm-lsp-prettier"; only-features = [ "format" ]; } "eslint"]; }
               { name = "sql"; formatter.command = "pg_format"; }
-              { name = "nix"; language-servers = [ "nil" ]; }
+              { name = "nix"; language-servers = [ "nixd" ]; auto-format = false; }
               { name = "json"; auto-format = false; language-servers = [{ name = "vscode-json-language-server"; except-features = [ "format" ]; }]; formatter = biomeFormatter; }
               { name = "markdown"; language-servers = [{ name = "marksman"; except-features = [ "format" ]; } "ltex-ls" "efm-lsp-prettier" "typos-lsp"]; }
             ];

@@ -426,26 +426,6 @@
         "type": "github"
       }
     },
-    "nil": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1765326831,
-        "narHash": "sha256-18j8X2Nbe0Wg1+7YrWRlYzmjZ5Wq0NCVwJHJlBIw/dc=",
-        "owner": "oxalica",
-        "repo": "nil",
-        "rev": "504599f7e555a249d6754698473124018b80d121",
-        "type": "github"
-      },
-      "original": {
-        "owner": "oxalica",
-        "repo": "nil",
-        "type": "github"
-      }
-    },
     "niri": {
       "inputs": {
         "niri-stable": "niri-stable",
@@ -598,7 +578,6 @@
         "mpv-ai-upscale": "mpv-ai-upscale",
         "mpv-default-shader-pack": "mpv-default-shader-pack",
         "musnix": "musnix",
-        "nil": "nil",
         "niri": "niri",
         "nix-index-database": "nix-index-database",
         "nix-snapd": "nix-snapd",
