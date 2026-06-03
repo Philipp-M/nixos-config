@@ -48,6 +48,8 @@
 
   environment.systemPackages = with pkgs; [
     remmina
+    otb
+    nomachine-client
     nvtopPackages.full
   ];
 

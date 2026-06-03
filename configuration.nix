@@ -425,7 +425,6 @@
     jdk
     ghc
     llvmPackages.bintools
-    neovim
     kakoune
     android-studio
     droidcam
@@ -436,6 +435,7 @@
     yarn
     deno
     nodejs_24
+    pnpm
     biome
     pkg-config
     android-tools
