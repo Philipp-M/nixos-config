@@ -5,6 +5,7 @@
   config = lib.mkIf config.modules.gui.firefox.enable {
     programs.firefox = {
       enable = true;
+      configPath = ".mozilla/firefox";
 
       profiles = {
         default = {

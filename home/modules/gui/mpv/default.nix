@@ -6,7 +6,6 @@
     programs.mpv = {
       enable = true;
       config = {
-        x11-netwm = "yes"; # necessary for xmonads fullscreen
         # gpu-api="vulkan";
         profile = "gpu-high";
         # video-sync = "audio";

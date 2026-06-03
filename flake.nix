@@ -76,6 +76,7 @@
         firefox = importHomeModule ./home/modules/gui/firefox.nix;
         alacritty = importHomeModule ./home/modules/gui/alacritty;
         kitty = importHomeModule ./home/modules/gui/kitty.nix;
+        zed-editor = importHomeModule ./home/modules/gui/zed-editor.nix;
         autorandr = importHomeModule ./home/modules/gui/autorandr.nix;
         desktop-environment = importHomeModule ./home/modules/gui/desktop-environment; # pretty much everything that is necessary to run niri as "desktop-environment"
         mpv = importHomeModule ./home/modules/gui/mpv;

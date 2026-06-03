@@ -134,6 +134,8 @@ in
         ".config/gtk-3.0"
         ".config/gtk-4.0"
         ".config/kdeconnect"
+        ".config/opencode"
+        ".config/zed"
         ".config/qBittorrent"
         ".config/Signal"
         ".config/syncthing"

@@ -205,7 +205,7 @@
           IOSchedulingClass = "idle";
           ExecStart =
             "${pkgs.writeShellScriptBin "awww-random-image" ''
-                ${pkgs.awww}/bin/awww img --resize="$RESIZE_TYPE" "$(${pkgs.findutils}/bin/find "$WALLPAPER_PATH" -type f | ${pkgs.coreutils}/bin/shuf -n1)"
+                ${pkgs.awww}/bin/awww img --resize="$RESIZE_TYPE" "$(${pkgs.findutils}/bin/find "$WALLPAPER_PATH" -follow -type f | ${pkgs.coreutils}/bin/shuf -n1)"
               ''}/bin/awww-random-image";
         };
         Install.WantedBy = [ "timers.target" ];
@@ -377,6 +377,7 @@
 
     gtk = {
       enable = true;
+      gtk4.theme = config.gtk.theme;
       iconTheme.name = "Papirus-Dark-Maia";
       iconTheme.package = pkgs.papirus-maia-icon-theme;
     };

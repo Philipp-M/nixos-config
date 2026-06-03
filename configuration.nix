@@ -3,6 +3,9 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, lib, inputs, ... }:
+let
+  system = pkgs.stdenv.hostPlatform.system;
+in
 {
   imports = [
     inputs.nix-snapd.nixosModules.default
@@ -315,11 +318,10 @@
   home-manager.useGlobalPkgs = true;
   home-manager.users.philm = {
     imports = builtins.attrValues inputs.self.homeManagerModules ++ [
-      inputs.nix-index-database.hmModules.nix-index
+      inputs.nix-index-database.homeModules.nix-index
       (import ./secrets/nix-expressions/firefox.nix inputs)
     ];
     programs.home-manager.enable = true;
-    nixpkgs.config = import ./nixpkgs-config.nix;
     xdg.configFile."nixpkgs/config.nix".source = ./nixpkgs-config.nix;
     home.stateVersion = "22.05";
     home.enableNixpkgsReleaseCheck = false;
@@ -419,7 +421,6 @@
     git-secret
     git-crypt
     diff-so-fancy
-    difftastic
     pijul
     gnumake
     jdk
@@ -513,8 +514,8 @@
     wget
     unzip
     b3sum
-    inputs.llm-agents.packages.${pkgs.system}.codex
-    inputs.llm-agents.packages.${pkgs.system}.opencode
+    inputs.llm-agents.packages.${system}.codex
+    inputs.llm-agents.packages.${system}.opencode
     yq
     jaq
     yt-dlp
@@ -597,7 +598,7 @@
 
     # GAMES
     # minecraft
-    wineWowPackages.yabridge
+    wineWow64Packages.yabridge
     winetricks
     protontricks
 
@@ -614,8 +615,8 @@
     nix-tree
     nix-query-tree-viewer
     gnuplot
-    inputs.comma.packages.${pkgs.system}.default
-    # inputs.devenv.packages.${pkgs.system}.devenv
+    inputs.comma.packages.${system}.default
+    # inputs.devenv.packages.${system}.devenv
     colmapWithCuda
     # colmap
     exfat

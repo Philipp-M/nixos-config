@@ -12,6 +12,7 @@
       desktop-environment.enable = true;
       firefox.enable = true;
       mpv.enable = true;
+      zed-editor.enable = true;
     };
 
     # too small for dedicated module

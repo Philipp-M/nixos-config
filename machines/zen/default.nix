@@ -39,6 +39,7 @@ in
     supportedFilesystems = [ "ntfs" "zfs" ];
     zfs.requestEncryptionCredentials = false;
     zfs.package = pkgs.zfs_unstable;
+    zfs.forceImportRoot = true;
     # kernelPackages = pkgs.linuxPackages_6_1;
     extraModulePackages = [ config.boot.kernelPackages.zenpower ];
     kernelModules = [ "kvm-amd" "snd-seq" "snd-rawmidi" "snd-virmidi" ];

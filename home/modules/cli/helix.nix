@@ -10,7 +10,7 @@ in
   config = mkIf cfg.enable {
     programs.helix = {
       enable = true;
-      package = helix.packages.${pkgs.system}.default;
+      package = helix.packages.${pkgs.stdenv.hostPlatform.system}.default;
       extraPackages = with pkgs; [
         astro-language-server
         clang-tools
@@ -40,7 +40,7 @@ in
         pyright
         (python3.withPackages (ps: with ps; [ python-lsp-server ] ++ python-lsp-server.optional-dependencies.all))
         bash-language-server
-        dockerfile-language-server-nodejs
+        dockerfile-language-server
         stylelint
         svelte-language-server
         # vls

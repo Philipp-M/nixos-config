@@ -6,19 +6,30 @@
 
     home.file.".ssh/config" = {
       target = ".ssh/config_source";
-      onChange = ''cat ~/.ssh/config_source > ~/.ssh/config && chmod 400 ~/.ssh/config'';
     };
+
+    home.activation.installSshConfig =
+      lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+        $DRY_RUN_CMD install -m 400 "$HOME/.ssh/config_source" "$HOME/.ssh/config"
+      '';
 
     programs.ssh = {
       enable = true;
-      serverAliveInterval = 240;
+      enableDefaultConfig = false;
       # TODO whitelist this for only a selected number of hosts
-      extraConfig = ''
-        ForwardX11 yes
-        ForwardX11Trusted yes
-        Host *
-        AddKeysToAgent yes
-      '';
+      settings."*" = {
+        ServerAliveInterval = 240;
+        ServerAliveCountMax = 3;
+        ForwardX11 = "yes";
+        ForwardX11Trusted = "yes";
+        AddKeysToAgent = "yes";
+        Compression = true;
+        HashKnownHosts = false;
+        UserKnownHostsFile = "~/.ssh/known_hosts";
+        ControlMaster = "no";
+        ControlPath = "~/.ssh/master-%r@%n:%p";
+        ControlPersist = "no";
+      };
     };
   };
 }
