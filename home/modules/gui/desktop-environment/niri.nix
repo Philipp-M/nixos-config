@@ -268,7 +268,7 @@
     // which may be more convenient to use.
     // See the binds section below for more spawn examples.
 
-    spawn-at-startup "systemctl" "--user" "start" "swww-random-image.service"
+    spawn-at-startup "systemctl" "--user" "start" "awww-random-image.service"
     // spawn-at-startup "systemctl" "--user" "reset-failed" "waybar.service"
     // spawn-at-startup "systemctl" "--user" "restart" "waybar.service"
 
@@ -321,9 +321,9 @@
 
     // Make the wallpaper stationary, rather than moving with workspaces.
     layer-rule {
-        // This is for swww; change for other wallpaper tools.
+        // This is for awww; change for other wallpaper tools.
         // Find the right namespace by running niri msg layers.
-        match namespace="^swww-daemon$"
+        match namespace="^awww-daemon$"
         place-within-backdrop true
     }
 

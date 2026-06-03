@@ -173,24 +173,24 @@
     };
 
     systemd.user.services = {
-      swww = {
+      awww = {
         Unit = {
           Description = "Background Wallpaper Manager for Wayland";
           After = [ "graphical-session.target" ];
           PartOf = [ "graphical-session.target" ];
         };
         Service = {
-          ExecStart = "${pkgs.swww}/bin/swww-daemon";
+          ExecStart = "${pkgs.awww}/bin/awww-daemon";
           Restart = "always";
           IOSchedulingClass = "idle";
         };
       };
-      swww-random-image = {
+      awww-random-image = {
         Unit = {
-          Description = "Set random wallpaper using swww";
-          After = [ "swww.service" ];
-          Requires = [ "swww.service" ];
-          PartOf = [ "swww.service" ];
+          Description = "Set random wallpaper using awww";
+          After = [ "awww.service" ];
+          Requires = [ "awww.service" ];
+          PartOf = [ "awww.service" ];
         };
 
         Service = {
@@ -204,17 +204,17 @@
           ];
           IOSchedulingClass = "idle";
           ExecStart =
-            "${pkgs.writeShellScriptBin "swww-random-image" ''
-                ${pkgs.swww}/bin/swww img --resize="$RESIZE_TYPE" "$(${pkgs.findutils}/bin/find "$WALLPAPER_PATH" -type f | ${pkgs.coreutils}/bin/shuf -n1)"
-              ''}/bin/swww-random-image";
+            "${pkgs.writeShellScriptBin "awww-random-image" ''
+                ${pkgs.awww}/bin/awww img --resize="$RESIZE_TYPE" "$(${pkgs.findutils}/bin/find "$WALLPAPER_PATH" -type f | ${pkgs.coreutils}/bin/shuf -n1)"
+              ''}/bin/awww-random-image";
         };
         Install.WantedBy = [ "timers.target" ];
       };
 
       # This seems to be necessary, as the background is gone after shutting off a monitor
-      restart-swww-random-image-on-output-change = {
+      restart-awww-random-image-on-output-change = {
         Unit = {
-          Description = "Reapply swww wallpaper when Niri adds an output";
+          Description = "Reapply awww wallpaper when Niri adds an output";
           After = [ "niri.service" "graphical-session.target" ];
           Requires = [ "niri.service" ];
           PartOf = [ "niri.service" "graphical-session.target" ];
@@ -222,7 +222,7 @@
         };
         Service = {
           ExecStart =
-            "${pkgs.writeShellScriptBin "restart-swww-random-image-on-output-change" ''
+            "${pkgs.writeShellScriptBin "restart-awww-random-image-on-output-change" ''
               set -eu
 
               has_new_output() {
@@ -267,12 +267,12 @@
 
                 if [ "$current_outputs" != "$previous_outputs" ] && [ "$current_outputs" != "null" ] && has_new_output "$previous_outputs" "$current_outputs"; then
                   ${pkgs.coreutils}/bin/sleep 3
-                  ${pkgs.systemd}/bin/systemctl --user restart swww-random-image.service
+                  ${pkgs.systemd}/bin/systemctl --user restart awww-random-image.service
                 fi
 
                 previous_outputs="$current_outputs"
               done
-            ''}/bin/restart-swww-random-image-on-output-change";
+            ''}/bin/restart-awww-random-image-on-output-change";
           IOSchedulingClass = "idle";
           Restart = "always";
           RestartSec = 1;
@@ -281,8 +281,8 @@
       };
     };
 
-    systemd.user.timers.swww-random-image = {
-      Unit.Description = "Periodically change wallpaper using swww";
+    systemd.user.timers.awww-random-image = {
+      Unit.Description = "Periodically change wallpaper using awww";
       Timer.OnUnitActiveSec = "5min";
       Install.WantedBy = [ "timers.target" ];
     };
