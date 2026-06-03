@@ -1,5 +1,5 @@
 { ... }:
-{ lib, config, ... }:
+{ pkgs, lib, config, ... }:
 {
   options.modules.cli.git.enable = lib.mkEnableOption "Enable personal git config";
 
@@ -32,6 +32,8 @@
         alias = {
           pushall = "!git remote | xargs -L1 git push --all";
           c = "commit -v";
+          diffd = "!git -c diff.external= diff --no-ext-diff";
+          difff = "!git -c diff.external= -c core.pager='${lib.getExe pkgs.diff-so-fancy} | less --tabs=4 -RFX' diff --no-ext-diff";
         };
       };
       lfs.enable = true;
