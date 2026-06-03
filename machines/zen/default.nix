@@ -29,12 +29,16 @@ in
   virtualisation.docker.enableNvidia = true;
   boot = {
     initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "uas" "sd_mod" ];
-    kernel.sysctl."vm.swappiness" = lib.mkForce 5;
+    kernel.sysctl."vm.swappiness" = lib.mkForce 1;
+    kernel.sysctl."vm.vfs_cache_pressure" = 200;
     kernelParams = [
       "nordrand"
       "amd_iommu=fullflush"
       "preempt=full"
       "initcall_blacklist=simpledrm_platform_driver_init"
+      "nvme_core.default_ps_max_latency_us=0"
+      "pcie_aspm=off"
+      "pcie_port_pm=off"
     ];
     supportedFilesystems = [ "ntfs" "zfs" ];
     zfs.requestEncryptionCredentials = false;
@@ -48,6 +52,7 @@ in
     # Bluetooth
     extraModprobeConfig = ''
       options bluetooth disable_ertm=1
+      options zfs l2arc_noprefetch=0 l2arc_write_boost=33554432 l2arc_write_max=16777216 zfs_arc_min=0 zfs_arc_max=2147483648
     '';
   };
 
@@ -73,14 +78,14 @@ in
       neededForBoot = true;
     };
     "/boot" = { device = "/dev/disk/by-uuid/90D9-9D03"; fsType = "vfat"; };
-    "/data/music" = { device = "data/music"; fsType = "zfs"; };
     # impermanence doesn't support yet direct bind mounts (without the path prefix on the persistent device)
-    "/home/philm/Music" = { device = "/data/music"; fsType = "none"; options = [ "bind" ]; depends = [ "/data/music" ]; };
-    "/data/games" = { device = "data/games"; fsType = "zfs"; };
+    "/home/philm/Music" = { device = "/tank/media/Music"; fsType = "none"; options = [ "bind" ]; depends = [ "/tank/media" ]; };
+    "/data/games" = { device = "data/games"; fsType = "zfs"; neededForBoot = true; };
     "/data/media" = { device = "data/media"; fsType = "zfs"; };
     "/data/backup" = { device = "data/backup"; fsType = "zfs"; };
     "/data/audio" = { device = "data/audio"; fsType = "zfs"; };
     "/data/photos" = { device = "data/photos"; fsType = "zfs"; };
+    "/tank/media" = { device = "tank/media"; fsType = "zfs"; neededForBoot = true; };
     "/home/philm/Photos" = { device = "/data/photos"; fsType = "none"; options = [ "bind" ]; depends = [ "/data/photos" ]; };
     # root on tmpfs
     "/" = { device = "none"; fsType = "tmpfs"; options = [ "defaults" "size=64G" "mode=755" ]; };
@@ -98,6 +103,8 @@ in
       "/var/lib/bluetooth"
       "/var/lib/systemd/coredump"
       "/var/lib/docker"
+      "/var/lib/ollama"
+      "/var/lib/llama-cpp"
       "/var/lib/snapd"
       "/var/lib/snap"
       "/var/snap"
@@ -143,6 +150,8 @@ in
         { directory = ".gnupg"; mode = "0700"; }
         { directory = ".ssh"; mode = "0700"; }
         { directory = ".local/share/keyrings"; mode = "0700"; }
+        ".codex"
+        ".config/blender"
         ".config/calibre"
         ".config/cantata"
         ".config/Cantata"
@@ -157,6 +166,9 @@ in
         ".config/gtk-3.0"
         ".config/gtk-4.0"
         ".config/kdeconnect"
+        ".config/opencode"
+        ".config/zed"
+        ".config/StardewValley"
         ".config/qBittorrent"
         ".config/Signal"
         ".config/syncthing"
@@ -271,8 +283,8 @@ in
     extraConfig = {
       pipewire."92-low-latency" = {
         "context.properties" = {
-          "default.clock.rate" = 44100;
-          "default.clock.quantum" = 512;
+          "default.clock.rate" = 192000;
+          "default.clock.quantum" = 1024;
           "default.clock.min-quantum" = 32;
           "default.clock.max-quantum" = 8192;
         };
@@ -295,7 +307,7 @@ in
       jack."92-low-latency" = {
         "jack.properties" = {
           "rt.prio" = 88;
-          "node.latency" = "512/44100";
+          "node.latency" = "1024/192000";
           "jack.show-monitor" = true;
           "jack.merge-monitor" = true;
           "jack.show-midi" = true;
@@ -312,8 +324,8 @@ in
             update-props = {
               api.alsa.use-acp = true,
               api.alsa.use-ucm = false,
-              api.alsa.period-size = 512,
-              api.acp.probe-rate = 44100,
+              api.alsa.period-size = 1024,
+              api.acp.probe-rate = 192000,
               api.acp.auto-profile = false
               api.acp.pro-channels = 10,
               device.profile = "pro-audio"
