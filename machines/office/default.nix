@@ -5,6 +5,7 @@
 
   hardware = {
     enableRedistributableFirmware = true;
+    bluetooth.enable = true;
     nvidia = {
       package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
       open = false;
@@ -26,6 +27,10 @@
       "initcall_blacklist=simpledrm_platform_driver_init"
     ];
     supportedFilesystems = [ "ntfs" ];
+    # Bluetooth
+    extraModprobeConfig = ''
+      options bluetooth disable_ertm=1
+    '';
   };
 
   networking.interfaces.enp0s31f6.useDHCP = true;
@@ -43,7 +48,7 @@
 
   environment.systemPackages = with pkgs; [
     remmina
-    (pkgs.callPackage ./claude-code/package.nix {})
+    nvtopPackages.full
   ];
 
   services.xserver = {
