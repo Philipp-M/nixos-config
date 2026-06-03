@@ -69,7 +69,6 @@
         cli = importHomeModule ./home/modules/cli; # enables all modules in the cli directory + small extra ones
         fish = importHomeModule ./home/modules/cli/fish.nix;
         git = importHomeModule ./home/modules/cli/git.nix;
-        neovim = importHomeModule ./home/modules/cli/neovim;
         helix = importHomeModule ./home/modules/cli/helix.nix;
         ssh = importHomeModule ./home/modules/cli/ssh.nix;
         starship = importHomeModule ./home/modules/cli/starship.nix;

@@ -8,7 +8,6 @@
     home.sessionVariables.EDITOR = "hx";
 
     modules.cli = {
-      neovim.enable = true;
       ssh.enable = true;
       fish.enable = true;
       starship.enable = true;
