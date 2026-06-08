@@ -17,6 +17,7 @@
           scrollback_lines = 100000;
           enable_audio_bell = false;
           update_check_interval = 0;
+          auto_reload_config = -1;
           # background_opacity = alpha;
           background_opacity = 0.85;
           background_blur = 1;
