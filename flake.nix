@@ -20,7 +20,8 @@
     home-manager = { url = "github:nix-community/home-manager"; inputs.nixpkgs.follows = "nixpkgs"; };
     # home-manager = { url = "git+file:///home/philm/dev/personal/desktop-environment/home-manager"; inputs.nixpkgs.follows = "nixpkgs"; };
     # kanata = { url = "github:jtroo/kanata"; flake = false; };
-    niri = { url = "github:sodiboo/niri-flake"; inputs = { nixpkgs.follows = "nixpkgs"; }; };
+    # niri = { url = "github:sodiboo/niri-flake"; inputs = { nixpkgs.follows = "nixpkgs"; }; };
+    niri = { url = "github:rebizzz/niri-flake/fix/libdisplay-info-dep"; inputs = { nixpkgs.follows = "nixpkgs"; }; };
     mpv-ai-upscale = { url = "github:Alexkral/AviSynthAiUpscale"; flake = false; };
     mpv-default-shader-pack = { url = "github:iwalton3/default-shader-pack"; flake = false; };
     fzf-fish = { url = "github:PatrickF1/fzf.fish"; flake = false; };
