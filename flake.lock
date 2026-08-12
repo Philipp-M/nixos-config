@@ -507,11 +507,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1786102771,
-        "narHash": "sha256-pJRHq19PNpSOldK74pegm7G7o4r7MQnM1KT+yQpixL0=",
+        "lastModified": 1786537243,
+        "narHash": "sha256-4f7xkXu4oEq+u/fEQPYF0JWBorYp4RpIuTjNNUntCUg=",
         "owner": "Philipp-M",
         "repo": "nixpkgs",
-        "rev": "7665a9e696e86cfc18bdba0d1c11d868c01b103b",
+        "rev": "207fb6227e9a7f77ea892f56dd73b21e2af3d6c1",
         "type": "github"
       },
       "original": {
