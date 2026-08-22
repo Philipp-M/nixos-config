@@ -12,6 +12,7 @@
     home.keyboard.layout = "us";
 
     home.pointerCursor = {
+      enable = true;
       package = pkgs.vanilla-dmz;
       name = "Vanilla-DMZ-AA";
       gtk.enable = true;

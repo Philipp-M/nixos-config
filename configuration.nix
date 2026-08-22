@@ -396,11 +396,11 @@ in
     graphql-client
     openapi-generator-cli
     ruby
-    earthly
+    earthbuild
     grpc-client-cli
     minio-client
     mongodb-compass
-    elixir
+    beamPackages.elixir
     gcc
     gdb
     meson
@@ -479,7 +479,7 @@ in
     calibre
     exiv2
     libreoffice
-    texlive.combined.scheme-full
+    texliveFull
     # wkhtmltopdf
 
     xournalpp
