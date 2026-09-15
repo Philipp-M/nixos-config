@@ -5,7 +5,7 @@ use std::{
     cmp::Ordering,
     collections::{BTreeMap, BTreeSet, HashSet},
     env,
-    ffi::{CStr, CString, c_char, c_int, c_uint},
+    ffi::{CStr, CString, c_char, c_int, c_uint, c_ulong},
     fs,
     io::{self, BufRead, BufReader, Read, Write},
     net::{TcpListener, TcpStream},
@@ -1629,8 +1629,8 @@ fn handle_midi_edge(args: &MidiArgs, note: u8, pressed: bool) -> Result<()> {
     Ok(())
 }
 
-fn run_midi(args: MidiArgs) -> Result<()> {
-    let seq = open_exclusive_midi(&args.port)?;
+fn midi_events(port: &str, tx: &std::sync::mpsc::Sender<(u8, bool)>) -> Result<()> {
+    let seq = open_exclusive_midi(port)?;
     let mut pressed = [false; 128];
 
     loop {
@@ -1654,9 +1654,133 @@ fn run_midi(args: MidiArgs) -> Result<()> {
             continue;
         }
         pressed[index] = is_pressed;
-        if let Err(error) = handle_midi_edge(&args, note_event.note, is_pressed) {
-            eprintln!("MIDI note {} action failed: {error}", note_event.note);
+        tx.send((note_event.note, is_pressed))?;
+    }
+}
+
+// Linux EVIOCGKEY(32): read held keys without taking events from niri.
+const EVIOCGKEY: c_ulong = 0x8020_4518;
+
+unsafe extern "C" {
+    fn ioctl(fd: c_int, request: c_ulong, ...) -> c_int;
+}
+
+fn shortcut_keys(spec: &str) -> Result<(usize, Vec<[usize; 2]>)> {
+    let parts = spec.split('+').collect::<Vec<_>>();
+    let (key, mods) = parts
+        .split_last()
+        .ok_or_else(|| io::Error::other("empty shortcut"))?;
+    let letter = key.trim().to_ascii_uppercase();
+    let index = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        .iter()
+        .position(|ch| Some(*ch) == letter.as_bytes().first().copied())
+        .filter(|_| letter.len() == 1)
+        .ok_or_else(|| io::Error::other(format!("unsupported shortcut key: {key}")))?;
+    // Linux key codes for letter keys. A stays on code 30 in Colemak.
+    let letters = [
+        30, 48, 46, 32, 18, 33, 34, 35, 23, 36, 37, 38, 50, 49, 24, 25, 16, 19, 31, 20, 22, 47, 17,
+        45, 21, 44,
+    ];
+    let mut modifiers = Vec::new();
+    for modifier in mods {
+        modifiers.push(match modifier.trim().to_ascii_lowercase().as_str() {
+            "mod" | "super" => [125, 126],
+            "alt" => [56, 100],
+            "ctrl" | "control" => [29, 97],
+            "shift" => [42, 54],
+            _ => return Err(io::Error::other(format!("unsupported modifier: {modifier}")).into()),
+        });
+    }
+    if modifiers.is_empty() {
+        return Err(io::Error::other("shortcut needs a modifier").into());
+    }
+    Ok((letters[index], modifiers))
+}
+
+fn held_keys(devices: &[std::fs::File]) -> [bool; 256] {
+    use std::os::fd::AsRawFd;
+
+    let mut held = [false; 256];
+    for device in devices {
+        let mut bits = [0u8; 32];
+        // SAFETY: bits is a writable buffer of the size requested above.
+        if unsafe { ioctl(device.as_raw_fd(), EVIOCGKEY, bits.as_mut_ptr()) } < 0 {
+            continue;
         }
+        for (code, is_held) in held.iter_mut().enumerate() {
+            *is_held |= bits[code / 8] & (1 << (code % 8)) != 0;
+        }
+    }
+    held
+}
+
+fn matches_shortcut(held: &[bool; 256], key: usize, modifiers: &[[usize; 2]]) -> bool {
+    let modifier_keys = [[125, 126], [56, 100], [29, 97], [42, 54]];
+    held[key]
+        && modifier_keys
+            .iter()
+            .all(|pair| (held[pair[0]] || held[pair[1]]) == modifiers.contains(pair))
+}
+
+fn run_controls(args: MidiArgs, english: &str, german: &str) -> Result<()> {
+    let bindings = [
+        (shortcut_keys(english)?, "en"),
+        (shortcut_keys(german)?, "de"),
+    ];
+    let devices = fs::read_dir("/dev/input")?
+        .filter_map(|entry| entry.ok())
+        .filter(|entry| entry.file_name().to_string_lossy().starts_with("event"))
+        .filter_map(|entry| std::fs::File::open(entry.path()).ok())
+        .collect::<Vec<_>>();
+    if devices.is_empty() {
+        eprintln!("no readable keyboard input devices; MIDI remains active");
+    }
+    let (tx, rx) = std::sync::mpsc::channel();
+    let port = args.port.clone();
+    thread::spawn(move || {
+        loop {
+            if let Err(error) = midi_events(&port, &tx) {
+                eprintln!("MIDI listener failed: {error}");
+                thread::sleep(std::time::Duration::from_secs(1));
+            }
+        }
+    });
+    let mut active: Option<usize> = None;
+    let mut key_was_held = [false; 2];
+    loop {
+        while let Ok((note, pressed)) = rx.try_recv() {
+            if let Err(error) = handle_midi_edge(&args, note, pressed) {
+                eprintln!("MIDI note {note} action failed: {error}");
+            }
+        }
+        let held = held_keys(&devices);
+        if let Some(index) = active {
+            let (binding, _) = &bindings[index];
+            if !matches_shortcut(&held, binding.0, &binding.1) {
+                active = None;
+                if let Err(error) = run_quiet(&args.whisrs, &["stop"]) {
+                    eprintln!("keyboard dictation stop failed: {error}");
+                }
+            }
+        }
+        if active.is_none()
+            && let Some(index) =
+                bindings
+                    .iter()
+                    .enumerate()
+                    .position(|(index, ((key, modifiers), _))| {
+                        matches_shortcut(&held, *key, modifiers) && !key_was_held[index]
+                    })
+        {
+            active = Some(index);
+            if let Err(error) = run_quiet(&args.whisrs, &["start", "-l", bindings[index].1]) {
+                eprintln!("keyboard dictation start failed: {error}");
+            }
+        }
+        for (index, ((key, _), _)) in bindings.iter().enumerate() {
+            key_was_held[index] = held[*key];
+        }
+        thread::sleep(std::time::Duration::from_millis(10));
     }
 }
 
@@ -1683,7 +1807,7 @@ where
 
 fn usage() -> ! {
     eprintln!(
-        "usage:\n  voice-control-runtime proxy --config FILE --dotool FILE\n  voice-control-runtime commands --config FILE --whisper FILE --model FILE --command-list FILE --dotool FILE --gate FILE --poll-ms N --audio-ms N --vad-ms N --startup-ms N --audio-ctx N --threads N --vad-threshold N\n  voice-control-runtime midi --port CLIENT[:PORT] --whisrs FILE --dotool FILE --gate FILE --command-note N --german-note N --enter-note N --dictation-note N"
+        "usage:\n  voice-control-runtime proxy --config FILE --dotool FILE\n  voice-control-runtime commands --config FILE --whisper FILE --model FILE --command-list FILE --dotool FILE --gate FILE --poll-ms N --audio-ms N --vad-ms N --startup-ms N --audio-ctx N --threads N --vad-threshold N\n  voice-control-runtime controls --port CLIENT[:PORT] --whisrs FILE --dotool FILE --gate FILE --command-note N --german-note N --enter-note N --dictation-note N --english Mod+A --german Mod+Shift+A"
     );
     std::process::exit(2);
 }
@@ -1715,16 +1839,20 @@ fn main() -> Result<()> {
             threads: parse_value(&args, "--threads")?,
             vad_threshold: parse_value(&args, "--vad-threshold")?,
         }),
-        "midi" => run_midi(MidiArgs {
-            port: value_after(&args, "--port")?,
-            whisrs: PathBuf::from(value_after(&args, "--whisrs")?),
-            dotool: PathBuf::from(value_after(&args, "--dotool")?),
-            gate: PathBuf::from(value_after(&args, "--gate")?),
-            command_note: parse_value(&args, "--command-note")?,
-            german_note: parse_value(&args, "--german-note")?,
-            enter_note: parse_value(&args, "--enter-note")?,
-            dictation_note: parse_value(&args, "--dictation-note")?,
-        }),
+        "controls" => run_controls(
+            MidiArgs {
+                port: value_after(&args, "--port")?,
+                whisrs: PathBuf::from(value_after(&args, "--whisrs")?),
+                dotool: PathBuf::from(value_after(&args, "--dotool")?),
+                gate: PathBuf::from(value_after(&args, "--gate")?),
+                command_note: parse_value(&args, "--command-note")?,
+                german_note: parse_value(&args, "--german-note")?,
+                enter_note: parse_value(&args, "--enter-note")?,
+                dictation_note: parse_value(&args, "--dictation-note")?,
+            },
+            &value_after(&args, "--english")?,
+            &value_after(&args, "--german")?,
+        ),
         _ => usage(),
     }
 }
@@ -1732,10 +1860,32 @@ fn main() -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::{
-        Transform, TransformAction, normalize_process_name, replacement_actions, selected_text,
+        Transform, TransformAction, matches_shortcut, normalize_process_name, replacement_actions,
+        selected_text, shortcut_keys,
     };
     use regex::Regex;
     use serde_json::json;
+
+    #[test]
+    fn parses_held_shortcut() {
+        assert_eq!(shortcut_keys("Mod+A").unwrap(), (30, vec![[125, 126]]));
+        assert_eq!(
+            shortcut_keys("Mod+Shift+A").unwrap(),
+            (30, vec![[125, 126], [42, 54]])
+        );
+        assert!(shortcut_keys("A").is_err());
+        assert!(shortcut_keys("Mod+F24").is_err());
+    }
+
+    #[test]
+    fn shifted_shortcut_does_not_trigger_english() {
+        let mut held = [false; 256];
+        held[30] = true;
+        held[125] = true;
+        held[42] = true;
+        assert!(!matches_shortcut(&held, 30, &[[125, 126]]));
+        assert!(matches_shortcut(&held, 30, &[[125, 126], [42, 54]]));
+    }
 
     #[test]
     fn normalizes_nix_wrapped_executable_names() {

@@ -1,11 +1,105 @@
 { config, lib, pkgs, modulesPath, ... }:
 let
   persistent = "/persistent";
+  realityscan-unwrapped = pkgs.stdenvNoCC.mkDerivation {
+    pname = "realityscan-unwrapped";
+    version = "2.1.1.1";
+
+    src = pkgs.requireFile {
+      name = "RealityScan-2.1.1.deb";
+      sha256 = "sha256-2ClHuaPkQr1l5D/Y2kXDotp4ENAl2o30U+b3vZAoI3U=";
+      message = ''
+        Add RealityScan-2.1.1.deb to the Nix store with:
+
+          nix-store --add-fixed sha256 RealityScan-2.1.1.deb
+      '';
+    };
+
+    nativeBuildInputs = [ pkgs.dpkg ];
+
+    unpackPhase = ''
+      dpkg-deb -x $src .
+    '';
+
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out
+      cp -a opt usr $out/
+      runHook postInstall
+    '';
+
+    dontFixup = true;
+  };
+
+  realityscan = pkgs.buildFHSEnv {
+    pname = "realityscan";
+    version = realityscan-unwrapped.version;
+    executableName = "realityscan-cli";
+    runScript = "/opt/realityscan/bin/realityscan-cli";
+
+    extraBuildCommands = ''
+      mkdir -p $out/opt/realityscan
+    '';
+
+    extraBwrapArgs = [
+      "--ro-bind"
+      "${realityscan-unwrapped}/opt/realityscan"
+      "/opt/realityscan"
+    ];
+
+    profile = ''
+      export CX_ROOT=/opt/realityscan
+      export LD_LIBRARY_PATH="/run/opengl-driver/lib:/run/opengl-driver-32/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    '';
+
+    targetPkgs = pkgs: with pkgs; [
+      alsa-lib
+      cups
+      dbus
+      desktop-file-utils
+      fontconfig
+      freetype
+      gdk-pixbuf
+      glib
+      gnutls
+      gst_all_1.gst-plugins-base
+      gst_all_1.gstreamer
+      gtk3
+      krb5
+      liberation_ttf
+      libgphoto2
+      libglvnd
+      libpcap
+      libpulseaudio
+      libunwind
+      libusb1
+      libxkbcommon
+      ocl-icd
+      openssl
+      pango
+      pcsclite
+      perl
+      python3
+      python3Packages.dbus-python
+      python3Packages.pycairo
+      python3Packages.pygobject3
+      sensible-utils
+      systemd
+      vte
+      vulkan-loader
+      xdg-utils
+      libx11
+      libxcomposite
+      libxcursor
+      libxext
+      libxfixes
+      libxi
+    ];
+  };
 in
 {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
-    ../../modules/voice-control
     ../../configuration.nix
   ];
 

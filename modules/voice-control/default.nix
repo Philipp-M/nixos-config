@@ -213,6 +213,7 @@ let
     cargoLock.lockFile = ./runtime/Cargo.lock;
     buildInputs = [ pkgs.alsa-lib ];
   };
+
 in
 {
   options.services.voiceControl = {
@@ -248,6 +249,18 @@ in
         type = types.int;
         default = 53;
       };
+    };
+
+    keyboard.englishShortcut = mkOption {
+      type = types.str;
+      default = "Mod+A";
+      description = "Hold this shortcut for English dictation (Linux letter key positions).";
+    };
+
+    keyboard.germanShortcut = mkOption {
+      type = types.str;
+      default = "Mod+Shift+A";
+      description = "Hold this shortcut for German dictation (Linux letter key positions).";
     };
 
     whisperCommand = {
@@ -530,7 +543,7 @@ in
     };
 
     systemd.user.services.midi-voice-control = {
-      description = "MIDI controls for dictation and niri voice commands";
+      description = "MIDI and keyboard controls for dictation and niri voice commands";
       wantedBy = [ "graphical-session.target" ];
       wants = [
         "whisrs.service"
@@ -545,7 +558,7 @@ in
       serviceConfig = {
         ExecStart = lib.escapeShellArgs [
           "${voiceControlRuntime}/bin/voice-control-runtime"
-          "midi"
+          "controls"
           "--port"
           cfg.midi.port
           "--whisrs"
@@ -562,6 +575,10 @@ in
           (toString cfg.midi.enterNote)
           "--dictation-note"
           (toString cfg.midi.dictationNote)
+          "--english"
+          cfg.keyboard.englishShortcut
+          "--german"
+          cfg.keyboard.germanShortcut
         ];
         ExecStopPost = pkgs.writeShellScript "voice-control-midi-cleanup" ''
           rm -f "$XDG_RUNTIME_DIR/voice-command.enabled"
@@ -571,5 +588,6 @@ in
         RestartSec = 1;
       };
     };
+
   };
 }

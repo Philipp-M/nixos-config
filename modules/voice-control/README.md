@@ -59,6 +59,13 @@ recognized phrases for immediate typing but cannot auto-stop the session; the
 same audio stream resumes afterward and remains open until MIDI note-off sends
 `stop`. Whisrs accumulates those phrases as one session result.
 
+Holding `Mod+A` starts the same English dictation session; releasing either
+key stops it. Holding `Mod+Shift+A` does the same for German. Set
+`services.voiceControl.keyboard.englishShortcut` or `.germanShortcut` to
+change either binding. The keyboard listener reads key state without taking
+events from niri; extra modifiers do not trigger the other shortcut. One
+`midi-voice-control` user service handles both MIDI and keyboard input.
+
 The patched whisper-command accepts:
 
 - `WHISPER_COMMAND_POLL_MS`

@@ -1,0 +1,149 @@
+diff --git a/README.md b/README.md
+index 695cc86..6f1c99c 100644
+--- a/README.md
++++ b/README.md
+@@ -406,9 +406,9 @@ If the layout is missing or wrong, fix it one of two ways:
+ 
+    Then `rc-service --user whisrs restart`.
+ 
+-### Hotkey keys are physical positions, not layout characters
++### Hotkey letters follow the active keyboard layout
+ 
+-The configured hotkey trigger (e.g. `Ctrl+Shift+W`) is interpreted as the physical evdev keycode at the US/QWERTY `W` position, regardless of the active layout. This is intentional — the hotkey listener reads raw evdev events before any XKB translation, which is how every evdev-based hotkey tool works (xremap, sxhkd --evdev). On non-US layouts, pick the trigger by its physical position on a QWERTY keyboard.
++Letter triggers in configured hotkeys (e.g. `Ctrl+Shift+W`) are resolved to the physical evdev keycode that produces that letter in the detected XKB layout. This lets the listener continue reading raw evdev events while keeping hotkey configuration layout-aware. Named triggers such as `F13`, `Space`, and `Home` map directly to their corresponding physical keys.
+ 
+ ---
+ 
+diff --git a/src/hotkey/parse.rs b/src/hotkey/parse.rs
+index 6e6a01f..047e3ec 100644
+--- a/src/hotkey/parse.rs
++++ b/src/hotkey/parse.rs
+@@ -1,6 +1,7 @@
+ //! Parse hotkey strings like "Super+Shift+D" into evdev key sets.
+ 
+ use evdev::Key;
++use xkb_type::{KeyboardLayout, XkbKeymap};
+ 
+ /// A parsed hotkey binding: a set of modifier keys + one trigger key.
+ #[derive(Debug, Clone)]
+@@ -16,6 +17,10 @@ pub struct HotkeyBinding {
+ /// Format: `Modifier+Modifier+Key` (case-insensitive).
+ /// Supported modifiers: Super, Alt, Ctrl, Shift.
+ pub fn parse_hotkey(s: &str) -> anyhow::Result<HotkeyBinding> {
++    parse_hotkey_with_layout(s, &KeyboardLayout::detect())
++}
++
++fn parse_hotkey_with_layout(s: &str, layout: &KeyboardLayout) -> anyhow::Result<HotkeyBinding> {
+     let parts: Vec<&str> = s.split('+').map(|p| p.trim()).collect();
+     if parts.is_empty() {
+         anyhow::bail!("empty hotkey string");
+@@ -37,7 +42,7 @@ pub fn parse_hotkey(s: &str) -> anyhow::Result<HotkeyBinding> {
+     }
+ 
+     let trigger_str = parts.last().unwrap();
+-    let trigger = parse_key(trigger_str)
++    let trigger = parse_key(trigger_str, layout)
+         .ok_or_else(|| anyhow::anyhow!("unknown key '{trigger_str}' in hotkey '{s}'"))?;
+ 
+     Ok(HotkeyBinding { modifiers, trigger })
+@@ -53,39 +58,14 @@ fn parse_modifier(s: &str) -> Option<Key> {
+     }
+ }
+ 
+-fn parse_key(s: &str) -> Option<Key> {
++fn parse_key(s: &str, layout: &KeyboardLayout) -> Option<Key> {
+     // Single letter keys.
+-    if s.len() == 1 {
+-        let ch = s.to_uppercase().chars().next()?;
+-        return match ch {
+-            'A' => Some(Key::KEY_A),
+-            'B' => Some(Key::KEY_B),
+-            'C' => Some(Key::KEY_C),
+-            'D' => Some(Key::KEY_D),
+-            'E' => Some(Key::KEY_E),
+-            'F' => Some(Key::KEY_F),
+-            'G' => Some(Key::KEY_G),
+-            'H' => Some(Key::KEY_H),
+-            'I' => Some(Key::KEY_I),
+-            'J' => Some(Key::KEY_J),
+-            'K' => Some(Key::KEY_K),
+-            'L' => Some(Key::KEY_L),
+-            'M' => Some(Key::KEY_M),
+-            'N' => Some(Key::KEY_N),
+-            'O' => Some(Key::KEY_O),
+-            'P' => Some(Key::KEY_P),
+-            'Q' => Some(Key::KEY_Q),
+-            'R' => Some(Key::KEY_R),
+-            'S' => Some(Key::KEY_S),
+-            'T' => Some(Key::KEY_T),
+-            'U' => Some(Key::KEY_U),
+-            'V' => Some(Key::KEY_V),
+-            'W' => Some(Key::KEY_W),
+-            'X' => Some(Key::KEY_X),
+-            'Y' => Some(Key::KEY_Y),
+-            'Z' => Some(Key::KEY_Z),
+-            _ => None,
+-        };
++    if s.len() == 1 && s.as_bytes()[0].is_ascii_alphabetic() {
++        let character = s.chars().next()?.to_ascii_lowercase();
++        return XkbKeymap::from_layout(layout)
++            .ok()?
++            .lookup(character)
++            .map(|mapping| Key::new(mapping.main.keycode));
+     }
+ 
+     // Named keys (case-insensitive).
+@@ -149,16 +129,23 @@ fn parse_key(s: &str) -> Option<Key> {
+ mod tests {
+     use super::*;
+ 
++    fn us() -> KeyboardLayout {
++        KeyboardLayout {
++            layout: "us".into(),
++            variant: String::new(),
++        }
++    }
++
+     #[test]
+     fn parse_super_d() {
+-        let binding = parse_hotkey("Super+D").unwrap();
++        let binding = parse_hotkey_with_layout("Super+D", &us()).unwrap();
+         assert_eq!(binding.modifiers, vec![Key::KEY_LEFTMETA]);
+         assert_eq!(binding.trigger, Key::KEY_D);
+     }
+ 
+     #[test]
+     fn parse_super_shift_c() {
+-        let binding = parse_hotkey("Super+Shift+C").unwrap();
++        let binding = parse_hotkey_with_layout("Super+Shift+C", &us()).unwrap();
+         assert_eq!(binding.modifiers.len(), 2);
+         assert_eq!(binding.trigger, Key::KEY_C);
+     }
+@@ -172,10 +159,26 @@ mod tests {
+ 
+     #[test]
+     fn parse_case_insensitive() {
+-        let binding = parse_hotkey("super+shift+d").unwrap();
++        let binding = parse_hotkey_with_layout("super+shift+d", &us()).unwrap();
+         assert_eq!(binding.trigger, Key::KEY_D);
+     }
+ 
++    #[test]
++    fn parse_letter_uses_layout_key_position() {
++        let de = KeyboardLayout {
++            layout: "de".into(),
++            variant: String::new(),
++        };
++        assert_eq!(
++            parse_hotkey_with_layout("Super+Y", &de).unwrap().trigger,
++            Key::KEY_Z
++        );
++        assert_eq!(
++            parse_hotkey_with_layout("Super+Z", &de).unwrap().trigger,
++            Key::KEY_Y
++        );
++    }
++
+     #[test]
+     fn parse_high_function_keys() {
+         assert_eq!(parse_hotkey("Shift+F13").unwrap().trigger, Key::KEY_F13);
