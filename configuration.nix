@@ -16,6 +16,7 @@ in
     inputs.niri.nixosModules.niri
     # "${inputs.nixpkgs}/nixos/modules/services/desktops/pipewire/filter.nix"
     ./secrets/nix-expressions/nixos.nix
+    ./modules/voice-control
   ];
 
   nixpkgs.config = import ./nixpkgs-config.nix;
@@ -110,6 +111,555 @@ in
       DEVPATH=="/devices/virtual/misc/cpu_dma_latency", OWNER="root", GROUP="audio", MODE="0660"
     '';
   };
+
+  services.voiceControl = {
+    enable = true;
+    user = "philm";
+
+    midi = {
+      port = "Ampero Control";
+      commandNote = 48;
+      germanNote = 52;
+      enterNote = 123;
+      dictationNote = 53;
+    };
+
+    whisperCommand = {
+      pollMs = 40;
+      audioMs = 600;
+      vadMs = 100;
+      startupMs = 0;
+    };
+
+    commands = {
+      default = {
+        left = "${pkgs.niri-unstable}/bin/niri msg action focus-column-left";
+        right = "${pkgs.niri-unstable}/bin/niri msg action focus-column-right";
+        up = "${pkgs.niri-unstable}/bin/niri msg action focus-window-or-workspace-up";
+        down = "${pkgs.niri-unstable}/bin/niri msg action focus-window-or-workspace-down";
+        launch = "${pkgs.niri-unstable}/bin/niri msg action spawn -- \"rofi\" \"-show\" \"run\"";
+        kitty = "${pkgs.kitty}/bin/kitty --detach";
+        enter = "key enter";
+
+        overview = "${pkgs.niri-unstable}/bin/niri msg action toggle-overview";
+        firefox = "focus_app firefox";
+
+        maximize = "${pkgs.niri-unstable}/bin/niri msg action maximize-window-to-edges";
+        fullscreen = "${pkgs.niri-unstable}/bin/niri msg action fullscreen-window";
+
+        copy = "key ctrl+c";
+        paste = "key ctrl+v";
+
+        play = "key x:XF86AudioPlay";
+        pause = "key x:XF86AudioPause";
+      };
+
+      modes = {
+        overview = {
+          priority = 100;
+          match.overview = true;
+
+          commands = {
+            left = "${pkgs.niri-unstable}/bin/niri msg action focus-column-left";
+            right = "${pkgs.niri-unstable}/bin/niri msg action focus-column-right";
+            up = "${pkgs.niri-unstable}/bin/niri msg action focus-workspace-up";
+            down = "${pkgs.niri-unstable}/bin/niri msg action focus-workspace-down";
+          };
+        };
+
+        rofi = {
+          priority = 90;
+
+          match = {
+            overview = false;
+            layerNamespace = "^rofi$";
+          };
+
+          commands = {
+            abort = "key esc";
+          };
+        };
+
+        terminal = {
+          priority = 60;
+
+          match = {
+            overview = false;
+            appId = "kitty|foot|alacritty|wezterm|ghostty";
+          };
+
+          commands = {
+            copy = "key ctrl+shift+c";
+            paste = "key ctrl+shift+v";
+          };
+        };
+
+        helix = {
+          priority = 80;
+
+          match = {
+            overview = false;
+            process = "^(hx|helix).*";
+          };
+
+          commands = {
+            insert = "key esc; key i";
+            undo = "key esc; key u";
+            redo = "key esc; key shift+u";
+            escape = "key esc";
+            "select all" = "key esc; key shift+5";
+
+            goto = "key esc; key g; key t";
+            "go to" = "key esc; key g; key t";
+            "go-to" = "key esc; key g; key t";
+
+            up = "key esc; key ctrl+u";
+            down = "key esc; key ctrl+d";
+          };
+        };
+
+        firefox = {
+          priority = 50;
+
+          match = {
+            overview = false;
+            appId = "firefox";
+          };
+
+          commands = {
+            back = "key alt+left";
+            forward = "key alt+right";
+            next = "key ctrl+tab";
+            previous = "key ctrl+shift+tab";
+            reload = "key ctrl+s";
+            new = "key ctrl+f";
+            close = "key ctrl+w";
+          };
+        };
+      };
+    };
+
+    dictation = {
+      enableLlm = false;
+      # Group related vocabulary to avoid repeating "git" and separator tokens.
+      # Keep the combined recognition prompt within Whisper's 224-token window.
+      vocabulary = [
+        (builtins.concatStringsSep " " [
+          "git diff status c commit add log show fetch pull push branch switch checkout"
+          "merge rebase stash restore reset cherry-pick clone remote tag bisect"
+          "worktree submodule lfs pushall diffd difff"
+        ])
+        "systemctl journalctl nix nixos-rebuild nix-shell flake develop eval"
+        (builtins.concatStringsSep " " [
+          "z z dot hx rg rga fd jaq yq fzf lsd htop btm nvtop gh gitui difft"
+          "bat tldr dust procs tokei"
+        ])
+        "cargo rustc trunk wasm-pack node npm pnpm yarn deno python3 pip poetry make"
+        "docker ssh rsync curl wget aws rclone ffmpeg mpv yt-dlp magick pandoc"
+        (builtins.concatStringsSep " " [
+          "kitty firefox zeditor dolphin blender freecad inkscape gimp krita darktable"
+          "obs codex opencode"
+        ])
+        "nxd upgrade update enter tree"
+      ];
+
+      transforms = [
+        {
+          name = "nix-command";
+          pattern = ''(?i)^\s*(?:nicks|nyx|nixs|nx)(\s|[.!?]*\s*$)'';
+          replace = "nix$1";
+        }
+        {
+          name = "hx-command";
+          pattern = ''(?i)^\s*(?:h\s*x|h ex)(\s|$)'';
+          replace = "hx$1";
+        }
+        {
+          name = "htop-command";
+          pattern = ''(?i)^\s*(?:h\s*top|age top)(\s|$)'';
+          replace = "htop$1";
+        }
+        {
+          name = "nvtop-command";
+          pattern = ''(?i)^\s*(?:n\s*v\s*top|envy top)(\s|$)'';
+          replace = "nvtop$1";
+        }
+        {
+          name = "rg-command";
+          pattern = ''(?i)^\s*(?:r\s*g|are gee)(\s|$)'';
+          replace = "rg$1";
+        }
+        {
+          name = "fd-command";
+          pattern = ''(?i)^\s*(?:f\s*d|eff dee)(\s|$)'';
+          replace = "fd$1";
+        }
+        {
+          name = "jaq-command";
+          pattern = ''(?i)^\s*(?:jack|jac|jay cue)(\s|$)'';
+          replace = "jaq$1";
+        }
+        {
+          name = "short-input";
+          pattern = ''(?s)^\s*(\S+(?:\s+\S+){0,3})\s*$'';
+          replace = "$1";
+          lowercaseFirst = true;
+          trimEndPunctuation = true;
+        }
+        {
+          name = "nxd-command";
+          pattern = ''(?i)^\s*nxd(\s|$)'';
+          replace = "nxd$1";
+        }
+        {
+          name = "spoken-dot";
+          # Run after short-input so a dictated literal dot is not stripped.
+          pattern = ''(?i)\s*\bdot\b\s*'';
+          replace = ".";
+        }
+        {
+          name = "spoken-dash";
+          # Keep the space before an option; consume only space after its dash.
+          pattern = ''(?i)\b(?:dash|minus)\b\s*'';
+          replace = "-";
+        }
+        {
+          name = "spoken-slash";
+          pattern = ''(?i)\s*\bslash\b\s*'';
+          replace = "/";
+        }
+      ];
+
+      modes = {
+        terminal = {
+          priority = 50;
+          match = {
+            overview = false;
+            appId = "^(kitty|foot|alacritty|wezterm|ghostty)$";
+          };
+          transforms = [
+            {
+              name = "git-command-prefix";
+              # These leading words are recognition errors for Git in this terminal setup.
+              pattern = ''(?i)^\s*(?:get|kit|good)[.,]?(\s|$)'';
+              replace = "git$1";
+            }
+            {
+              name = "git-short-command";
+              # Normalize known bare subcommands, including other common Git misrecognitions.
+              pattern = ''(?i)^\s*(?:git|good|did)[.,]?\s+(diff|status|c|commit|add|log|show|fetch|pull|push|branch|switch|checkout|merge|rebase|stash|restore|reset|cherry-pick|clone|remote|tag|bisect|worktree|submodule|lfs|pushall|diffd|difff)[.!?]*\s*$'';
+              replace = "git $1";
+              lowercase = true;
+            }
+            # Match complete utterances, including optional recognition punctuation.
+            # These corrections type text; they do not press Enter.
+            {
+              name = "git-diff";
+              pattern = ''(?i)^\s*(?:(?:git|get|kit|good)[.,]?\s+diff|(?:git|get)\s+this)[.!?]*\s*$'';
+              replace = "git diff";
+            }
+            {
+              name = "git-status";
+              pattern = ''(?i)^\s*(?:(?:git|get|kit|good)[.,]?\s+status|(?:git|get)\s+started)[.!?]*\s*$'';
+              replace = "git status";
+            }
+            {
+              name = "git-c";
+              pattern = ''(?i)^\s*(?:(?:git|kit)\s+c|(?:git|good)\s+to\s+see(?:\s+you)?|(?:git|good)[.,]?\s+see(?:\s+you)?)[.!?]*\s*$'';
+              replace = "git c";
+            }
+            {
+              name = "git-commit";
+              pattern = ''(?i)^\s*(?:(?:git|did|good)\s+commit|git\s*,?\s+come\s+with\s+me|commit)[.!?]*\s*$'';
+              replace = "git commit";
+            }
+            {
+              name = "git-attached-short-option";
+              # Repair "git c-a" while preserving flags, arguments and hyphenated subcommands.
+              pattern = ''(?i)^(\s*git\s+(?:c|add|diff|commit|status))(-[a-z])(\s|$)'';
+              replace = "$1 $2$3";
+            }
+            {
+              name = "systemctl";
+              pattern = ''(?i)^\s*system\s*(?:ctl|city\s+r)[.!?]*\s*$'';
+              replace = "systemctl";
+            }
+            {
+              name = "journalctl";
+              pattern = ''(?xi)^\s*(?:
+                journal\s*,?\s*(?:ctl|cdl|citiel)
+                | jean(?:[-\s]+(?:anthony|anne|ann|marc))?\s*,?\s*(?:c[.\s]*[td][.\s]*l|c[.\s]*t[.\s]*r|c[.\s]*t[.\s]*a[.\s]*r|sit\s+down|sidial|sidier|citiel)
+                | john\s+(?:c[.\s]*[td][.\s]*l|c[.\s]*gales?|octl|city\s+(?:hall|health)|(?:on\s+)?ctl)
+                | stronghold\s+city\s+hall
+              )[.,!?]*\s*$'';
+              replace = "journalctl";
+            }
+            {
+              name = "hx";
+              pattern = ''(?i)^\s*(?:hx|helix|relax)[.!?]*\s*$'';
+              replace = "hx";
+            }
+            {
+              name = "z-dot-query";
+              # Global spoken-dot turns "z dot" into "z."; keep this directory query literal.
+              pattern = ''(?i)^\s*(?:z|zee|see(?:\s+you)?|si)\.\s*$'';
+              replace = "z dot";
+            }
+            {
+              name = "zoxide";
+              # One path token only: reject longer sentences. Preserve dots within paths.
+              pattern = ''(?i)^\s*(?:z|zee|see(?:\s+you)?|si)(?:[.?!,]+\s*|\s+|-)([^\s!?.,]+(?:\.[^\s!?.,]+)*|\.[^\s!?.,]+(?:\.[^\s!?.,]+)*)[.!?]*\s*$'';
+              replace = "z $1";
+              lowercase = true;
+            }
+          ];
+        };
+
+        codex = {
+          priority = 85;
+          match = {
+            overview = false;
+            process = "^(codex|codex-cli)$";
+          };
+          transforms = [
+            {
+              name = "slash-command";
+              pattern = ''(?i)^\s*(status|usage|model|permissions|review|compact|diff|mention|mcp|skills|apps|plugins|help|new|resume|fork|init|feedback|logout|quit)[.!?]?\s*$'';
+              replace = "/$1\n";
+              lowercase = true;
+            }
+          ];
+        };
+
+        helix = {
+          priority = 80;
+          match = {
+            overview = false;
+            process = "^(hx|helix)$";
+          };
+          transforms = [
+            {
+              name = "insert-mode";
+              pattern = ''(?i)^\s*insert[.!?]?\s*$'';
+              replace = "\\k{esc}i";
+            }
+            {
+              name = "append-mode";
+              pattern = ''(?i)^\s*append[.!?]?\s*$'';
+              replace = "\\k{esc}a";
+            }
+            {
+              name = "goto";
+              pattern = ''(?i)^\s*(?:goto|go[ -]?to)[.!?]?\s*$'';
+              replace = "\\k{esc}gt";
+            }
+            {
+              name = "search";
+              pattern = ''(?i)^\s*(?:find|search)\s+(.+?)\s*$'';
+              replace = "\\k{esc}/$1";
+            }
+            {
+              name = "open-search";
+              pattern = ''(?i)^\s*(?:find|search)[.!?]?\s*$'';
+              replace = "\\k{esc}/";
+            }
+          ];
+        };
+
+        firefox = {
+          priority = 50;
+          match = {
+            overview = false;
+            appId = "firefox";
+          };
+          transforms = [
+            {
+              name = "find";
+              pattern = ''(?i)^\s*(?:find|search)\s+(.+?)\s*$'';
+              replace = "\\k{ctrl+e}\\w{150}$1";
+            }
+            {
+              name = "open-find";
+              pattern = ''(?i)^\s*(?:find|search)[.!?]?\s*$'';
+              replace = "\\k{ctrl+e}\\w{150}";
+            }
+          ];
+        };
+      };
+    };
+
+    llmContext = {
+      default = ''
+        Preserve the speaker's language and wording.
+        Never translate.
+        Correct only likely speech-recognition errors.
+      '';
+
+      modes = {
+        overview = {
+          priority = 100;
+          match.overview = true;
+
+          context = ''
+            The user is interacting with the niri overview.
+            Terms are likely related to windows, workspaces and applications.
+          '';
+        };
+        terminal = {
+          priority = 50;
+
+          match = {
+            overview = false;
+            appId = "kitty|foot|alacritty|wezterm|ghostty";
+          };
+
+          context = ''
+            The focused application is a terminal.
+
+            Prefer interpreting ambiguous speech as common shell commands, Unix utilities,
+            development tools, Nix/NixOS commands, Rust tooling, Git commands and identifiers.
+
+            Commands and tools commonly intended include:
+            hx
+            z
+            cd
+            ls
+            pwd
+            mkdir
+            rm
+            mv
+            cp
+            ln
+            cat
+            less
+            tail
+            watch
+            find
+            fd
+            rg
+            grep
+            sed
+            awk
+            jaq
+            curl
+            wget
+            ssh
+            scp
+            rsync
+            htop
+            nvtop
+            systemctl
+            journalctl
+            dmesg
+            ps
+            kill
+            pkill
+            cargo
+            cargo check
+            cargo build
+            cargo run
+            cargo test
+            cargo watch
+            rustc
+            rustup
+            nix
+            nix build
+            nix develop
+            nix shell
+            nix run
+            nix log
+            nix flake
+            nix flake check
+            nix flake update
+            nixos-rebuild
+            deploy
+            git
+            git status
+            git diff
+            git add
+            git commit
+            git push
+            git pull
+            git fetch
+            git switch
+            git checkout
+            git rebase
+            git log
+            niri
+            niri msg
+            whisrs
+            aseqdump
+            llama-server
+
+            In particular:
+            - "H X", "H ex", or similar likely means "hx".
+            - "H top" likely means "htop".
+            - "NV top", "N V top", or similar likely means "nvtop".
+            - "R G" likely means "rg".
+            - "F D" likely means "fd".
+            - "JAC", "jack", or similar may mean "jaq" when used as a shell command.
+            - "Z <name>" or "zee <name>" or "c <name>"  likely means the zoxide command "z <name>".
+            - Preserve flags beginning with "-" or "--".
+            - Preserve paths, filenames, package names, Git branches and Rust identifiers.
+            - Prefer lowercase command names.
+            - Do not expand a short command into explanatory prose.
+          '';
+        };
+
+        codex = {
+          priority = 85;
+          match = {
+            overview = false;
+            process = "^(codex|codex-cli)$";
+          };
+
+          context = "The user is dictating into Codex.";
+        };
+
+        helix = {
+          priority = 80;
+          match = {
+            overview = false;
+            process = "^(hx|helix)$";
+          };
+
+          context = ''
+            The user is editing text or source code in Helix.
+            Prefer exact technical terminology, identifiers, filenames,
+            programming-language syntax and capitalization.
+            Do not rewrite code-like text into natural prose.
+          '';
+        };
+
+        rofi = {
+          priority = 90;
+          match.layerNamespace = "^rofi$";
+
+          context = ''
+            The user is interacting with the Rofi application launcher.
+            The transcription may contain application names, executable names
+            or short search terms.
+          '';
+        };
+
+        firefox = {
+          priority = 50;
+          match = {
+            overview = false;
+            appId = "firefox";
+          };
+
+          context = ''
+            The user is in Firefox.
+            The transcription may contain website names, URLs, search terms
+            or text intended for a web page.
+          '';
+        };
+      };
+    };
+  };
+
+
   # services.pipewire.deepfilter.enable = true;
 
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
