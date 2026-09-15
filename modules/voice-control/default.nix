@@ -264,6 +264,11 @@ in
     };
 
     whisperCommand = {
+      enable = mkEnableOption "Whisper voice commands" // {
+        default = true;
+        description = "Whether to run Whisper voice commands. Disable to avoid loading the command model into VRAM.";
+      };
+
       model = mkOption {
         type = types.package;
         default = whisperSmallEn;
@@ -433,11 +438,10 @@ in
 
     environment.systemPackages = [
       pkgs.whisrs-voice-control
-      pkgs.whisper-command-env
       pkgs.alsa-utils
       pkgs.dotool
       niri
-    ];
+    ] ++ lib.optional cfg.whisperCommand.enable pkgs.whisper-command-env;
 
     services.llama-cpp = {
       enable = cfg.dictation.enableLlm;
@@ -463,6 +467,7 @@ in
 
     systemd.user.services.whisrs-context-proxy = {
       description = "Context-aware whisrs LLM proxy";
+      environment.VOICE_CONTROL_KEYBOARD_GATE = "%t/voice-keyboard.held";
       wantedBy = [ "graphical-session.target" ];
       unitConfig.ConditionUser = cfg.user;
 
@@ -489,6 +494,7 @@ in
       ];
       unitConfig.ConditionUser = cfg.user;
       environment = {
+        VOICE_CONTROL_KEYBOARD_GATE = "%t/voice-keyboard.held";
         XKB_DEFAULT_LAYOUT = "us";
         XKB_DEFAULT_VARIANT = "colemak";
       };
@@ -501,7 +507,7 @@ in
       };
     };
 
-    systemd.user.services.voice-command = {
+    systemd.user.services.voice-command = mkIf cfg.whisperCommand.enable {
       description = "Guided Whisper contextual niri voice commands";
       wantedBy = [ "graphical-session.target" ];
       unitConfig.ConditionUser = cfg.user;
@@ -544,15 +550,14 @@ in
 
     systemd.user.services.midi-voice-control = {
       description = "MIDI and keyboard controls for dictation and niri voice commands";
+      environment.VOICE_CONTROL_KEYBOARD_GATE = "%t/voice-keyboard.held";
       wantedBy = [ "graphical-session.target" ];
       wants = [
         "whisrs.service"
-        "voice-command.service"
-      ];
+      ] ++ lib.optional cfg.whisperCommand.enable "voice-command.service";
       after = [
         "whisrs.service"
-        "voice-command.service"
-      ];
+      ] ++ lib.optional cfg.whisperCommand.enable "voice-command.service";
       unitConfig.ConditionUser = cfg.user;
 
       serviceConfig = {
@@ -581,7 +586,7 @@ in
           cfg.keyboard.germanShortcut
         ];
         ExecStopPost = pkgs.writeShellScript "voice-control-midi-cleanup" ''
-          rm -f "$XDG_RUNTIME_DIR/voice-command.enabled"
+          rm -f "$XDG_RUNTIME_DIR/voice-command.enabled" "$XDG_RUNTIME_DIR/voice-keyboard.held"
           printf 'keyup enter\n' | ${pkgs.dotool}/bin/dotool || true
         '';
         Restart = "always";

@@ -35,10 +35,10 @@ diff --git a/src/daemon/pipeline.rs b/src/daemon/pipeline.rs
 -    let (text_tx, text_rx) = tokio::sync::mpsc::channel::<String>(64);
 +    let (raw_text_tx, mut raw_text_rx) = tokio::sync::mpsc::channel::<String>(64);
 +    let (text_tx, text_rx) = tokio::sync::mpsc::channel::<String>(64);
- 
+
      // Build the filler filter once for the lifetime of this pipeline so the
      // batch loop below isn't recompiling regexes on every typed delta.
-@@ -120,10 +123,27 @@ pub(crate) async fn run_streaming_pipeline(params: StreamingPipelineParams) -> R
+@@ -120,10 +123,40 @@ pub(crate) async fn run_streaming_pipeline(params: StreamingPipelineParams) -> R
      let config_clone = config.clone();
      let backend_task = tokio::spawn(async move {
          backend
@@ -46,7 +46,7 @@ diff --git a/src/daemon/pipeline.rs b/src/daemon/pipeline.rs
 +            .transcribe_stream(backend_rx, raw_text_tx, &config_clone)
              .await
      });
- 
+
 +    // Treat every backend fragment as an independent dictation. With local
 +    // Whisper's silence segmentation this is exactly one pause-delimited
 +    // phrase, so anchored regexes match the fragment rather than the entire
@@ -57,6 +57,19 @@ diff --git a/src/daemon/pipeline.rs b/src/daemon/pipeline.rs
 +            if transform_cancel.load(Ordering::SeqCst) {
 +                break;
 +            }
++            if let Some(path) = std::env::var_os("VOICE_CONTROL_KEYBOARD_GATE") {
++                while std::path::Path::new(&path).exists() {
++                    if transform_cancel.load(Ordering::SeqCst) {
++                        return;
++                    }
++                    tokio::time::sleep(std::time::Duration::from_millis(10)).await;
++                }
++            }
++            // Cancellation may have arrived with the release.
++            if transform_cancel.load(Ordering::SeqCst) {
++                break;
++            }
++
 +            let outcome = apply_llm_post_process(text, &context).await;
 +            if text_tx.send(outcome.text).await.is_err() {
 +                break;
@@ -67,10 +80,10 @@ diff --git a/src/daemon/pipeline.rs b/src/daemon/pipeline.rs
      // Spawn a task that batches and types text as it arrives.
      // We collect deltas for a short window to avoid creating a new virtual
      // keyboard for every single word delta from the streaming API.
-@@ -272,6 +290,11 @@ pub(crate) async fn run_streaming_pipeline(params: StreamingPipelineParams) -> R
+@@ -272,6 +303,11 @@ pub(crate) async fn run_streaming_pipeline(params: StreamingPipelineParams) -> R
          }
      }
- 
+
 +    if let Err(e) = transform_task.await {
 +        error!("streaming transform task panicked: {e}");
 +        stream_error.get_or_insert_with(|| format!("transform task panicked: {e}"));
@@ -79,3 +92,38 @@ diff --git a/src/daemon/pipeline.rs b/src/daemon/pipeline.rs
      // Wait for the typing side to observe the closed text channel and drain
      // any final batch. If that somehow gets stuck, abort it so the daemon can
      // return to Idle instead of staying in Transcribing forever.
+diff --git a/src/daemon/injection.rs b/src/daemon/injection.rs
+--- a/src/daemon/injection.rs
++++ b/src/daemon/injection.rs
+@@ -96,12 +96,23 @@
+     LlmInjection::Inject(cleaned)
+ }
+
++// Also guard the final injection in case another shortcut was pressed
++// while transcription or LLM processing was still in flight.
++fn wait_for_keyboard_release() {
++    if let Some(path) = std::env::var_os("VOICE_CONTROL_KEYBOARD_GATE") {
++        while std::path::Path::new(&path).exists() {
++            std::thread::sleep(std::time::Duration::from_millis(10));
++        }
++    }
++}
++
+ /// Type text at the cursor using uinput (keyboard injection) or clipboard paste.
+ pub(crate) fn type_text_at_cursor(
+     text: &str,
+     key_delay: std::time::Duration,
+     backend: InjectorBackend,
+ ) -> Result<()> {
++    wait_for_keyboard_release();
+     let keyboard_slot = KEYBOARD.get_or_init(|| StdMutex::new(None));
+     let mut keyboard_guard = keyboard_slot
+         .lock()
+@@ -146,6 +157,7 @@
+ ) -> Result<()> {
+     use evdev::Key;
+
++    wait_for_keyboard_release();
+     let keyboard_slot = KEYBOARD.get_or_init(|| StdMutex::new(None));
+     let mut keyboard_guard = keyboard_slot
+         .lock()

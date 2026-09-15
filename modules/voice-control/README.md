@@ -32,7 +32,8 @@ services.voiceControl = {
   # 52 = Enter (real held uinput key)
   # 53 = hold for English dictation
 
-  command = {
+  whisperCommand = {
+    enable = true;
     pollMs = 50;
     audioMs = 800;
     vadMs = 400;
@@ -66,6 +67,11 @@ change either binding. The keyboard listener reads key state without taking
 events from niri; extra modifiers do not trigger the other shortcut. One
 `midi-voice-control` user service handles both MIDI and keyboard input.
 
+Keyboard dictation queues phrases until the shortcut letter and all modifiers
+have been released. Text, transform keystrokes, and automatic Enter wait for
+release, so held Super/Shift keys cannot turn dictation into niri shortcuts.
+MIDI dictation still streams when no keyboard dictation shortcut is held.
+
 The patched whisper-command accepts:
 
 - `WHISPER_COMMAND_POLL_MS`
@@ -74,4 +80,9 @@ The patched whisper-command accepts:
 - `WHISPER_COMMAND_STARTUP_MS`
 - `WHISPER_COMMAND_GATE_FILE`
 
-The process stays warm. While the gate file does not exist it clears buffered audio and skips recognition.
+When enabled (the default), the command process stays warm. While the gate file
+does not exist it clears buffered audio and skips recognition.
+
+Set `services.voiceControl.whisperCommand.enable = false;` and rebuild/switch
+your NixOS configuration to disable the command service entirely. Its model
+will not load into VRAM. Dictation remains enabled and uses its own model.

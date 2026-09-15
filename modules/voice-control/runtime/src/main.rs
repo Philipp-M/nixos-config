@@ -1033,6 +1033,8 @@ fn handle_proxy_client(
         let context = context_for(&config, &snapshot);
         eprintln!("PROXY: context capture {:?}", t.elapsed());
 
+        wait_for_keyboard_release();
+
         if let Some(matched) = apply_transform(&config, &snapshot, &body)? {
             eprintln!(
                 "PROXY: transform {} -> {:?} submit={}",
@@ -1138,6 +1140,7 @@ impl Dotool {
     }
 
     fn key(&mut self, key: &str) -> Result<()> {
+        wait_for_keyboard_release();
         writeln!(self.stdin, "key {key}")?;
         self.stdin.flush()?;
         Ok(())
@@ -1722,6 +1725,21 @@ fn matches_shortcut(held: &[bool; 256], key: usize, modifiers: &[[usize; 2]]) ->
             .all(|pair| (held[pair[0]] || held[pair[1]]) == modifiers.contains(pair))
 }
 
+fn wait_for_keyboard_release() {
+    if let Some(path) = env::var_os("VOICE_CONTROL_KEYBOARD_GATE") {
+        while Path::new(&path).exists() {
+            thread::sleep(std::time::Duration::from_millis(10));
+        }
+    }
+}
+
+fn keyboard_output_blocked(held: &[bool; 256], keys: &[usize]) -> bool {
+    keys.iter().any(|key| held[*key])
+        || [125, 126, 56, 100, 29, 97, 42, 54]
+            .iter()
+            .any(|key| held[*key])
+}
+
 fn run_controls(args: MidiArgs, english: &str, german: &str) -> Result<()> {
     let bindings = [
         (shortcut_keys(english)?, "en"),
@@ -1734,6 +1752,42 @@ fn run_controls(args: MidiArgs, english: &str, german: &str) -> Result<()> {
         .collect::<Vec<_>>();
     if devices.is_empty() {
         eprintln!("no readable keyboard input devices; MIDI remains active");
+    }
+    let devices = Arc::new(devices);
+    let keyboard_gate = env::var_os("VOICE_CONTROL_KEYBOARD_GATE").map(PathBuf::from);
+    let gate_lock = Arc::new(Mutex::new(()));
+    if let Some(path) = keyboard_gate.clone() {
+        let devices = Arc::clone(&devices);
+        let gate_lock = Arc::clone(&gate_lock);
+        let gate_bindings = bindings.clone();
+        let keys = [bindings[0].0.0, bindings[1].0.0];
+        // Stop waits for transcription to drain, so release detection must
+        // continue independently while the controls thread waits for stop.
+        thread::spawn(move || {
+            loop {
+                {
+                    let _guard = gate_lock.lock().unwrap();
+                    let held = held_keys(&devices);
+                    if gate_bindings
+                        .iter()
+                        .any(|((key, modifiers), _)| matches_shortcut(&held, *key, modifiers))
+                        && !path.exists()
+                    {
+                        if let Err(error) = fs::write(&path, []) {
+                            eprintln!("keyboard gate creation failed: {error}");
+                        }
+                    }
+                    if !keyboard_output_blocked(&held, &keys) {
+                        if let Err(error) = fs::remove_file(&path) {
+                            if error.kind() != io::ErrorKind::NotFound {
+                                eprintln!("keyboard gate cleanup failed: {error}");
+                            }
+                        }
+                    }
+                }
+                thread::sleep(std::time::Duration::from_millis(10));
+            }
+        });
     }
     let (tx, rx) = std::sync::mpsc::channel();
     let port = args.port.clone();
@@ -1772,6 +1826,10 @@ fn run_controls(args: MidiArgs, english: &str, german: &str) -> Result<()> {
                         matches_shortcut(&held, *key, modifiers) && !key_was_held[index]
                     })
         {
+            if let Some(path) = &keyboard_gate {
+                let _guard = gate_lock.lock().unwrap();
+                fs::write(path, [])?;
+            }
             active = Some(index);
             if let Err(error) = run_quiet(&args.whisrs, &["start", "-l", bindings[index].1]) {
                 eprintln!("keyboard dictation start failed: {error}");
@@ -1860,11 +1918,27 @@ fn main() -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::{
-        Transform, TransformAction, matches_shortcut, normalize_process_name, replacement_actions,
-        selected_text, shortcut_keys,
+        Transform, TransformAction, keyboard_output_blocked, matches_shortcut,
+        normalize_process_name, replacement_actions, selected_text, shortcut_keys,
     };
     use regex::Regex;
     use serde_json::json;
+
+    #[test]
+    fn output_waits_for_letter_and_all_modifiers_to_release() {
+        for keys in [vec![30, 125], vec![125], vec![30], vec![42], vec![126, 54]] {
+            let mut held = [false; 256];
+            for key in keys {
+                held[key] = true;
+            }
+            assert!(keyboard_output_blocked(&held, &[30, 30]));
+        }
+        let mut held = [false; 256];
+        assert!(!keyboard_output_blocked(&held, &[30, 30]));
+        held[48] = true;
+        assert!(!keyboard_output_blocked(&held, &[30, 30]));
+        assert!(keyboard_output_blocked(&held, &[30, 48]));
+    }
 
     #[test]
     fn parses_held_shortcut() {
