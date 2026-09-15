@@ -1,0 +1,395 @@
+diff --git a/src/daemon/dictation.rs b/src/daemon/dictation.rs
+--- a/src/daemon/dictation.rs
++++ b/src/daemon/dictation.rs
+@@ -133,6 +133,7 @@
+                 let params = StreamingPipelineParams {
+                     audio_rx,
+                     backend: Arc::clone(&context.transcription_backend),
++                    context: Arc::clone(&context),
+                     daemon_state: Arc::clone(&daemon_state),
+                     window_tracker: Arc::clone(&context.window_tracker),
+                     state_tx: context.state_tx.clone(),
+diff --git a/src/daemon/pipeline.rs b/src/daemon/pipeline.rs
+--- a/src/daemon/pipeline.rs
++++ b/src/daemon/pipeline.rs
+@@ -50,6 +50,7 @@
+     // Channels and shared handles.
+     pub(crate) audio_rx: tokio::sync::mpsc::UnboundedReceiver<Vec<i16>>,
+     pub(crate) backend: Arc<dyn TranscriptionBackend>,
++    pub(crate) context: Arc<DaemonContext>,
+     pub(crate) daemon_state: Arc<Mutex<DaemonState>>,
+     pub(crate) window_tracker: Arc<dyn WindowTracker>,
+     pub(crate) state_tx: tokio::sync::watch::Sender<State>,
+@@ -92,6 +93,7 @@
+     let StreamingPipelineParams {
+         mut audio_rx,
+         backend,
++        context,
+         daemon_state,
+         window_tracker,
+         state_tx,
+@@ -119,6 +121,7 @@
+     let notify_error = notify;
+     let pipeline_start = std::time::Instant::now();
+     let (audio_tx, backend_rx) = tokio::sync::mpsc::channel::<Vec<i16>>(256);
++    let (raw_text_tx, mut raw_text_rx) = tokio::sync::mpsc::channel::<String>(64);
+     let (text_tx, text_rx) = tokio::sync::mpsc::channel::<String>(64);
+
+     // Build the filler filter once for the lifetime of this pipeline so the
+@@ -138,8 +141,66 @@
+     let config_clone = config.clone();
+     let backend_task = tokio::spawn(async move {
+         backend
+-            .transcribe_stream(backend_rx, text_tx, &config_clone)
++            .transcribe_stream(backend_rx, raw_text_tx, &config_clone)
+             .await
++    });
++
++    // Pauses still stream text. Session-only filters may run only if nothing
++    // has streamed yet and recording has ended, after collecting the final drain.
++    let recording_finished = Arc::new(AtomicBool::new(false));
++    let transform_finished = Arc::clone(&recording_finished);
++    let transform_language = language.clone();
++    let transform_cancel = Arc::clone(&cancel_flag);
++    let transform_task = tokio::spawn(async move {
++        let mut streamed = false;
++        while let Some(text) = raw_text_rx.recv().await {
++            if text.trim().is_empty() {
++                continue;
++            }
++            if transform_cancel.load(Ordering::SeqCst) {
++                break;
++            }
++            let mut keyboard_queued = false;
++            if let Some(path) = std::env::var_os("VOICE_CONTROL_KEYBOARD_GATE") {
++                while std::path::Path::new(&path).exists() {
++                    keyboard_queued = true;
++                    if transform_cancel.load(Ordering::SeqCst) {
++                        return;
++                    }
++                    tokio::time::sleep(std::time::Duration::from_millis(10)).await;
++                }
++            }
++            // Releasing the shortcut clears its gate just before sending Stop.
++            // Wait for that Stop to reach the audio pipeline before classifying queued text.
++            while keyboard_queued && !transform_finished.load(Ordering::SeqCst) {
++                if transform_cancel.load(Ordering::SeqCst) {
++                    return;
++                }
++                tokio::time::sleep(std::time::Duration::from_millis(10)).await;
++            }
++            // Cancellation may have arrived with the release.
++            if transform_cancel.load(Ordering::SeqCst) {
++                break;
++            }
++
++            let Some((text, whole_session)) = session_fragment(
++                text,
++                &mut raw_text_rx,
++                streamed,
++                transform_finished.load(Ordering::SeqCst),
++                &transform_cancel,
++            )
++            .await
++            else {
++                return;
++            };
++            let outcome =
++                apply_llm_post_process(text, &context, whole_session, &transform_language).await;
++            if text_tx.send(outcome.text).await.is_err() {
++                break;
++            }
++            streamed = true;
++        }
+     });
+
+     // Spawn a task that batches and types text as it arrives.
+@@ -259,9 +320,8 @@
+     });
+
+     // Forward audio from capture to backend, with auto-stop detection.
+-    let mut auto_stop = (silence_timeout_ms != 0).then(|| {
+-        AutoStopDetector::new(SILENCE_RMS_THRESHOLD, silence_timeout_ms, SAMPLE_RATE)
+-    });
++    let mut auto_stop = (silence_timeout_ms != 0)
++        .then(|| AutoStopDetector::new(SILENCE_RMS_THRESHOLD, silence_timeout_ms, SAMPLE_RATE));
+
+     while let Some(chunk) = audio_rx.recv().await {
+         // Check for auto-stop.
+@@ -308,6 +368,7 @@
+     }
+
+     // Close the audio channel to signal end-of-stream to the backend.
++    recording_finished.store(true, Ordering::SeqCst);
+     drop(audio_tx);
+
+     // Wait for backend to finish.
+@@ -323,6 +384,11 @@
+             error!("streaming backend task panicked: {e}");
+             stream_error = Some(format!("transcription task panicked: {e}"));
+         }
++    }
++
++    if let Err(e) = transform_task.await {
++        error!("streaming transform task panicked: {e}");
++        stream_error.get_or_insert_with(|| format!("transform task panicked: {e}"));
+     }
+
+     // Wait for the typing side to observe the closed text channel and drain
+@@ -1007,7 +1073,39 @@
+ /// Reuses `llm::rewrite_text` exactly as the llm-command path does, with the
+ /// dictated text as the "selected text" and the configured instruction as the
+ /// "voice instruction".
+-async fn apply_llm_post_process(text: String, context: &DaemonContext) -> DictationOutcome {
++async fn session_fragment(
++    mut text: String,
++    fragments: &mut tokio::sync::mpsc::Receiver<String>,
++    streamed: bool,
++    recording_finished: bool,
++    cancelled: &AtomicBool,
++) -> Option<(String, bool)> {
++    let whole_session = !streamed && recording_finished;
++    if cancelled.load(Ordering::SeqCst) {
++        return None;
++    }
++    if whole_session {
++        while let Some(rest) = fragments.recv().await {
++            if cancelled.load(Ordering::SeqCst) {
++                return None;
++            }
++            if !rest.trim().is_empty() {
++                if !text.ends_with(char::is_whitespace) && !rest.starts_with(char::is_whitespace) {
++                    text.push(' ');
++                }
++                text.push_str(&rest);
++            }
++        }
++    }
++    Some((text, whole_session))
++}
++
++async fn apply_llm_post_process(
++    text: String,
++    context: &DaemonContext,
++    whole_session: bool,
++    language: &str,
++) -> DictationOutcome {
+     let Some(instruction) = llm_post_process_instruction(&context.config) else {
+         return DictationOutcome::raw(text);
+     };
+@@ -1023,7 +1121,7 @@
+
+     let rewritten = match tokio::time::timeout(
+         LLM_POST_PROCESS_TIMEOUT,
+-        llm::rewrite_text(&llm_config, &text, instruction),
++        llm::rewrite_dictation_text(&llm_config, &text, instruction, whole_session, language),
+     )
+     .await
+     {
+@@ -1104,7 +1202,7 @@
+     // is inverted here and `Config::validate` warns instead. The rewritten
+     // text is what this function returns, so history records what was actually
+     // typed, tagged by `history_backend_tag` with whether the LLM produced it.
+-    let outcome = apply_llm_post_process(text, context).await;
++    let outcome = apply_llm_post_process(text, context, true, language).await;
+
+     let keys = KeystrokeSettings::from_config(&context.config.input);
+     let paste = context.config.input.paste;
+@@ -1338,6 +1436,89 @@
+ mod tests {
+     use super::*;
+     use std::sync::Mutex as StdMutex;
++
++    #[tokio::test]
++    async fn session_fragment_streams_pauses_without_waiting_for_stop() {
++        let (sender, mut receiver) = tokio::sync::mpsc::channel(4);
++        let cancelled = AtomicBool::new(false);
++        let result = tokio::time::timeout(
++            Duration::from_millis(100),
++            session_fragment("Heute ist".into(), &mut receiver, false, false, &cancelled),
++        )
++        .await
++        .unwrap()
++        .unwrap();
++        assert_eq!(result, ("Heute ist".into(), false));
++        // Even the final fragment belongs to an already streamed recording.
++        let final_result = session_fragment(
++            "schönes Wetter".into(),
++            &mut receiver,
++            true,
++            true,
++            &cancelled,
++        )
++        .await
++        .unwrap();
++        assert_eq!(final_result, ("schönes Wetter".into(), false));
++        drop(sender);
++    }
++
++    #[tokio::test]
++    async fn session_fragment_collects_all_queued_text_when_recording_stops() {
++        let (sender, mut receiver) = tokio::sync::mpsc::channel(4);
++        sender.send("schönes Wetter".into()).await.unwrap();
++        sender.send("und wir gehen spazieren".into()).await.unwrap();
++        let task = tokio::spawn(async move {
++            session_fragment(
++                "Heute ist".into(),
++                &mut receiver,
++                false,
++                true,
++                &AtomicBool::new(false),
++            )
++            .await
++            .unwrap()
++        });
++        tokio::task::yield_now().await;
++        assert!(
++            !task.is_finished(),
++            "the complete session must wait for the backend drain"
++        );
++        drop(sender);
++        let result = task.await.unwrap();
++        assert_eq!(
++            result,
++            (
++                "Heute ist schönes Wetter und wir gehen spazieren".into(),
++                true
++            )
++        );
++    }
++
++    #[tokio::test]
++    async fn session_fragment_cancellation_and_new_recordings_are_independent() {
++        let (sender, mut receiver) = tokio::sync::mpsc::channel(4);
++        drop(sender);
++        assert!(session_fragment(
++            "cancelled".into(),
++            &mut receiver,
++            false,
++            true,
++            &AtomicBool::new(true)
++        )
++        .await
++        .is_none());
++        let result = session_fragment(
++            "Guten Morgen".into(),
++            &mut receiver,
++            false,
++            true,
++            &AtomicBool::new(false),
++        )
++        .await
++        .unwrap();
++        assert_eq!(result, ("Guten Morgen".into(), true));
++    }
+
+     #[test]
+     fn transcription_prompt_neither() {
+diff --git a/src/daemon/injection.rs b/src/daemon/injection.rs
+--- a/src/daemon/injection.rs
++++ b/src/daemon/injection.rs
+@@ -718,9 +718,12 @@
+         refresh_keyboard_cache(&mut cache);
+     }
+     || {
+-        keyboard_cache()
+-            .lock()
+-            .is_ok_and(|mut cache| cache.any_modifier_held())
++        // Our dictation shortcut can still have its letter held after its modifier releases.
++        std::env::var_os("VOICE_CONTROL_KEYBOARD_GATE")
++            .is_some_and(|path| std::path::Path::new(&path).exists())
++            || keyboard_cache()
++                .lock()
++                .is_ok_and(|mut cache| cache.any_modifier_held())
+     }
+ }
+
+diff --git a/src/llm.rs b/src/llm.rs
+--- a/src/llm.rs
++++ b/src/llm.rs
+@@ -95,6 +95,8 @@
+     model: String,
+     messages: Vec<ChatMessage>,
+     temperature: f32,
++    #[serde(skip_serializing_if = "Option::is_none")]
++    dictation: Option<serde_json::Value>,
+ }
+
+ #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+@@ -385,6 +387,27 @@
+     selected_text: &str,
+     instruction: &str,
+ ) -> anyhow::Result<String> {
++    rewrite_with_dictation(config, selected_text, instruction, None).await
++}
++
++/// Metadata for the local dictation filter; other rewrite requests remain unchanged.
++pub async fn rewrite_dictation_text(
++    config: &LlmConfig,
++    selected_text: &str,
++    instruction: &str,
++    whole_session: bool,
++    language: &str,
++) -> anyhow::Result<String> {
++    let session = serde_json::json!({ "wholeSession": whole_session, "language": language });
++    rewrite_with_dictation(config, selected_text, instruction, Some(session)).await
++}
++
++async fn rewrite_with_dictation(
++    config: &LlmConfig,
++    selected_text: &str,
++    instruction: &str,
++    dictation: Option<serde_json::Value>,
++) -> anyhow::Result<String> {
+     let api_key = resolve_api_key(config)?;
+     info!("llm: sending to LLM (model={})", config.model);
+     debug!("instruction: {:?}", instruction);
+@@ -394,6 +417,7 @@
+         config,
+         &api_key,
+         rewrite_messages(selected_text, instruction),
++        dictation,
+     )
+     .await
+ }
+@@ -428,11 +452,13 @@
+     config: &LlmConfig,
+     api_key: &str,
+     messages: Vec<ChatMessage>,
++    dictation: Option<serde_json::Value>,
+ ) -> anyhow::Result<String> {
+     let request = ChatRequest {
+         model: config.model.clone(),
+         messages,
+         temperature: 0.3,
++        dictation,
+     };
+
+     let client = reqwest::Client::new();
+@@ -490,11 +516,26 @@
+                 ChatMessage::user("Hello".to_string()),
+             ],
+             temperature: 0.3,
++            dictation: None,
+         };
+         let json = serde_json::to_string(&request).unwrap();
+         assert!(json.contains("gpt-4o-mini"));
+         assert!(json.contains("system"));
+         assert!(json.contains("Hello"));
++        assert!(!json.contains("dictation"));
++    }
++
++    #[test]
++    fn dictation_session_metadata_serialization() {
++        let request = ChatRequest {
++            model: "local-proxy".into(),
++            messages: rewrite_messages("Guten Morgen", "dictate"),
++            temperature: 0.3,
++            dictation: Some(serde_json::json!({ "wholeSession": true, "language": "de" })),
++        };
++        let request = serde_json::to_value(request).unwrap();
++        assert_eq!(request["dictation"]["wholeSession"], true);
++        assert_eq!(request["dictation"]["language"], "de");
+     }
+
+     /// The framing every turn shares. Both callers depend on it: command mode
