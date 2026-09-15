@@ -1,0 +1,170 @@
+diff --git a/src/ipc.rs b/src/ipc.rs
+--- a/src/ipc.rs
++++ b/src/ipc.rs
+@@ -38,6 +38,14 @@ pub enum Command {
+     LlmCommand {
+         name: String,
+     },
++    #[serde(rename = "llm-command-start")]
++    LlmCommandStart {
++        name: String,
++    },
++    #[serde(rename = "llm-command-stop")]
++    LlmCommandStop {
++        name: String,
++    },
+     /// Reprogram a named LLM command (see `[[llm_commands]]` `set_hotkey`):
+     /// the currently selected text becomes the command's new instruction,
+     /// saved to config and applied live. No recording, LLM call, or typing.
+diff --git a/src/cli/main.rs b/src/cli/main.rs
+--- a/src/cli/main.rs
++++ b/src/cli/main.rs
+@@ -84,6 +84,16 @@ enum SubCmd {
+         /// Name of the [[llm_commands]] entry to run.
+         name: String,
+     },
++    #[command(name = "llm-command-start")]
++    LlmCommandStart {
++        /// Name of the [[llm_commands]] entry to start.
++        name: String,
++    },
++    #[command(name = "llm-command-stop")]
++    LlmCommandStop {
++        /// Name of the active [[llm_commands]] entry to stop.
++        name: String,
++    },
+     /// Reprogram a named LLM command from the current selection: highlight the
+     /// new instruction text, then run this — it's saved to config and applied
+     /// live. Pairs with an entry's `set_hotkey`.
+@@ -164,6 +176,12 @@ async fn main() -> anyhow::Result<()> {
+         SubCmd::LlmCommand { name } => {
+             send_command(Command::LlmCommand { name }).await?;
+         }
++        SubCmd::LlmCommandStart { name } => {
++            send_command(Command::LlmCommandStart { name }).await?;
++        }
++        SubCmd::LlmCommandStop { name } => {
++            send_command(Command::LlmCommandStop { name }).await?;
++        }
+         SubCmd::LlmCommandSet { name } => {
+             send_command(Command::SetLlmInstruction { name }).await?;
+         }
+diff --git a/src/daemon/main.rs b/src/daemon/main.rs
+--- a/src/daemon/main.rs
++++ b/src/daemon/main.rs
+@@ -23,5 +23,8 @@ mod startup;
+ 
+-use crate::command_mode::{handle_command_mode, handle_llm_command, handle_set_llm_instruction};
++use crate::command_mode::{
++    handle_command_mode, handle_llm_command, handle_llm_command_start, handle_llm_command_stop,
++    handle_set_llm_instruction,
++};
+ use crate::context::{DaemonContext, DaemonState};
+ use crate::dictation::{handle_cancel, handle_start, handle_stop, handle_toggle};
+ use crate::factory::create_backend;
+@@ -275,4 +278,10 @@ async fn handle_command(
+         Command::LlmCommand { name } => handle_llm_command(daemon_state, context, name).await,
++        Command::LlmCommandStart { name } => {
++            handle_llm_command_start(daemon_state, context, name).await
++        }
++        Command::LlmCommandStop { name } => {
++            handle_llm_command_stop(daemon_state, context, name).await
++        }
+         Command::SetLlmInstruction { name } => {
+             handle_set_llm_instruction(daemon_state, context, name).await
+         }
+diff --git a/src/daemon/command_mode.rs b/src/daemon/command_mode.rs
+--- a/src/daemon/command_mode.rs
++++ b/src/daemon/command_mode.rs
+@@ -564,6 +564,6 @@ pub(crate) async fn handle_llm_command(
+                 .cloned();
+             match entry {
+-                Some(entry) => llm_command_start(daemon_state, context, entry).await,
++                Some(entry) => llm_command_start(daemon_state, context, entry, false).await,
+                 None => Response::Error {
+                     message: format!("no llm_commands entry named '{name}' — check config.toml"),
+                 },
+@@ -579,4 +579,52 @@ pub(crate) async fn handle_llm_command(
+     }
+ }
++
++pub(crate) async fn handle_llm_command_start(
++    daemon_state: Arc<Mutex<DaemonState>>,
++    context: Arc<DaemonContext>,
++    name: String,
++) -> Response {
++    let state = daemon_state.lock().await.state_machine.state();
++    if state != State::Idle {
++        return Response::Ok { state };
++    }
++
++    let entry = context
++        .config
++        .llm_commands
++        .iter()
++        .find(|entry| entry.name == name)
++        .cloned();
++    match entry {
++        Some(entry) => llm_command_start(daemon_state, context, entry, true).await,
++        None => Response::Error {
++            message: format!("no llm_commands entry named '{name}' — check config.toml"),
++        },
++    }
++}
++
++pub(crate) async fn handle_llm_command_stop(
++    daemon_state: Arc<Mutex<DaemonState>>,
++    context: Arc<DaemonContext>,
++    name: String,
++) -> Response {
++    let (state, matches) = {
++        let state = daemon_state.lock().await;
++        (
++            state.state_machine.state(),
++            state
++                .llm_command
++                .as_ref()
++                .is_some_and(|command| command.name == name),
++        )
++    };
++    if state != State::Recording {
++        return Response::Ok { state };
++    }
++    if !matches {
++        return Response::Ok { state };
++    }
++    handle_llm_command(daemon_state, context, name).await
++}
+ 
+ /// Reprogram a named LLM command from the current selection (its `set_hotkey`).
+@@ -675,4 +723,5 @@ async fn llm_command_start(
+     daemon_state: Arc<Mutex<DaemonState>>,
+     context: Arc<DaemonContext>,
+     entry: llm::LlmCommandConfig,
++    manual_stop: bool,
+ ) -> Response {
+@@ -744,3 +793,3 @@ async fn llm_command_start(
+     tokio::spawn(async move {
+-        llm_command_background(audio_rx, ds_ref, ctx).await;
++        llm_command_background(audio_rx, ds_ref, ctx, manual_stop).await;
+     });
+@@ -766,11 +815,16 @@ async fn llm_command_background(
+     context: Arc<DaemonContext>,
++    manual_stop: bool,
+ ) {
+     let silence_timeout = context.config.general.silence_timeout_ms;
+-    let mut auto_stop = AutoStopDetector::new(SILENCE_RMS_THRESHOLD, silence_timeout, SAMPLE_RATE);
++    let mut auto_stop = (!manual_stop)
++        .then(|| AutoStopDetector::new(SILENCE_RMS_THRESHOLD, silence_timeout, SAMPLE_RATE));
+     let mut all_samples: Vec<i16> = Vec::new();
+
+     if let Some(mut rx) = audio_rx {
+         while let Some(chunk) = rx.recv().await {
+             all_samples.extend_from_slice(&chunk);
+-            if auto_stop.feed(&chunk) {
++            if auto_stop
++                .as_mut()
++                .is_some_and(|detector| detector.feed(&chunk))
++            {
+                 info!("llm-command: silence auto-stop");
+                 let mut ds = daemon_state.lock().await;

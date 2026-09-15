@@ -1,0 +1,81 @@
+diff --git a/src/daemon/dictation.rs b/src/daemon/dictation.rs
+--- a/src/daemon/dictation.rs
++++ b/src/daemon/dictation.rs
+@@ -130,6 +130,7 @@ async fn handle_dictation(
+                 let params = StreamingPipelineParams {
+                     audio_rx,
+                     backend: Arc::clone(&context.transcription_backend),
++                    context: Arc::clone(&context),
+                     daemon_state: Arc::clone(&daemon_state),
+                     window_tracker: Arc::clone(&context.window_tracker),
+                     state_tx: context.state_tx.clone(),
+diff --git a/src/daemon/pipeline.rs b/src/daemon/pipeline.rs
+--- a/src/daemon/pipeline.rs
++++ b/src/daemon/pipeline.rs
+@@ -43,6 +43,7 @@ pub(crate) struct StreamingPipelineParams {
+     // Channels and shared handles.
+     pub(crate) audio_rx: tokio::sync::mpsc::UnboundedReceiver<Vec<i16>>,
+     pub(crate) backend: Arc<dyn TranscriptionBackend>,
++    pub(crate) context: Arc<DaemonContext>,
+     pub(crate) daemon_state: Arc<Mutex<DaemonState>>,
+     pub(crate) window_tracker: Arc<dyn WindowTracker>,
+     pub(crate) state_tx: tokio::sync::watch::Sender<State>,
+@@ -78,6 +79,7 @@ pub(crate) async fn run_streaming_pipeline(params: StreamingPipelineParams) -> R
+     let StreamingPipelineParams {
+         mut audio_rx,
+         backend,
++        context,
+         daemon_state,
+         window_tracker,
+         state_tx,
+@@ -103,7 +105,8 @@ pub(crate) async fn run_streaming_pipeline(params: StreamingPipelineParams) -> R
+     let notify_error = notify;
+     let pipeline_start = std::time::Instant::now();
+     let (audio_tx, backend_rx) = tokio::sync::mpsc::channel::<Vec<i16>>(256);
+-    let (text_tx, text_rx) = tokio::sync::mpsc::channel::<String>(64);
++    let (raw_text_tx, mut raw_text_rx) = tokio::sync::mpsc::channel::<String>(64);
++    let (text_tx, text_rx) = tokio::sync::mpsc::channel::<String>(64);
+ 
+     // Build the filler filter once for the lifetime of this pipeline so the
+     // batch loop below isn't recompiling regexes on every typed delta.
+@@ -120,10 +123,27 @@ pub(crate) async fn run_streaming_pipeline(params: StreamingPipelineParams) -> R
+     let config_clone = config.clone();
+     let backend_task = tokio::spawn(async move {
+         backend
+-            .transcribe_stream(backend_rx, text_tx, &config_clone)
++            .transcribe_stream(backend_rx, raw_text_tx, &config_clone)
+             .await
+     });
+ 
++    // Treat every backend fragment as an independent dictation. With local
++    // Whisper's silence segmentation this is exactly one pause-delimited
++    // phrase, so anchored regexes match the fragment rather than the entire
++    // note-on/note-off session.
++    let transform_cancel = Arc::clone(&cancel_flag);
++    let transform_task = tokio::spawn(async move {
++        while let Some(text) = raw_text_rx.recv().await {
++            if transform_cancel.load(Ordering::SeqCst) {
++                break;
++            }
++            let outcome = apply_llm_post_process(text, &context).await;
++            if text_tx.send(outcome.text).await.is_err() {
++                break;
++            }
++        }
++    });
++
+     // Spawn a task that batches and types text as it arrives.
+     // We collect deltas for a short window to avoid creating a new virtual
+     // keyboard for every single word delta from the streaming API.
+@@ -272,6 +290,11 @@ pub(crate) async fn run_streaming_pipeline(params: StreamingPipelineParams) -> R
+         }
+     }
+ 
++    if let Err(e) = transform_task.await {
++        error!("streaming transform task panicked: {e}");
++        stream_error.get_or_insert_with(|| format!("transform task panicked: {e}"));
++    }
++
+     // Wait for the typing side to observe the closed text channel and drain
+     // any final batch. If that somehow gets stuck, abort it so the daemon can
+     // return to Idle instead of staying in Transcribing forever.

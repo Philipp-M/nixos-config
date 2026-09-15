@@ -1,0 +1,145 @@
+diff --git a/src/ipc.rs b/src/ipc.rs
+--- a/src/ipc.rs
++++ b/src/ipc.rs
+@@ -19,6 +19,13 @@ pub enum Command {
+         #[serde(default, skip_serializing_if = "Option::is_none")]
+         language: Option<String>,
+     },
++    /// Start recording if idle. Idempotent in every other state.
++    Start {
++        #[serde(default, skip_serializing_if = "Option::is_none")]
++        language: Option<String>,
++    },
++    /// Stop and transcribe if recording. Idempotent in every other state.
++    Stop,
+     Cancel,
+     Status,
+     /// Retrieve recent transcription history.
+diff --git a/src/cli/main.rs b/src/cli/main.rs
+--- a/src/cli/main.rs
++++ b/src/cli/main.rs
+@@ -55,6 +55,14 @@ enum SubCmd {
+         #[arg(short, long, value_parser = whisrs::validate_language_override)]
+         language: Option<String>,
+     },
++    /// Start dictation if it is not already recording
++    Start {
++        /// Override the transcription language for this session
++        #[arg(short, long, value_parser = whisrs::validate_language_override)]
++        language: Option<String>,
++    },
++    /// Stop and transcribe if dictation is currently recording
++    Stop,
+     /// Cancel the current recording and discard audio
+     Cancel,
+     /// Query the daemon state (idle, recording, transcribing)
+@@ -142,6 +151,12 @@ async fn main() -> anyhow::Result<()> {
+         SubCmd::Toggle { language } => {
+             send_command(Command::Toggle { language }).await?;
+         }
++        SubCmd::Start { language } => {
++            send_command(Command::Start { language }).await?;
++        }
++        SubCmd::Stop => {
++            send_command(Command::Stop).await?;
++        }
+         SubCmd::Cancel => {
+             send_command(Command::Cancel).await?;
+         }
+diff --git a/src/daemon/main.rs b/src/daemon/main.rs
+--- a/src/daemon/main.rs
++++ b/src/daemon/main.rs
+@@ -26,5 +26,5 @@ use crate::command_mode::{handle_command_mode, handle_llm_command, handle_set_ll
+ use crate::context::{DaemonContext, DaemonState};
+-use crate::dictation::{handle_cancel, handle_toggle};
++use crate::dictation::{handle_cancel, handle_start, handle_stop, handle_toggle};
+ use crate::factory::create_backend;
+ use crate::injection::warm_keyboard;
+ use crate::notify::send_notification;
+@@ -245,6 +245,8 @@ async fn handle_command(
+ ) -> Response {
+     match cmd {
+         Command::Toggle { language } => handle_toggle(daemon_state, context, language).await,
++        Command::Start { language } => handle_start(daemon_state, context, language).await,
++        Command::Stop => handle_stop(daemon_state, context).await,
+         Command::Cancel => handle_cancel(daemon_state, context).await,
+         Command::Status => {
+             let ds = daemon_state.lock().await;
+diff --git a/src/daemon/dictation.rs b/src/daemon/dictation.rs
+--- a/src/daemon/dictation.rs
++++ b/src/daemon/dictation.rs
+@@ -22,9 +22,42 @@ pub(crate) async fn handle_toggle(
+     context: Arc<DaemonContext>,
+     language: Option<String>,
+ ) -> Response {
++    handle_dictation(daemon_state, context, language, None).await
++}
++
++pub(crate) async fn handle_start(
++    daemon_state: Arc<Mutex<DaemonState>>,
++    context: Arc<DaemonContext>,
++    language: Option<String>,
++) -> Response {
++    handle_dictation(daemon_state, context, language, Some(true)).await
++}
++
++pub(crate) async fn handle_stop(
++    daemon_state: Arc<Mutex<DaemonState>>,
++    context: Arc<DaemonContext>,
++) -> Response {
++    handle_dictation(daemon_state, context, None, Some(false)).await
++}
++
++async fn handle_dictation(
++    daemon_state: Arc<Mutex<DaemonState>>,
++    context: Arc<DaemonContext>,
++    language: Option<String>,
++    desired_recording: Option<bool>,
++) -> Response {
+     let mut ds = daemon_state.lock().await;
+     let current_state = ds.state_machine.state();
+ 
++    // Check and transition under one daemon lock. A client-side status query
++    // followed by toggle has a race and can reverse a newer state.
++    if desired_recording == Some(true) && current_state != State::Idle {
++        return Response::Ok { state: current_state };
++    }
++    if desired_recording == Some(false) && current_state != State::Recording {
++        return Response::Ok { state: current_state };
++    }
++
+     match current_state {
+         State::Idle => {
+             // Fail fast on a bad `-l` override before any capture or state
+@@ -105,8 +138,12 @@ pub(crate) async fn handle_toggle(
+                     window_id: window_id.clone(),
+                     language: session_language.clone(),
+                     notify: context.notify,
+                     overlay_enabled: context.overlay_enabled,
+-                    silence_timeout_ms: context.config.general.silence_timeout_ms,
++                    silence_timeout_ms: if desired_recording == Some(true) {
++                        0
++                    } else {
++                        context.config.general.silence_timeout_ms
++                    },
+                     filler_enabled: context.config.general.remove_filler_words,
+                     filler_words: context.config.general.filler_words.clone(),
+                     audio_feedback: context.config.general.audio_feedback,
+diff --git a/src/daemon/pipeline.rs b/src/daemon/pipeline.rs
+--- a/src/daemon/pipeline.rs
++++ b/src/daemon/pipeline.rs
+@@ -208,3 +208,4 @@ pub(crate) async fn run_streaming_pipeline(
+     // Forward audio from capture to backend, with auto-stop detection.
+-    let mut auto_stop =
+-        AutoStopDetector::new(SILENCE_RMS_THRESHOLD, silence_timeout_ms, SAMPLE_RATE);
++    let mut auto_stop = (silence_timeout_ms != 0).then(|| {
++        AutoStopDetector::new(SILENCE_RMS_THRESHOLD, silence_timeout_ms, SAMPLE_RATE)
++    });
+@@ -212,3 +213,6 @@ pub(crate) async fn run_streaming_pipeline(
+     while let Some(chunk) = audio_rx.recv().await {
+         // Check for auto-stop.
+-        if auto_stop.feed(&chunk) {
++        if auto_stop
++            .as_mut()
++            .is_some_and(|detector| detector.feed(&chunk))
++        {
