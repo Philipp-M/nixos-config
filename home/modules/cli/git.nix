@@ -9,7 +9,7 @@
       enable = true;
       git = {
         enable = true;
-        mode = "difftool";
+        mode = "external";
       };
       options = {
         background = "light";
