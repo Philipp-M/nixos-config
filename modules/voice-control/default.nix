@@ -251,6 +251,20 @@ in
       };
     };
 
+    mouse.enable = mkEnableOption "mouse-button dictation";
+
+    mouse.englishButton = mkOption {
+      type = types.ints.between 272 279;
+      default = 275;
+      description = "Linux mouse button code to hold for English dictation. Phrases stream while held (275 is the side button).";
+    };
+
+    mouse.germanButton = mkOption {
+      type = types.ints.between 272 279;
+      default = 276;
+      description = "Linux mouse button code to hold for German dictation. Phrases stream while held (276 is the extra button).";
+    };
+
     keyboard.englishShortcut = mkOption {
       type = types.str;
       default = "Mod+A";
@@ -561,7 +575,7 @@ in
       unitConfig.ConditionUser = cfg.user;
 
       serviceConfig = {
-        ExecStart = lib.escapeShellArgs [
+        ExecStart = lib.escapeShellArgs ([
           "${voiceControlRuntime}/bin/voice-control-runtime"
           "controls"
           "--port"
@@ -584,7 +598,11 @@ in
           cfg.keyboard.englishShortcut
           "--german"
           cfg.keyboard.germanShortcut
-        ];
+          "--mouse-button"
+          (toString cfg.mouse.englishButton)
+          "--german-mouse-button"
+          (toString cfg.mouse.germanButton)
+        ] ++ lib.optional (!cfg.mouse.enable) "--disable-mouse");
         ExecStopPost = pkgs.writeShellScript "voice-control-midi-cleanup" ''
           rm -f "$XDG_RUNTIME_DIR/voice-command.enabled" "$XDG_RUNTIME_DIR/voice-keyboard.held"
           printf 'keyup enter\n' | ${pkgs.dotool}/bin/dotool || true

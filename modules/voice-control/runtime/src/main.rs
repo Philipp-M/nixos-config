@@ -525,11 +525,38 @@ fn layer_is_interactive(layer: &Value) -> bool {
     }
 }
 
-fn niri_request(request: Value) -> Result<Value> {
-    let socket =
-        env::var_os("NIRI_SOCKET").ok_or_else(|| io::Error::other("NIRI_SOCKET is not set"))?;
+fn discover_niri_stream(runtime_dir: &Path) -> Result<UnixStream> {
+    let mut streams = Vec::new();
+    for entry in fs::read_dir(runtime_dir)? {
+        let entry = entry?;
+        let name = entry.file_name();
+        let name = name.to_string_lossy();
+        if name.starts_with("niri.") && name.ends_with(".sock") {
+            if let Ok(stream) = UnixStream::connect(entry.path()) {
+                streams.push(stream);
+            }
+        }
+    }
+    if streams.len() != 1 {
+        return Err(io::Error::other(format!(
+            "expected one live niri socket in {}, found {}; set NIRI_SOCKET to select a session",
+            runtime_dir.display(),
+            streams.len()
+        ))
+        .into());
+    }
+    Ok(streams.pop().unwrap())
+}
 
-    let mut stream = UnixStream::connect(socket)?;
+fn niri_request(request: Value) -> Result<Value> {
+    let mut stream = if let Some(socket) = env::var_os("NIRI_SOCKET") {
+        UnixStream::connect(socket)?
+    } else {
+        // User services can start before niri imports its environment.
+        let runtime_dir = env::var_os("XDG_RUNTIME_DIR")
+            .ok_or_else(|| io::Error::other("XDG_RUNTIME_DIR is not set"))?;
+        discover_niri_stream(Path::new(&runtime_dir))?
+    };
     serde_json::to_writer(&mut stream, &request)?;
     stream.write_all(b"\n")?;
     stream.flush()?;
@@ -1661,8 +1688,10 @@ fn midi_events(port: &str, tx: &std::sync::mpsc::Sender<(u8, bool)>) -> Result<(
     }
 }
 
-// Linux EVIOCGKEY(32): read held keys without taking events from niri.
-const EVIOCGKEY: c_ulong = 0x8020_4518;
+// Linux EVIOCGKEY(96): include mouse buttons (BTN_SIDE = 275) as well
+// as keyboard keys, without taking events from niri.
+const KEY_COUNT: usize = 768;
+const EVIOCGKEY: c_ulong = 0x8060_4518;
 
 unsafe extern "C" {
     fn ioctl(fd: c_int, request: c_ulong, ...) -> c_int;
@@ -1700,12 +1729,12 @@ fn shortcut_keys(spec: &str) -> Result<(usize, Vec<[usize; 2]>)> {
     Ok((letters[index], modifiers))
 }
 
-fn held_keys(devices: &[std::fs::File]) -> [bool; 256] {
+fn held_keys(devices: &[std::fs::File]) -> [bool; KEY_COUNT] {
     use std::os::fd::AsRawFd;
 
-    let mut held = [false; 256];
+    let mut held = [false; KEY_COUNT];
     for device in devices {
-        let mut bits = [0u8; 32];
+        let mut bits = [0u8; KEY_COUNT / 8];
         // SAFETY: bits is a writable buffer of the size requested above.
         if unsafe { ioctl(device.as_raw_fd(), EVIOCGKEY, bits.as_mut_ptr()) } < 0 {
             continue;
@@ -1717,7 +1746,11 @@ fn held_keys(devices: &[std::fs::File]) -> [bool; 256] {
     held
 }
 
-fn matches_shortcut(held: &[bool; 256], key: usize, modifiers: &[[usize; 2]]) -> bool {
+fn matches_shortcut(held: &[bool; KEY_COUNT], key: usize, modifiers: &[[usize; 2]]) -> bool {
+    // Mouse buttons are held independently of keyboard modifiers.
+    if (272..=279).contains(&key) {
+        return held[key];
+    }
     let modifier_keys = [[125, 126], [56, 100], [29, 97], [42, 54]];
     held[key]
         && modifier_keys
@@ -1733,18 +1766,38 @@ fn wait_for_keyboard_release() {
     }
 }
 
-fn keyboard_output_blocked(held: &[bool; 256], keys: &[usize]) -> bool {
+fn keyboard_output_blocked(held: &[bool; KEY_COUNT], keys: &[usize]) -> bool {
     keys.iter().any(|key| held[*key])
         || [125, 126, 56, 100, 29, 97, 42, 54]
             .iter()
             .any(|key| held[*key])
 }
 
-fn run_controls(args: MidiArgs, english: &str, german: &str) -> Result<()> {
-    let bindings = [
+fn run_controls(
+    args: MidiArgs,
+    english: &str,
+    german: &str,
+    mouse_button: usize,
+    german_mouse_button: usize,
+    mouse_enabled: bool,
+) -> Result<()> {
+    if ![mouse_button, german_mouse_button]
+        .iter()
+        .all(|button| (272..=279).contains(button))
+    {
+        return Err(
+            io::Error::other("mouse button must be a Linux button code from 272 to 279").into(),
+        );
+    }
+    let mut bindings = vec![
         (shortcut_keys(english)?, "en"),
         (shortcut_keys(german)?, "de"),
+        ((mouse_button, Vec::new()), "en"),
+        ((german_mouse_button, Vec::new()), "de"),
     ];
+    if !mouse_enabled {
+        bindings.truncate(2);
+    }
     let devices = fs::read_dir("/dev/input")?
         .filter_map(|entry| entry.ok())
         .filter(|entry| entry.file_name().to_string_lossy().starts_with("event"))
@@ -1759,8 +1812,8 @@ fn run_controls(args: MidiArgs, english: &str, german: &str) -> Result<()> {
     if let Some(path) = keyboard_gate.clone() {
         let devices = Arc::clone(&devices);
         let gate_lock = Arc::clone(&gate_lock);
-        let gate_bindings = bindings.clone();
-        let keys = [bindings[0].0.0, bindings[1].0.0];
+        let gate_bindings = [bindings[0].clone(), bindings[1].clone()];
+        let keys = gate_bindings.each_ref().map(|((key, _), _)| *key);
         // Stop waits for transcription to drain, so release detection must
         // continue independently while the controls thread waits for stop.
         thread::spawn(move || {
@@ -1800,7 +1853,7 @@ fn run_controls(args: MidiArgs, english: &str, german: &str) -> Result<()> {
         }
     });
     let mut active: Option<usize> = None;
-    let mut key_was_held = [false; 2];
+    let mut key_was_held = vec![false; bindings.len()];
     loop {
         while let Ok((note, pressed)) = rx.try_recv() {
             if let Err(error) = handle_midi_edge(&args, note, pressed) {
@@ -1826,7 +1879,9 @@ fn run_controls(args: MidiArgs, english: &str, german: &str) -> Result<()> {
                         matches_shortcut(&held, *key, modifiers) && !key_was_held[index]
                     })
         {
-            if let Some(path) = &keyboard_gate {
+            if index < 2
+                && let Some(path) = &keyboard_gate
+            {
                 let _guard = gate_lock.lock().unwrap();
                 fs::write(path, [])?;
             }
@@ -1865,7 +1920,7 @@ where
 
 fn usage() -> ! {
     eprintln!(
-        "usage:\n  voice-control-runtime proxy --config FILE --dotool FILE\n  voice-control-runtime commands --config FILE --whisper FILE --model FILE --command-list FILE --dotool FILE --gate FILE --poll-ms N --audio-ms N --vad-ms N --startup-ms N --audio-ctx N --threads N --vad-threshold N\n  voice-control-runtime controls --port CLIENT[:PORT] --whisrs FILE --dotool FILE --gate FILE --command-note N --german-note N --enter-note N --dictation-note N --english Mod+A --german Mod+Shift+A"
+        "usage:\n  voice-control-runtime proxy --config FILE --dotool FILE\n  voice-control-runtime commands --config FILE --whisper FILE --model FILE --command-list FILE --dotool FILE --gate FILE --poll-ms N --audio-ms N --vad-ms N --startup-ms N --audio-ctx N --threads N --vad-threshold N\n  voice-control-runtime controls --port CLIENT[:PORT] --whisrs FILE --dotool FILE --gate FILE --command-note N --german-note N --enter-note N --dictation-note N --english Mod+A --german Mod+Shift+A --mouse-button 275 --german-mouse-button 276 [--disable-mouse]"
     );
     std::process::exit(2);
 }
@@ -1910,6 +1965,9 @@ fn main() -> Result<()> {
             },
             &value_after(&args, "--english")?,
             &value_after(&args, "--german")?,
+            parse_value(&args, "--mouse-button")?,
+            parse_value(&args, "--german-mouse-button")?,
+            !args.iter().any(|arg| arg == "--disable-mouse"),
         ),
         _ => usage(),
     }
@@ -1918,7 +1976,7 @@ fn main() -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::{
-        Transform, TransformAction, keyboard_output_blocked, matches_shortcut,
+        KEY_COUNT, Transform, TransformAction, keyboard_output_blocked, matches_shortcut,
         normalize_process_name, replacement_actions, selected_text, shortcut_keys,
     };
     use regex::Regex;
@@ -1927,17 +1985,46 @@ mod tests {
     #[test]
     fn output_waits_for_letter_and_all_modifiers_to_release() {
         for keys in [vec![30, 125], vec![125], vec![30], vec![42], vec![126, 54]] {
-            let mut held = [false; 256];
+            let mut held = [false; KEY_COUNT];
             for key in keys {
                 held[key] = true;
             }
             assert!(keyboard_output_blocked(&held, &[30, 30]));
         }
-        let mut held = [false; 256];
+        let mut held = [false; KEY_COUNT];
         assert!(!keyboard_output_blocked(&held, &[30, 30]));
         held[48] = true;
         assert!(!keyboard_output_blocked(&held, &[30, 30]));
         assert!(keyboard_output_blocked(&held, &[30, 48]));
+    }
+
+    #[test]
+    fn mouse_dictation_streams_while_either_button_is_held() {
+        let mut held = [false; KEY_COUNT];
+        for button in [275, 276] {
+            held[button] = true;
+            assert!(matches_shortcut(&held, button, &[]));
+            assert!(!keyboard_output_blocked(&held, &[30, 30]));
+            held[button] = false;
+            assert!(!matches_shortcut(&held, button, &[]));
+        }
+    }
+
+    #[test]
+    fn discovers_live_niri_socket_and_rejects_ambiguous_sessions() {
+        let dir = std::env::temp_dir().join(format!("voice-niri-test-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let first = dir.join("niri.wayland-1.123.sock");
+        let second = dir.join("niri.wayland-2.456.sock");
+        let listener = std::os::unix::net::UnixListener::bind(&first).unwrap();
+        assert!(super::discover_niri_stream(&dir).is_ok());
+        let other = std::os::unix::net::UnixListener::bind(&second).unwrap();
+        assert!(super::discover_niri_stream(&dir).is_err());
+        drop(other);
+        assert!(super::discover_niri_stream(&dir).is_ok());
+        drop(listener);
+        assert!(super::discover_niri_stream(&dir).is_err());
+        std::fs::remove_dir_all(dir).unwrap();
     }
 
     #[test]
@@ -1953,7 +2040,7 @@ mod tests {
 
     #[test]
     fn shifted_shortcut_does_not_trigger_english() {
-        let mut held = [false; 256];
+        let mut held = [false; KEY_COUNT];
         held[30] = true;
         held[125] = true;
         held[42] = true;

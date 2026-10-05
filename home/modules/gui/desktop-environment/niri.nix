@@ -1,4 +1,30 @@
-{ pkgs, lib, config, ... }: {
+{ pkgs, lib, config, osConfig ? { }, ... }:
+let
+  voiceControl = osConfig.services.voiceControl or { };
+  mouseButtonName = button: {
+    "272" = "MouseLeft";
+    "273" = "MouseRight";
+    "274" = "MouseMiddle";
+    "275" = "MouseBack";
+    "276" = "MouseForward";
+  }.${toString button} or null;
+  dictationMouseButtons = lib.unique (builtins.filter (button: button != null) (map mouseButtonName [
+    (voiceControl.mouse.englishButton or 275)
+    (voiceControl.mouse.germanButton or 276)
+  ]));
+  # Mouse dictation works with any modifiers. Reserve every combination so
+  # the same click cannot also reach an application (e.g. browser Back).
+  mouseModifiers = lib.foldl'
+    (prefixes: modifier: prefixes ++ map (prefix: prefix + modifier + "+") prefixes)
+    [ "" ]
+    [ "Super" "Ctrl" "Alt" "Shift" "Mod5" "ISO_Level5_Shift" ];
+  dictationMouseBinds = lib.optionalString
+    ((voiceControl.enable or false) && (voiceControl.mouse.enable or false))
+    (lib.concatMapStringsSep "\n" (button: lib.concatMapStringsSep "\n" (prefix:
+      ''${prefix}${button} allow-inhibiting=false repeat=false { spawn "${pkgs.coreutils}/bin/true"; }''
+    ) mouseModifiers) dictationMouseButtons);
+in {
+
   xdg.configFile."niri/config.kdl".text = ''
     // This config is in the KDL format: https://kdl.dev
     // "/-" comments out the following node.
@@ -383,6 +409,8 @@
     }
 
     binds {
+        // Consume dictation clicks; voice-control reads the physical button.
+        ${dictationMouseBinds}
         // Keys consist of modifiers separated by + signs, followed by an XKB key name
         // in the end. To find an XKB name for a particular key, you may use a program
         // like wev.

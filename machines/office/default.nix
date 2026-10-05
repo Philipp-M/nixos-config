@@ -46,6 +46,7 @@
     "/dev/input/by-id/usb-Logitech_USB_Receiver-if02-event-mouse" # mouse
   ];
   services.voiceControl.whisperCommand.enable = false;
+  services.voiceControl.mouse.enable = true;
 
   environment.systemPackages = with pkgs; [
     remmina
