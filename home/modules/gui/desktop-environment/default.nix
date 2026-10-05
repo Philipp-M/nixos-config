@@ -422,8 +422,6 @@
       settings.icon_names.media = [ "media-optical" ];
     };
 
-    services.status-notifier-watcher.enable = true;
-
     services.pasystray.enable = true;
 
     services.network-manager-applet.enable = true;
