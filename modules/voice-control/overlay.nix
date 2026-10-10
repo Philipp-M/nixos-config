@@ -3,6 +3,11 @@ final: prev:
 let
   cuda = final.cudaPackages;
   cudaStubs = "${final.lib.getOutput "stubs" cuda.cuda_cudart}/lib/stubs";
+  # Emit optimized native code only for our toolkit-compatible GPU targets.
+  # Plain CMake architecture numbers also generate PTX for future GPUs.
+  cudaArchitectures = final.lib.concatMapStringsSep ";"
+    (capability: "${cuda.flags.dropDots capability}-real")
+    cuda.backendStdenv.cudaCapabilities;
 
   buildRustPackage =
     if useCuda then
@@ -21,6 +26,11 @@ in
       cudaSupport = useCuda;
       vulkanSupport = !useCuda;
     }).overrideAttrs (old: {
+      cmakeFlags = final.lib.filter
+        (flag: !useCuda || !(final.lib.hasPrefix "-DCMAKE_CUDA_ARCHITECTURES" flag))
+        (old.cmakeFlags or [ ]) ++ final.lib.optionals useCuda [
+        (final.lib.cmakeFeature "CMAKE_CUDA_ARCHITECTURES" cudaArchitectures)
+      ];
       postPatch = (old.postPatch or "") + ''
         substituteInPlace examples/command/command.cpp \
           --replace-fail \
@@ -71,6 +81,12 @@ in
     doCheck = false;
 
     buildFeatures = [ (if useCuda then "cuda" else "vulkan") ];
+
+    # whisper-rs-sys forwards CMAKE_* environment variables to its bundled
+    # whisper.cpp build; nixpkgs' cmakeFlags do not reach this Cargo build.
+    env = final.lib.optionalAttrs useCuda {
+      CMAKE_CUDA_ARCHITECTURES = cudaArchitectures;
+    };
 
     nativeBuildInputs = [
       final.pkg-config
