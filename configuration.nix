@@ -766,15 +766,6 @@ in
     autoRepeatInterval = 15;
     autoRepeatDelay = 300;
     xkb.variant = "colemak";
-    displayManager.session = [{
-      name = "xmonad";
-      manage = "window";
-      bgSupport = true;
-      start = ''
-        ${pkgs.runtimeShell} $HOME/.xsession &
-        waitPID=$!
-      '';
-    }];
   };
 
   services.kanata = {
