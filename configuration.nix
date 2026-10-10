@@ -897,6 +897,10 @@ in
   programs.gnupg.agent = {
     enable = true;
     pinentryPackage = pkgs.pinentry-tty;
+    settings = {
+      default-cache-ttl = 604800;
+      max-cache-ttl = 604800;
+    };
   };
 
   programs.steam = {
