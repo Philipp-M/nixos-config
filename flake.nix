@@ -25,7 +25,7 @@
     mpv-ai-upscale = { url = "github:Alexkral/AviSynthAiUpscale"; flake = false; };
     mpv-default-shader-pack = { url = "github:iwalton3/default-shader-pack"; flake = false; };
     fzf-fish = { url = "github:PatrickF1/fzf.fish"; flake = false; };
-    llm-agents = { url = "github:numtide/llm-agents.nix"; inputs = { nixpkgs.follows = "nixpkgs"; flake-parts.follows = "flake-parts"; systems.follows = "systems"; }; };
+    llm-agents.url = "github:numtide/llm-agents.nix";
     whisrs = { url = "github:y0sif/whisrs"; inputs = { nixpkgs.follows = "nixpkgs"; flake-utils.follows = "flake-utils"; }; };
   };
 
