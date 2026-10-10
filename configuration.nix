@@ -954,6 +954,7 @@ in
     ruby
     earthbuild
     grpc-client-cli
+    websocat
     minio-client
     mongodb-compass
     beamPackages.elixir
@@ -1020,6 +1021,7 @@ in
     miniserve
 
     sqlitebrowser
+    sqlite
     zig
     vscode
     glslang
@@ -1061,6 +1063,7 @@ in
     gh
     dust
     bat
+    mdcat
     zoxide
     bandwhich
     grex
@@ -1091,9 +1094,11 @@ in
     exiftool
     realesrgan-ncnn-vulkan
     pitivi
+    rembg
 
     # GIS
     LAStools
+    (pkgs.python3Packages.ifcopenshell.overrideAttrs (old: { cmakeFlags = old.cmakeFlags or [ ] ++ [ "-DGLTF_SUPPORT=ON" ]; }))
     cloudcompare
     qgis
     gdal
@@ -1101,6 +1106,7 @@ in
     # AUDIO
     giada
     cantata
+    gmetronome
     # loopers
     yabridge
     yabridgectl
