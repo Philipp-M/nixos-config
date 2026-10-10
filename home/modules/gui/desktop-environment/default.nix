@@ -310,6 +310,17 @@
           "x-scheme-handler/magnet" = "qbittorent.desktop";
           "x-scheme-handler/mailto" = "thunderbird.desktop";
           "x-scheme-handler/terminal" = "kitty.desktop";
+          "application/zip" = "org.gnome.FileRoller.desktop";
+          "application/x-7z-compressed" = "org.gnome.FileRoller.desktop";
+          "application/vnd.rar" = "org.gnome.FileRoller.desktop";
+          "application/x-tar" = "org.gnome.FileRoller.desktop";
+          "application/gzip" = "org.gnome.FileRoller.desktop";
+          "application/x-bzip2" = "org.gnome.FileRoller.desktop";
+          "application/x-xz" = "org.gnome.FileRoller.desktop";
+          "application/zstd" = "org.gnome.FileRoller.desktop";
+          "application/lzip" = "org.gnome.FileRoller.desktop";
+          "application/x-lzma" = "org.gnome.FileRoller.desktop";
+          "application/x-brotli" = "org.gnome.FileRoller.desktop";
         };
       };
       desktopEntries = {
