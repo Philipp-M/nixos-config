@@ -73,8 +73,8 @@
             };
           };
           cpu = {
-            interval = 1;
-            format = "{}% ";
+            interval = 2;
+            format = "{usage}% ";
             max-length = 10;
           };
           wireplumber = {
