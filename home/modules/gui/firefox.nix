@@ -6,6 +6,19 @@
     programs.firefox = {
       enable = true;
       configPath = ".mozilla/firefox";
+      policies = {
+        PDFjs.Enabled = false;
+        Handlers = {
+          mimeTypes."application/pdf" = {
+            action = "useSystemDefault";
+            ask = false;
+          };
+          extensions.pdf = {
+            action = "useSystemDefault";
+            ask = false;
+          };
+        };
+      };
 
       profiles = {
         default = {
