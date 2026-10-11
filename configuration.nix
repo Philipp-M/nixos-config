@@ -965,7 +965,7 @@ in
     dart
     perf
     valgrind
-    tracy
+    # tracy
     git
     mercurial
     mold
@@ -1230,7 +1230,7 @@ in
     transmission_4-gtk
     qbittorrent
     xclip
-    adb-sync
+    better-adb-sync
     udiskie
     tree-sitter
     adwaita-icon-theme
