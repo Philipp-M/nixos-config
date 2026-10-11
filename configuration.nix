@@ -45,6 +45,7 @@ in
       }));
     })
     (final: prev: { qemu = prev.qemu.override { smbdSupport = true; }; })
+    (import ./deduplicate.nix)
     (final: prev: { gimp = prev.gimp.overrideAttrs (oldAttrs: { buildInputs = oldAttrs.buildInputs ++ [ final.darktable ]; }); })
     inputs.niri.overlays.niri
   ];
@@ -1112,7 +1113,7 @@ in
     yabridgectl
     pavucontrol
     crosspipe
-    ffmpeg_7-full
+    ffmpeg_8-full
     flacon
     bitwig-studio
     renoise
@@ -1194,7 +1195,8 @@ in
     woeusb
     kubo
     acpi
-    (pkgs.freecad.overrideAttrs (old: { nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.wrapGAppsHook3 ]; }))
+    freecad
+    # (pkgs.freecad.overrideAttrs (old: { nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.wrapGAppsHook3 ]; }))
     appimage-run
     openvpn
     # openvpn3
