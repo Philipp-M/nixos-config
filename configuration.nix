@@ -23,6 +23,16 @@ in
 
   nixpkgs.overlays = [
     inputs.rust-overlay.overlays.default
+    (final: prev: {
+      bitwig-studio = prev.bitwig-studio.overrideAttrs (finalAttrs: oldAttrs: {
+        version = "6.0.11";
+        src = prev.fetchurl {
+          name = "bitwig-studio-${finalAttrs.version}.deb";
+          url = "https://www.bitwig.com/dl/Bitwig%20Studio/${finalAttrs.version}/installer_linux";
+          hash = "sha256-rnr/Z8y6klKrU2gT5/XT+sRryl/HZZZ04n565L0HPEw=";
+        };
+      });
+    })
     # "overwrite" xdg-open with handlr
     (final: prev: {
       # very expensive since this invalidates the cache for a lot of (almost all) graphical apps.
@@ -46,6 +56,30 @@ in
     })
     (final: prev: { qemu = prev.qemu.override { smbdSupport = true; }; })
     (import ./deduplicate.nix)
+    (final: prev: {
+      # Host C++ code includes nvcc's CRT headers via Eigen/CHOLMOD/cuBLAS.
+      # strictDeps exposes nativeBuildInputs as tools, not host headers.
+      colmap = prev.colmap.overrideAttrs (old:
+        let
+          # Reuse the selected toolkit; CPU-only builds have no nvcc input.
+          cudaHeaders = builtins.filter
+            (input: (input.pname or "") == "cuda_nvcc")
+            old.nativeBuildInputs;
+        in
+        {
+          buildInputs = old.buildInputs ++ cudaHeaders;
+          # Eigen 3.4 wraps cholmod.h in extern "C", but CUDA-enabled CHOLMOD
+          # includes C++ templates. Load it first using its own linkage guards.
+          postPatch = (old.postPatch or "") + ''
+            substituteInPlace src/colmap/optim/sparse_cholesky.h \
+              --replace-fail '#include <Eigen/CholmodSupport>' \
+                $'#include <cholmod.h>\n#include <Eigen/CholmodSupport>'
+          '';
+          passthru = old.passthru // {
+            depsAlsoForPycolmap = old.passthru.depsAlsoForPycolmap ++ cudaHeaders;
+          };
+        });
+    })
     (final: prev: { gimp = prev.gimp.overrideAttrs (oldAttrs: { buildInputs = oldAttrs.buildInputs ++ [ final.darktable ]; }); })
     inputs.niri.overlays.niri
   ];
@@ -1113,7 +1147,7 @@ in
     yabridgectl
     pavucontrol
     crosspipe
-    ffmpeg_8-full
+    ffmpeg-full
     flacon
     bitwig-studio
     renoise
