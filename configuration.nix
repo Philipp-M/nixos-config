@@ -159,7 +159,7 @@ in
       port = "Ampero Control";
       commandNote = 48;
       germanNote = 52;
-      enterNote = 123;
+      enterNote = 50;
       dictationNote = 53;
     };
 
@@ -241,20 +241,27 @@ in
             process = "^(hx|helix).*";
           };
 
-          commands = {
+          commands = let
+            aliases = words: action: builtins.listToAttrs
+              (map (name: { inherit name; value = action; }) words);
+          in {
             insert = "key esc; key i";
             undo = "key esc; key u";
             redo = "key esc; key shift+u";
             escape = "key esc";
             "select all" = "key esc; key shift+5";
 
-            goto = "key esc; key g; key t";
-            "go to" = "key esc; key g; key t";
-            "go-to" = "key esc; key g; key t";
-
-            up = "key esc; key ctrl+u";
-            down = "key esc; key ctrl+d";
-          };
+          }
+          // aliases [ "goto" "go to" "go-to" "go too" "go two" "go to definition" "definition" ]
+            "key esc; key g; key d"
+          // aliases [ "back" "beck" "backward" "backwards" "go back" "jump back" ]
+            "key esc; key ctrl+o"
+          // aliases [ "into" "in to" "in-to" "forward" "forwards" "go forward" "jump forward" ]
+            "key esc; key ctrl+i"
+          // aliases [ "up" "half page up" "half-page up" "page up" ]
+            "key esc; key ctrl+u"
+          // aliases [ "down" "half page down" "half-page down" "page down" ]
+            "key esc; key ctrl+d";
         };
 
         firefox = {
@@ -280,99 +287,40 @@ in
 
     dictation = {
       enableLlm = false;
-      # Hint command/subcommand phrases, not loose argument words such as "log".
-      # Prioritize these phrases within Whisper's short recognition prompt.
-      vocabulary = let
-        commands = executable: subcommands: builtins.concatStringsSep " "
-          (map (subcommand: "${executable} ${subcommand}") subcommands);
-      in [
-        (commands "git" [
-          "diff" "status" "c" "commit" "add" "log" "show" "fetch" "pull" "push"
-          "branch" "switch" "checkout" "merge" "rebase" "stash" "restore" "reset"
-          "clone" "remote"
-        ])
-        "systemctl journalctl nixos-rebuild nix-shell"
-        (commands "nix" [ "flake update" "develop" "build" "run" "eval" "fmt" ])
-        (builtins.concatStringsSep " " [
-          "z dot hx rg rga fd jaq yq fzf lsd htop nvtop gh gitui difft"
-          "bat tldr"
-        ])
-        (commands "cargo" [ "build" "test" "check" "run" "fmt" "clippy" ])
-        "rustc trunk node npm pnpm yarn deno python3 pip poetry make"
-        "docker ssh rsync curl wget aws rclone ffmpeg mpv yt-dlp magick pandoc"
-        (builtins.concatStringsSep " " [
-          "kitty firefox zeditor dolphin blender freecad inkscape gimp krita darktable"
-          "obs codex opencode"
-        ])
-        "nxd upgrade update enter tree"
-      ];
-
+      # Keep Whisper unprompted; command vocabulary lives in contextual regexes.
+      vocabulary = [ ];
       transforms = [
         {
-          name = "nix-command";
-          pattern = ''(?i)^\s*(?:nicks|nyx|nixs|nx)(\s|[.!?]*\s*$)'';
-          replace = "nix$1";
-        }
-        {
-          name = "hx-command";
-          pattern = ''(?i)^\s*(?:h\s*x|h ex)(\s|$)'';
-          replace = "hx$1";
-        }
-        {
-          name = "htop-command";
-          pattern = ''(?i)^\s*(?:h\s*top|age top)(\s|$)'';
-          replace = "htop$1";
-        }
-        {
-          name = "nvtop-command";
-          pattern = ''(?i)^\s*(?:n\s*v\s*top|envy top)(\s|$)'';
-          replace = "nvtop$1";
-        }
-        {
-          name = "rg-command";
-          pattern = ''(?i)^\s*(?:r\s*g|are gee)(\s|$)'';
-          replace = "rg$1";
-        }
-        {
-          name = "fd-command";
-          pattern = ''(?i)^\s*(?:f\s*d|eff dee)(\s|$)'';
-          replace = "fd$1";
-        }
-        {
-          name = "jaq-command";
-          pattern = ''(?i)^\s*(?:jack|jac|jay cue)(\s|$)'';
-          replace = "jaq$1";
-        }
-        {
-          name = "short-input";
-          pattern = ''(?s)^\s*(\S+(?:\s+\S+){0,3})\s*$'';
+          name = "short-utterance";
+          excludeLanguages = [ "de" ];
+          pattern = ''(?s)^\s*(\S+(?:\s+\S+){0,2})\s*$'';
           replace = "$1";
-          lowercaseFirst = true;
-          lowercaseFirstWholeSession = true;
-          germanMaxWords = 2;
-          trimEndPunctuation = true;
+          lowercase = true;
+          wholeSessionOnly = true;
         }
         {
-          name = "nxd-command";
-          pattern = ''(?i)^\s*nxd(\s|$)'';
-          replace = "nxd$1";
+          name = "short-utterance-trailing-dots";
+          pattern = ''(?s)^\s*(\S*?(?:\s+\S+?){0,2}?)\.+\s*$'';
+          replace = "$1";
+          wholeSessionOnly = true;
         }
         {
-          name = "spoken-dot";
-          # Run after short-input so a dictated literal dot is not stripped.
-          pattern = ''(?i)\s*\bdot\b\s*'';
-          replace = ".";
+          name = "droix-name";
+          pattern = ''(?i)\bdraw(?:[\s_,–—-]*|[\s,]+(?:dash|minus)[\s,]+)x\b'';
+          replace = "droix";
         }
         {
-          name = "spoken-dash";
-          # Keep the space before an option; consume only space after its dash.
-          pattern = ''(?i)\b(?:dash|minus)\b\s*'';
-          replace = "-";
+          name = "spoken-hashtag";
+          pattern = ''(?i)\bhash[ -]?tag\b[\t ,]*'';
+          replace = "#";
+          afterModes = true;
         }
         {
-          name = "spoken-slash";
-          pattern = ''(?i)\s*\bslash\b\s*'';
-          replace = "/";
+          name = "spoken-identifier-punctuation";
+          pattern = ''(?is)^(.*\b(?:slash|dash|minus|dot|colon)\b.*)$'';
+          replace = "$1";
+          spokenPunctuation = "identifier";
+          afterModes = true;
         }
       ];
 
@@ -383,82 +331,7 @@ in
             overview = false;
             appId = "^(kitty|foot|alacritty|wezterm|ghostty)$";
           };
-          transforms = [
-            {
-              name = "git-command-prefix";
-              # These leading words are recognition errors for Git in this terminal setup.
-              pattern = ''(?i)^\s*(?:get|kit|good)[.,]?(\s|$)'';
-              replace = "git$1";
-            }
-            {
-              name = "git-short-command";
-              # Normalize known bare subcommands, including other common Git misrecognitions.
-              pattern = ''(?i)^\s*(?:git|good|did)[.,]?\s+(diff|status|c|commit|add|log|show|fetch|pull|push|branch|switch|checkout|merge|rebase|stash|restore|reset|cherry-pick|clone|remote|tag|bisect|worktree|submodule|lfs|pushall|diffd|difff)[.!?]*\s*$'';
-              replace = "git $1";
-              lowercase = true;
-            }
-            # Match complete utterances, including optional recognition punctuation.
-            # These corrections type text; they do not press Enter.
-            {
-              name = "git-diff";
-              pattern = ''(?i)^\s*(?:(?:git|get|kit|good)[.,]?\s+diff|(?:git|get)\s+this)[.!?]*\s*$'';
-              replace = "git diff";
-            }
-            {
-              name = "git-status";
-              pattern = ''(?i)^\s*(?:(?:git|get|kit|good)[.,]?\s+status|(?:git|get)\s+started)[.!?]*\s*$'';
-              replace = "git status";
-            }
-            {
-              name = "git-c";
-              pattern = ''(?i)^\s*(?:(?:git|kit)\s+c|(?:git|good)\s+to\s+see(?:\s+you)?|(?:git|good)[.,]?\s+see(?:\s+you)?)[.!?]*\s*$'';
-              replace = "git c";
-            }
-            {
-              name = "git-commit";
-              pattern = ''(?i)^\s*(?:(?:git|did|good)\s+commit|git\s*,?\s+come\s+with\s+me|commit)[.!?]*\s*$'';
-              replace = "git commit";
-            }
-            {
-              name = "git-attached-short-option";
-              # Repair "git c-a" while preserving flags, arguments and hyphenated subcommands.
-              pattern = ''(?i)^(\s*git\s+(?:c|add|diff|commit|status))(-[a-z])(\s|$)'';
-              replace = "$1 $2$3";
-            }
-            {
-              name = "systemctl";
-              pattern = ''(?i)^\s*system\s*(?:ctl|city\s+r)[.!?]*\s*$'';
-              replace = "systemctl";
-            }
-            {
-              name = "journalctl";
-              pattern = ''(?xi)^\s*(?:
-                journal\s*,?\s*(?:ctl|cdl|citiel)
-                | jean(?:[-\s]+(?:anthony|anne|ann|marc))?\s*,?\s*(?:c[.\s]*[td][.\s]*l|c[.\s]*t[.\s]*r|c[.\s]*t[.\s]*a[.\s]*r|sit\s+down|sidial|sidier|citiel)
-                | john\s+(?:c[.\s]*[td][.\s]*l|c[.\s]*gales?|octl|city\s+(?:hall|health)|(?:on\s+)?ctl)
-                | stronghold\s+city\s+hall
-              )[.,!?]*\s*$'';
-              replace = "journalctl";
-            }
-            {
-              name = "hx";
-              pattern = ''(?i)^\s*(?:hx|helix|hey\s+lex|relax)[.!?]*\s*$'';
-              replace = "hx";
-            }
-            {
-              name = "z-dot-query";
-              # Global spoken-dot turns "z dot" into "z."; keep this directory query literal.
-              pattern = ''(?i)^\s*(?:z|zee|see(?:\s+you)?|si)\.\s*$'';
-              replace = "z dot";
-            }
-            {
-              name = "zoxide";
-              # One path token only: reject longer sentences. Preserve dots within paths.
-              pattern = ''(?i)^\s*(?:z|zee|see(?:\s+you)?|si)(?:[.?!,]+\s*|\s+|-)([^\s!?.,]+(?:\.[^\s!?.,]+)*|\.[^\s!?.,]+(?:\.[^\s!?.,]+)*)[.!?]*\s*$'';
-              replace = "z $1";
-              lowercase = true;
-            }
-          ];
+          transforms = import ./modules/voice-control/terminal-transforms.nix;
         };
 
         codex = {
@@ -497,7 +370,7 @@ in
             {
               name = "goto";
               pattern = ''(?i)^\s*(?:goto|go[ -]?to)[.!?]?\s*$'';
-              replace = "\\k{esc}gt";
+              replace = "\\k{esc}gd";
             }
             {
               name = "search";

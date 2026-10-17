@@ -86,3 +86,99 @@ does not exist it clears buffered audio and skips recognition.
 Set `services.voiceControl.whisperCommand.enable = false;` and rebuild/switch
 your NixOS configuration to disable the command service entirely. Its model
 will not load into VRAM. Dictation remains enabled and uses its own model.
+
+## Dictation casing and command aliases
+
+The repository configuration leaves `dictation.vocabulary` empty and disables
+LLM rewriting. Whisrs embeds vocabulary in Whisper's initial prompt, so a long
+lowercase list can bias normal transcription. Regex transforms run after
+recognition and provide an offline command vocabulary without that prompt.
+Completed English utterances of one to three words are lowercased in full and
+lose trailing dots. German utterances of the same length lose trailing dots
+without changing capitalization. Longer sentences and streamed fragments do not
+receive these short-recording corrections.
+
+`terminal-transforms.nix` contains the offline vocabulary, including the user's
+recorded misrecognitions for `rg`, `ll`, `nixpkgs`, `cargo`, `nix flake update`,
+`codex`, `ssh`, `htop`, `fd`, and `git clone`. Terminal input is treated primarily
+as commands, including ordinary argument tails and Rust/JavaScript/TypeScript
+tooling. Command names are normalized; argument casing is retained except when
+the English short-recording rule has already lowercased the entire input.
+
+Spoken slash joins paths (`something, slash, blub` → `something/blub`). Dash and
+minus join identifiers (`some dash kebab minus case` → `some-kebab-case`), or
+form options after known command heads (`rg dash e double dash something` →
+`rg -e --something`). Commas adjacent to these spoken separators are absorbed.
+Explicitly quoted literals preserve slash/dash/minus words. Spoken `dot` always
+becomes `.`, even inside quotes; the sole exception is the complete `z dot`
+directory command. Dot conversion follows trailing-dot cleanup, so deliberately
+spoken dots survive. Filenames join (`file dot rs` → `file.rs`), while terminal
+command arguments stay separated (`rg dot` → `rg .`).
+Outside terminal mode, dash/minus still join identifiers and slash still joins
+paths; shell option spacing is enabled only in terminal context.
+
+Common spoken forms such as `git c dash a`, `git add Punkt`, and
+`git commit minus m "Fix Casing"` have dedicated rules.
+
+These rules apply in the terminal mode only. Codex and Helix have higher-priority
+modes, so shell aliases do not rewrite their prose. Shell corrections type text
+without pressing Enter. Repeated command aliases within one transcript (such as
+`commit git commit`) collapse to one command; repeated prose and argument text
+are retained. This does not deduplicate separate streamed fragments or separate
+recordings. Removing the prompt may help recognition, but microphone testing is
+still needed to assess recognition errors and the source of repetitions.
+
+Run `bash modules/voice-control/test-transforms.sh` in a Rust environment with
+ALSA available to the linker. It evaluates the actual configured rules and checks
+command variants, repetition, case-sensitive arguments, German/English prose,
+and application-mode isolation using the runtime's Rust regex engine.
+
+## Helix voice commands
+
+While holding the explicit voice-command control with Helix focused:
+
+- `go to` / `goto` / `go-to` / `go too` / `go two` / `definition`: `Esc`, `gd` (definition).
+- `back` / `beck` / `backward(s)` / `go back` / `jump back`: `Esc`, `Ctrl+o`.
+- `into` / `in to` / `in-to` / `forward(s)` / `go forward` / `jump forward`: `Esc`, `Ctrl+i`.
+- `up` / `half page up` / `page up`: `Esc`, `Ctrl+u` (half page).
+- `down` / `half page down` / `page down`: `Esc`, `Ctrl+d` (half page).
+
+Matching currently knows the foreground Helix process, not its editor mode.
+Explicit commands intentionally leave insert mode via Escape. Existing dictation
+shortcuts also lack an insert-mode guard. Reliable automatic gating would require
+Helix to publish per-process mode state (its internal `OnModeSwitch` hook is a
+possible integration point), including initial state, cleanup and prompt/picker
+focus; remembering injected keys is insufficient to infer actual editor state.
+
+Terminal zoxide dictation always emits lowercase `z` and lowercases the entire
+following path/query, even for German and streamed or multi-word input. For
+example, `Z MyProject` → `z myproject` and `Z My minus Project slash Src` →
+`z my-project/src`. In zoxide queries, spoken dash/minus join path-name segments;
+`z dot` remains literal. These rules do not apply inside Codex/Helix dictation.
+
+Joined leading `z` forms in terminal dictation are also zoxide commands:
+`zm/` → `z m/`, `zMyProject/Src` → `z myproject/src`. The application exception
+is `zathura`: `Satura` (any casing), `Sathura`, and `Zatura` normalize to `zathura`
+before zoxide splitting, including when followed by arguments. These aliases
+and splitting rules stay out of other application contexts.
+
+Spoken `colon` becomes `:` everywhere, including quotes. Leading spaces/commas
+are removed, while following spacing is retained (`label colon value` →
+`label: value`); combined with slash it also supports `https://…`.
+
+Terminal Git correction separates attached flags and joins recognized multiword
+long-option names: `git diff--compact summary` → `git diff --compact-summary`,
+`git push --force with lease` → `git push --force-with-lease`, and
+`git diff --ignore all space` → `git diff --ignore-all-space`. Quoted literals,
+option values, unknown options and paths after standalone `--` are retained.
+The offline catalogue `runtime/src/git-long-options.txt` was collected from
+Git 2.55.0's `--git-completion-helper` for diff, log, show, commit, status, push,
+fetch, pull, branch, rebase, clone, add, restore, switch, checkout, merge and reset.
+Only known option names are joined; this is not a general shell parser.
+
+Command-boundary comma/period cleanup is shared across terminal commands:
+`git,diff` → `git diff`, `cargo. test` → `cargo test`, and
+`nix.flake.update` → `nix flake update`. Recognized nested Git/Nix subcommands
+are supported too. Punctuation inside argument tokens, URLs and quoted strings
+is preserved, as are `.config`, `./path`, standalone dots and `.#`/`.hashtag`
+flake references. The cleanup does not apply in browser/Codex/Helix dictation.

@@ -60,6 +60,12 @@ let
         type = types.str;
       };
 
+      excludePattern = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = "Skip this transform when the input matches this regex.";
+      };
+
       replace = mkOption {
         type = types.str;
       };
@@ -67,6 +73,30 @@ let
       lowercase = mkOption {
         type = types.bool;
         default = false;
+      };
+
+      wholeSessionOnly = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Apply only to a completed recording with no earlier streamed text.";
+      };
+
+      excludeLanguages = mkOption {
+        type = types.listOf types.str;
+        default = [ ];
+        description = "Dictation language codes for which this transform is skipped.";
+      };
+
+      spokenPunctuation = mkOption {
+        type = types.enum [ "none" "identifier" "shell" ];
+        default = "none";
+        description = "Convert spoken slash/dash/minus, preserving quoted text; shell mode spaces options.";
+      };
+
+      afterModes = mkOption {
+        type = types.bool;
+        default = false;
+        description = "For global transforms, run after contextual mode transforms.";
       };
 
       lowercaseFirst = mkOption {
@@ -371,7 +401,7 @@ in
       vocabulary = mkOption {
         type = types.listOf types.str;
         default = [ ];
-        description = "Vocabulary hints passed by whisrs to the speech recognition model.";
+        description = "Vocabulary hints included in Whisper's initial prompt. These can bias prose casing and recognition; prefer contextual dictation transforms for command aliases.";
       };
 
       enableLlm = mkOption {

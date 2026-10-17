@@ -140,9 +140,19 @@ struct LlmModeConfig {
 struct TransformConfig {
     name: String,
     pattern: String,
+    #[serde(default)]
+    exclude_pattern: Option<String>,
     replace: String,
     #[serde(default)]
     lowercase: bool,
+    #[serde(default)]
+    whole_session_only: bool,
+    #[serde(default)]
+    exclude_languages: Vec<String>,
+    #[serde(default)]
+    spoken_punctuation: String,
+    #[serde(default)]
+    after_modes: bool,
     #[serde(default)]
     lowercase_first: bool,
     #[serde(default)]
@@ -280,8 +290,13 @@ struct TransformMode {
 struct Transform {
     name: String,
     pattern: Regex,
+    exclude_pattern: Option<Regex>,
     replace: String,
     lowercase: bool,
+    whole_session_only: bool,
+    exclude_languages: Vec<String>,
+    spoken_punctuation: String,
+    after_modes: bool,
     lowercase_first: bool,
     lowercase_first_whole_session: bool,
     german_max_words: Option<usize>,
@@ -388,8 +403,16 @@ impl Transform {
         Ok(Self {
             name: raw.name,
             pattern: Regex::new(&raw.pattern)?,
+            exclude_pattern: raw
+                .exclude_pattern
+                .map(|pattern| Regex::new(&pattern))
+                .transpose()?,
             replace: raw.replace,
             lowercase: raw.lowercase,
+            whole_session_only: raw.whole_session_only,
+            exclude_languages: raw.exclude_languages,
+            spoken_punctuation: raw.spoken_punctuation,
+            after_modes: raw.after_modes,
             lowercase_first: raw.lowercase_first,
             lowercase_first_whole_session: raw.lowercase_first_whole_session,
             german_max_words: raw.german_max_words,
@@ -403,7 +426,18 @@ impl Transform {
     }
 
     fn apply_in_session(&self, input: &str, session: Option<&DictationSession>) -> Option<String> {
-        if !self.pattern.is_match(input) {
+        if self.whole_session_only && !session.is_some_and(|session| session.whole_session) {
+            return None;
+        }
+        if session.is_some_and(|session| self.exclude_languages.contains(&session.language)) {
+            return None;
+        }
+        if self
+            .exclude_pattern
+            .as_ref()
+            .is_some_and(|pattern| pattern.is_match(input))
+            || !self.pattern.is_match(input)
+        {
             return None;
         }
 
@@ -411,6 +445,9 @@ impl Transform {
             .pattern
             .replace_all(input, self.replace.as_str())
             .into_owned();
+        if matches!(self.spoken_punctuation.as_str(), "shell" | "identifier") {
+            output = normalize_spoken_punctuation(&output, self.spoken_punctuation == "shell");
+        }
         if self.trim_end_punctuation {
             output.truncate(
                 output
@@ -442,6 +479,166 @@ impl Transform {
         }
         Some(output)
     }
+}
+
+fn normalize_spoken_punctuation(input: &str, shell: bool) -> String {
+    use std::sync::OnceLock;
+    static COLON: OnceLock<Regex> = OnceLock::new();
+    let colonized = COLON
+        .get_or_init(|| Regex::new(r"(?i)[\s,]*\bcolon\b,?").unwrap())
+        .replace_all(input, ":");
+    let input = colonized.as_ref();
+    let zoxide_query = shell && input.starts_with("z ");
+    // Dot is explicitly requested even inside quotes. Run after short-utterance
+    // cleanup so intentionally spoken dots cannot be mistaken for ASR periods.
+    static Z_DOT: OnceLock<Regex> = OnceLock::new();
+    static DOT_ONLY: OnceLock<Regex> = OnceLock::new();
+    static DOT: OnceLock<Regex> = OnceLock::new();
+    static COMMAND_HEAD: OnceLock<Regex> = OnceLock::new();
+    if Z_DOT
+        .get_or_init(|| Regex::new(r"(?i)^\s*z\s+dot[.!?]*\s*$").unwrap())
+        .is_match(input)
+    {
+        return input.to_owned();
+    }
+    if DOT_ONLY
+        .get_or_init(|| Regex::new(r"(?i)^\s*dot[.!?]*\s*$").unwrap())
+        .is_match(input)
+    {
+        return ".".into();
+    }
+    let dot = DOT.get_or_init(|| Regex::new(r"(?i)[\s,]*\bdot\b[\s,]*").unwrap());
+    let command_head = COMMAND_HEAD.get_or_init(|| Regex::new(
+        r"(?i)^(?:git\s+\S+|cargo(?:\s+\S+)?|nix(?:\s+(?:flake\s+)?\S+)?|rg|fd|ll|ls|cd|hx|zathura|bat|cat|mkdir|rm|cp|mv|z|droix|codex|npm|pnpm|yarn|node|npx|bun|deno|tsc|trunk|ssh|rsync|curl|wget)$"
+    ).unwrap());
+    let mut dotted = String::new();
+    let mut dot_end = 0;
+    for found in dot.find_iter(input) {
+        dotted.push_str(&input[dot_end..found.start()]);
+        if shell && command_head.is_match(&dotted) {
+            dotted.push(' ');
+        }
+        dotted.push('.');
+        dot_end = found.end();
+    }
+    dotted.push_str(&input[dot_end..]);
+    let input = dotted.as_str();
+    static TOKENS: OnceLock<Regex> = OnceLock::new();
+    let tokens = TOKENS.get_or_init(|| Regex::new(
+        r#"(?i)"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[\s,]*\b(?P<symbol>(?:(?:double|doppel)[\s,]+)?(?:dash|minus)|slash)\b[\s,]*"#
+    ).unwrap());
+    let mut output = String::new();
+    let mut end = 0;
+    for token in tokens.captures_iter(input) {
+        let whole = token.get(0).unwrap();
+        output.push_str(&input[end..whole.start()]);
+        if let Some(symbol) = token.name("symbol") {
+            let symbol = symbol.as_str().to_ascii_lowercase();
+            if symbol == "slash" {
+                if shell
+                    && matches!(
+                        output.as_str(),
+                        "rg" | "fd" | "hx" | "cd" | "ls" | "ll" | "z" | "zathura" | "git clone"
+                    )
+                {
+                    output.push(' ');
+                }
+                output.push('/');
+            } else {
+                if shell && !zoxide_query && !output.is_empty() && !output.ends_with('-') {
+                    output.push(' ');
+                }
+                output.push('-');
+                if symbol.starts_with("double") || symbol.starts_with("doppel") {
+                    output.push('-');
+                }
+            }
+        } else {
+            // Explicitly quoted literals (including commit messages) are opaque.
+            output.push_str(whole.as_str());
+        }
+        end = whole.end();
+    }
+    output.push_str(&input[end..]);
+    if shell && output.starts_with("git ") {
+        normalize_git_options(&output)
+    } else {
+        output
+    }
+}
+
+fn normalize_git_options(input: &str) -> String {
+    use std::sync::OnceLock;
+    static TOKENS: OnceLock<Regex> = OnceLock::new();
+    static OPTIONS: OnceLock<HashSet<&'static str>> = OnceLock::new();
+    let options = OPTIONS.get_or_init(|| include_str!("git-long-options.txt").lines().collect());
+    // Preserve shell tokens, including quoted arguments and escaped whitespace.
+    let tokens = TOKENS
+        .get_or_init(|| Regex::new(r#"(?:[^\s"'\\]|\\.|"(?:\\.|[^"\\])*"|'[^']*')+"#).unwrap());
+    let tokens: Vec<_> = tokens.find_iter(input).collect();
+    let mut output = String::new();
+    let mut copied = 0;
+    let mut index = 0;
+    while index < tokens.len() {
+        let token = tokens[index];
+        if token.as_str() == "--" {
+            break; // Everything after this is a path/revision, not an option.
+        }
+        let Some(first) = token.as_str().strip_prefix("--") else {
+            index += 1;
+            continue;
+        };
+        let mut candidate = String::new();
+        let mut best = None;
+        for (offset, part) in std::iter::once(first)
+            .chain(tokens[index + 1..].iter().map(|token| token.as_str()))
+            .take(8)
+            .enumerate()
+        {
+            let (name, value) = part
+                .split_once('=')
+                .map_or((part, None), |(name, value)| (name, Some(value)));
+            // A spoken internal "dash" is initially spaced like another option.
+            // Rejoin it only when the complete result is a known Git long option.
+            let name = if offset > 0 && !name.starts_with("--") {
+                name.strip_prefix('-').unwrap_or(name)
+            } else {
+                name
+            }
+            .trim_end_matches(',');
+            if name.is_empty()
+                || name.starts_with('-')
+                || !name.chars().all(|c| c.is_ascii_alphabetic() || c == '-')
+            {
+                break;
+            }
+            if offset > 0 {
+                candidate.push('-');
+            }
+            candidate.push_str(&name.to_ascii_lowercase());
+            if options.contains(candidate.as_str()) {
+                let mut replacement = format!("--{candidate}");
+                if let Some(value) = value {
+                    replacement.push('=');
+                    replacement.push_str(value);
+                }
+                best = Some((index + offset, replacement));
+            }
+            if value.is_some() {
+                break;
+            }
+        }
+        if let Some((last, replacement)) = best {
+            output.push_str(&input[copied..token.start()]);
+            output.push_str(&replacement);
+            copied = tokens[last].end();
+            index = last + 1;
+        } else {
+            index += 1;
+        }
+    }
+    output.push_str(&input[copied..]);
+    output
 }
 
 #[derive(Deserialize)]
@@ -834,7 +1031,11 @@ fn apply_transform(
         .map(|value| serde_json::from_value::<DictationSession>(value.clone()))
         .transpose()?;
     let mut matched_rules = Vec::new();
-    for transform in &config.dictation_transforms {
+    for transform in config
+        .dictation_transforms
+        .iter()
+        .filter(|rule| !rule.after_modes)
+    {
         if let Some(transformed) = transform.apply_in_session(&output, session.as_ref()) {
             output = transformed;
             matched_rules.push(transform.name.clone());
@@ -847,6 +1048,17 @@ fn apply_transform(
                 output = transformed;
                 matched_rules.push(format!("{}.{}", mode.name, transform.name));
             }
+        }
+    }
+
+    for transform in config
+        .dictation_transforms
+        .iter()
+        .filter(|rule| rule.after_modes)
+    {
+        if let Some(transformed) = transform.apply_in_session(&output, session.as_ref()) {
+            output = transformed;
+            matched_rules.push(transform.name.clone());
         }
     }
 
@@ -2032,6 +2244,695 @@ mod tests {
     use serde_json::json;
 
     #[test]
+    #[ignore = "requires evaluated configuration; run ../test-transforms.sh"]
+    fn configured_dictation_preserves_prose_and_corrects_terminal_commands() {
+        let path = std::env::var_os("VOICE_CONTROL_TEST_CONFIG")
+            .expect("run modules/voice-control/test-transforms.sh");
+        let config = super::RuntimeConfig::load(std::path::Path::new(&path)).unwrap();
+        let mut snapshot = super::Snapshot {
+            focused: super::FocusedWindow {
+                raw: serde_json::Value::Null,
+                app_id: Some("kitty".into()),
+                title: None,
+                pid: None,
+            },
+            interactive_layers: vec![],
+            interactive_layer_names: vec![],
+            overview: false,
+            processes: vec![],
+        };
+        let helix_commands = config
+            .command_modes
+            .iter()
+            .find(|mode| mode.name == "helix")
+            .unwrap();
+        for (aliases, expected) in [
+            (
+                &[
+                    "goto",
+                    "go to",
+                    "go-to",
+                    "go too",
+                    "go two",
+                    "go to definition",
+                    "definition",
+                ][..],
+                "key esc; key g; key d",
+            ),
+            (
+                &[
+                    "back",
+                    "beck",
+                    "backward",
+                    "backwards",
+                    "go back",
+                    "jump back",
+                ][..],
+                "key esc; key ctrl+o",
+            ),
+            (
+                &[
+                    "into",
+                    "in to",
+                    "in-to",
+                    "forward",
+                    "forwards",
+                    "go forward",
+                    "jump forward",
+                ][..],
+                "key esc; key ctrl+i",
+            ),
+            (
+                &["up", "half page up", "half-page up", "page up"][..],
+                "key esc; key ctrl+u",
+            ),
+            (
+                &["down", "half page down", "half-page down", "page down"][..],
+                "key esc; key ctrl+d",
+            ),
+        ] {
+            for alias in aliases {
+                assert_eq!(
+                    helix_commands.commands.get(*alias).map(String::as_str),
+                    Some(expected)
+                );
+                for segment in super::split_action_segments(expected).unwrap() {
+                    assert_eq!(super::split_words(&segment).unwrap()[0], "key");
+                }
+            }
+        }
+        for (process, matches) in [
+            ("hx", true),
+            ("helix", true),
+            ("fish", false),
+            ("codex", false),
+        ] {
+            snapshot.processes = vec![super::ProcessInfo {
+                name: process.into(),
+                foreground: true,
+            }];
+            assert_eq!(helix_commands.matcher.matches(&snapshot), matches);
+        }
+        snapshot.processes.clear();
+        let check = |snapshot: &super::Snapshot,
+                     input: &str,
+                     expected: &str,
+                     partial: &str,
+                     german: &str| {
+            for language in ["de", "en"] {
+                for whole_session in [true, false] {
+                    let body = serde_json::to_vec(&json!({
+                        "messages": [{"role": "user", "content": format!(
+                            "Selected text:\n{input}\n\nInstruction: dictate"
+                        )}],
+                        "dictation": {"wholeSession": whole_session, "language": language}
+                    }))
+                    .unwrap();
+                    let result = super::apply_transform(&config, snapshot, &body).unwrap();
+                    if let Some(result) = &result {
+                        assert!(
+                            !result.submit,
+                            "shell correction must not execute {input:?}"
+                        );
+                        assert!(result.actions_before.is_empty());
+                    }
+                    assert_eq!(
+                        result.map(|r| r.output).as_deref().unwrap_or(input),
+                        if !whole_session {
+                            partial
+                        } else if language == "de" {
+                            german
+                        } else {
+                            expected
+                        },
+                        "input={input:?}, language={language}, whole_session={whole_session}"
+                    );
+                }
+            }
+        };
+        for (input, expected) in [
+            ("Commit.", "git commit"),
+            ("Git commit git commit.", "git commit"),
+            ("Commit, git commit! Commit.", "git commit"),
+            ("Get kommit.", "git commit"),
+            ("Git come with me.", "git commit"),
+            ("Get this.", "git diff"),
+            ("git diff--compact summary", "git diff --compact-summary"),
+            (
+                "git diff double dash compact dash summary",
+                "git diff --compact-summary",
+            ),
+            ("git diff --compact, summary", "git diff --compact-summary"),
+            ("GIT DIFF--COMPACT SUMMARY", "git diff --compact-summary"),
+            ("get diff--name status", "git diff --name-status"),
+            (
+                "git diff double dash compact summary",
+                "git diff --compact-summary",
+            ),
+            (
+                "git diff --ignore all space --name only",
+                "git diff --ignore-all-space --name-only",
+            ),
+            (
+                "git diff --find copies harder",
+                "git diff --find-copies-harder",
+            ),
+            (
+                "git diff --word diff regex=MyPattern",
+                "git diff --word-diff-regex=MyPattern",
+            ),
+            ("git push--force with lease", "git push --force-with-lease"),
+            (
+                "git push --set upstream origin MyBranch",
+                "git push --set-upstream origin MyBranch",
+            ),
+            ("git commit --no verify", "git commit --no-verify"),
+            ("git c --amend.", "git c --amend"),
+            ("git c --amend...", "git c --amend"),
+            (
+                "git commit --amend --no edit.",
+                "git commit --amend --no-edit",
+            ),
+            ("git diff--compact summary.", "git diff --compact-summary"),
+            ("git add .", "git add ."),
+            ("git diff -- ./file.", "git diff -- ./file."),
+            (
+                "git commit -m \"Keep this period.\"",
+                "git commit -m \"Keep this period.\"",
+            ),
+            ("git diff file dot", "git diff file."),
+            ("git status--short", "git status --short"),
+            ("git diff --unknown option", "git diff --unknown option"),
+            (
+                "git diff -- --compact summary",
+                "git diff -- --compact summary",
+            ),
+            (
+                "git commit -m \"Keep --compact summary literal\"",
+                "git commit -m \"Keep --compact summary literal\"",
+            ),
+            (
+                "git log --format=\"Keep --name status\"",
+                "git log --format=\"Keep --name status\"",
+            ),
+            ("get the", "git diff"),
+            ("Get the.", "git diff"),
+            ("GET THE", "git diff"),
+            ("get and", "git add"),
+            ("get pushed", "git push"),
+            ("get the push", "git push"),
+            ("Get the push.", "git push"),
+            ("GET THE PUSH", "git push"),
+            ("get the pushed", "git push"),
+            ("get the push origin main", "git push origin main"),
+            (
+                "get the push --force with lease",
+                "git push --force-with-lease",
+            ),
+            ("Get pushed.", "git push"),
+            ("GET PUSHED", "git push"),
+            ("get pushed origin main", "git push origin main"),
+            ("Get, pushed origin main", "git push origin main"),
+            (
+                "get pushed --force with lease",
+                "git push --force-with-lease",
+            ),
+            ("get", "git"),
+            ("Get.", "git"),
+            ("get custom-alias", "git custom-alias"),
+            ("getting", "getting"),
+            ("please get something", "please get something"),
+            ("Get and.", "git add"),
+            ("GET AND", "git add"),
+            ("get and dot", "git add ."),
+            ("get and src/main.rs", "git add src/main.rs"),
+            (
+                "Get the clone https://example.com/Repo",
+                "git clone https://example.com/Repo",
+            ),
+            ("Good started!", "git status"),
+            ("Good to see you.", "git c"),
+            ("Git check out.", "git checkout"),
+            ("Git cherry pick.", "git cherry-pick"),
+            (
+                "GIT COMMIT -m \"Fix German Nouns.\"",
+                "git commit -m \"Fix German Nouns.\"",
+            ),
+            (
+                "Commit git commit -m \"Commit commit\"",
+                "git commit -m \"Commit commit\"",
+            ),
+            ("Git C-a", "git c -a"),
+            ("Git c dash a.", "git c -a"),
+            ("Git add Punkt.", "git add ."),
+            (
+                "Git commit minus m \"Fix Casing\"",
+                "git commit -m \"Fix Casing\"",
+            ),
+            ("Nicks Build.", "nix build"),
+            ("Nyx flake update.", "nix flake update"),
+            ("nix, run", "nix run"),
+            ("nix. run", "nix run"),
+            ("nix.flake.update", "nix flake update"),
+            ("git,diff", "git diff"),
+            ("git. diff, --compact summary", "git diff --compact-summary"),
+            ("Get. and, src/main.rs", "git add src/main.rs"),
+            ("cargo. test", "cargo test"),
+            (
+                "cargo,test,--package my-crate",
+                "cargo test --package my-crate",
+            ),
+            ("pnpm,run,dev", "pnpm run dev"),
+            ("rg,needle", "rg needle"),
+            ("hx. src/main.rs", "hx src/main.rs"),
+            (
+                "curl,https://example.com/a,b",
+                "curl https://example.com/a,b",
+            ),
+            (
+                "git.remote.add,origin https://example.com/repo.git",
+                "git remote add origin https://example.com/repo.git",
+            ),
+            ("git diff test.file", "git diff test.file"),
+            ("rg test.file", "rg test.file"),
+            ("hx .config", "hx .config"),
+            ("git add ./src", "git add ./src"),
+            ("git diff -- file,a.rs", "git diff -- file,a.rs"),
+            (
+                "git commit -m \"One, two. Three.\"",
+                "git commit -m \"One, two. Three.\"",
+            ),
+            ("Nix, run.", "nix run"),
+            ("nix,run", "nix run"),
+            ("nix, run .#app", "nix run .#app"),
+            ("nix, build .#package", "nix build .#package"),
+            ("nix, flake update", "nix flake update"),
+            ("nixrun.hashtag app", "nix run .#app"),
+            ("nixrun.hashtag, app", "nix run .#app"),
+            ("nix run.hashtag app", "nix run .#app"),
+            ("nixrun . hashtag app", "nix run .#app"),
+            ("nix run dot hashtag app", "nix run .#app"),
+            ("nixbuild.hashtag package", "nix build .#package"),
+            ("nixdevelop.#dev", "nix develop .#dev"),
+            ("nix run .#app", "nix run .#app"),
+            ("Kargo Check.", "cargo check"),
+            ("Cargo Add serde", "cargo add serde"),
+            ("PNPM Run test", "pnpm run test"),
+            (
+                "Cargo Test --package MyCrate",
+                "cargo test --package MyCrate",
+            ),
+            ("H ex.", "hx"),
+            ("Felix.", "hx"),
+            ("hey, lex", "hx"),
+            ("Hey, Lex.", "hx"),
+            ("hey-lex", "hx"),
+            ("hey,lex src/main.rs", "hx src/main.rs"),
+            ("FELIX", "hx"),
+            ("felix src/main.rs", "hx src/main.rs"),
+            ("felix slash tmp slash file dot rs", "hx /tmp/file.rs"),
+            ("Ha iks.", "hx"),
+            ("En vau top.", "nvtop"),
+            ("Er ge.", "rg"),
+            ("Ef de.", "fd"),
+            ("System C T L.", "systemctl"),
+            ("John city hall.", "journalctl"),
+            ("Z dot.", "z dot"),
+            ("Z", "z"),
+            ("Z.", "z"),
+            ("ZEE", "z"),
+            ("Z MyProject", "z myproject"),
+            ("Z My Project Source Code.", "z my project source code"),
+            ("Z ./MyProject/Src", "z ./myproject/src"),
+            ("Z~/Documents/MyProject", "z ~/documents/myproject"),
+            ("Z/Projects/MyProject", "z /projects/myproject"),
+            ("Z My.Project.", "z my.project"),
+            ("Z My dash Project", "z my-project"),
+            ("Z My minus Project slash Src", "z my-project/src"),
+            ("Z slash Home slash Projects", "z /home/projects"),
+            ("Z, MyProject!", "z myproject"),
+            ("C MyProject", "z myproject"),
+            ("z-droix", "z droix"),
+            ("zdrawx", "z droix"),
+            ("c droix", "z droix"),
+            ("C Droix.", "z droix"),
+            ("zDroix", "z droix"),
+            ("zDrawX.", "z droix"),
+            ("c draw x", "z droix"),
+            ("c-drawX", "z droix"),
+            ("z - droix", "z droix"),
+            ("z, draw x.", "z droix"),
+            ("zee dash droix", "z droix"),
+            ("z minus draw x", "z droix"),
+            ("c droix c droix", "z droix"),
+            ("c project", "z project"),
+            ("z - project", "z project"),
+            ("zm/", "z m/"),
+            ("ZM/", "z m/"),
+            ("zMyProject/Src", "z myproject/src"),
+            ("zeditor", "z editor"),
+            ("Satura", "zathura"),
+            ("SATURA.", "zathura"),
+            ("satura", "zathura"),
+            ("Zathura.", "zathura"),
+            ("zatura", "zathura"),
+            ("Sathura", "zathura"),
+            ("satura document.pdf", "zathura document.pdf"),
+            ("zathura dash dash help", "zathura --help"),
+            ("zathuraproject", "z athuraproject"),
+            ("zebra", "z ebra"),
+            ("zdrawxadapter", "z drawxadapter"),
+        ] {
+            check(&snapshot, input, expected, expected, expected);
+        }
+        for (expected, aliases) in [
+            (
+                "droix",
+                vec![
+                    "strokes", "strikes", "Strokes.", "Strikes.", "draw x", "DrawX",
+                ],
+            ),
+            (
+                "rg",
+                vec![
+                    "R.D.", "R-G-R-G.", "R.G.", "RG", "Rd", "R-G", "Rg", "Lip gap.", "Ripgrab.",
+                    "Ripgrap.", "Ripgrep.",
+                ],
+            ),
+            ("ll", vec!["List.", "And ass.", "LS", "L.S.", "list"]),
+            (
+                "nixpkgs",
+                vec![
+                    "Nick's PKG's",
+                    "Next PKGs.",
+                    "Nick's Picky G's.",
+                    "NixPKGs.",
+                    "Next pick I guess.",
+                    "Nick's Pick A Gaze.",
+                    "Nix pick I guess.",
+                    "No PKGs.",
+                    "Nick's Pekka Gays.",
+                    "Next pick, I guess.",
+                    "Nix PKGs.",
+                    "Nick's Baker, I guess.",
+                    "xpkgs",
+                    "Nix P.K.G.'s.",
+                    "Nick's pick, I guess.",
+                    "next pick a kiss",
+                    "Mixed PKGs.",
+                ],
+            ),
+            (
+                "cargo",
+                vec!["Cargo.", "Kind of.", "Car golf.", "Cargolf.", "Caggle."],
+            ),
+            (
+                "nix flake update",
+                vec![
+                    "Nix Flake Update.",
+                    "Next flake update.",
+                    "Flake update.",
+                    "FlixFlake Update.",
+                    "next fake update.",
+                    "Mix Flake Update.",
+                ],
+            ),
+            ("codex", vec!["Codex.", "Cool, Diggs."]),
+            ("ssh", vec!["SSH.", "as aged", "Mrs. H.", "it's H"]),
+            (
+                "htop",
+                vec![
+                    "It stopped.",
+                    "H-top.",
+                    "It's top.",
+                    "Age top.",
+                    "Each top five.",
+                    "each top",
+                    "It's tough.",
+                    "age tops",
+                    "H top.",
+                ],
+            ),
+            ("fd", vec!["find", "Fine.", "find it.", "FD."]),
+            (
+                "git clone",
+                vec![
+                    "Get cloned.",
+                    "git clone",
+                    "Good club.",
+                    "Get the clone.",
+                    "Good, clear.",
+                ],
+            ),
+        ] {
+            for input in aliases {
+                check(&snapshot, input, expected, expected, expected);
+            }
+        }
+        for (input, expected) in [
+            ("rg dash e double dash something", "rg -e --something"),
+            ("rg, dash, e, dash, dash, something", "rg -e --something"),
+            ("ripgrep dash e needle", "rg -e needle"),
+            ("cargo test minus p my-crate", "cargo test -p my-crate"),
+            ("npm run test dash dash watch", "npm run test --watch"),
+            ("something, slash, blub", "something/blub"),
+            ("some dash kebab minus case", "some-kebab-case"),
+            ("rg slash tmp slash source", "rg /tmp/source"),
+            (
+                "git clone git@example.com slash repo",
+                "git clone git@example.com/repo",
+            ),
+            (
+                "git commit -m \"Keep dash and slash literal\"",
+                "git commit -m \"Keep dash and slash literal\"",
+            ),
+        ] {
+            check(&snapshot, input, expected, expected, expected);
+        }
+        check(
+            &snapshot,
+            "H X ./MyFile.rs",
+            "hx ./myfile.rs",
+            "hx ./MyFile.rs",
+            "hx ./MyFile.rs",
+        );
+        check(
+            &snapshot,
+            "Zett Documents.",
+            "z documents",
+            "z documents",
+            "z documents",
+        );
+        snapshot.focused.app_id = Some("org.example.Editor".into());
+        for (input, expected) in [
+            ("some dash kebab minus case", "some-kebab-case"),
+            ("something, slash, blub", "something/blub"),
+            ("some Slash folder Dash name", "some/folder-name"),
+        ] {
+            check(&snapshot, input, expected, expected, expected);
+        }
+
+        for (input, expected) in [
+            ("Morgen.", "morgen"),
+            ("Guten Morgen.", "guten morgen"),
+            ("Das Ist Schön...", "das ist schön"),
+            ("Good Morning Everyone.", "good morning everyone"),
+            ("  Drei Kleine Wörter...  ", "drei kleine wörter"),
+            ("Ist das gut?", "ist das gut?"),
+            ("Heute ist schönes Wetter.", "Heute ist schönes Wetter."),
+            ("Please show the changes.", "Please show the changes."),
+        ] {
+            check(
+                &snapshot,
+                input,
+                expected,
+                input,
+                if input.split_whitespace().count() <= 3 {
+                    input.trim().trim_end_matches('.')
+                } else {
+                    input
+                },
+            );
+        }
+        let prose = [
+            "Heute ist schönes Wetter.",
+            "Please show the changes.",
+            "Get the latest version.",
+            "Git commit ist der richtige Befehl.",
+            "Commit to the plan.",
+            "Das ist sehr sehr gut.",
+            "I said git commit git commit twice.",
+        ];
+        for app in ["firefox", "org.example.Editor"] {
+            snapshot.focused.app_id = Some(app.into());
+            for input in prose {
+                check(&snapshot, input, input, input, input);
+            }
+        }
+        for (app, process) in [
+            ("kitty", "fish"),
+            ("firefox", "firefox"),
+            ("kitty", "codex"),
+            ("kitty", "hx"),
+        ] {
+            snapshot.focused.app_id = Some(app.into());
+            snapshot.processes = vec![super::ProcessInfo {
+                name: process.into(),
+                foreground: true,
+            }];
+            for (input, expected) in [
+                ("dot", "."),
+                ("dot.", "."),
+                ("dot dot", ".."),
+                ("file dot rs", "file.rs"),
+                ("file, dot, ts", "file.ts"),
+                ("label colon value", "label: value"),
+                ("hashtag", "#"),
+                ("HASHTAG", "#"),
+                ("hash tag", "#"),
+                ("hashtag heading", "#heading"),
+                ("\"hashtag\"", "\"#\""),
+                (
+                    "Put a hashtag before this heading",
+                    "Put a #before this heading",
+                ),
+                ("hashtagged", "hashtagged"),
+                ("label, colon, value", "label: value"),
+                ("colon", ":"),
+                (
+                    "https colon slash slash example dot com",
+                    "https://example.com",
+                ),
+                ("\"label colon value\"", "\"label: value\""),
+                ("dot config", ".config"),
+                ("dot slash src slash main dot rs", "./src/main.rs"),
+                ("\"file dot ts\"", "\"file.ts\""),
+                ("z dot", "z dot"),
+                ("dotnet", "dotnet"),
+            ] {
+                check(&snapshot, input, expected, expected, expected);
+            }
+            if process == "fish" {
+                for (input, expected) in [
+                    ("rg dot", "rg ."),
+                    ("hx dot slash src slash main dot rs", "hx ./src/main.rs"),
+                    ("git add dot", "git add ."),
+                    ("zee dot", "z dot"),
+                    ("c dot", "z dot"),
+                    ("zdot", "z dot"),
+                    ("Zdot.", "z dot"),
+                    ("zDot", "z dot"),
+                    ("ZDOT", "z dot"),
+                    ("z-dot", "z dot"),
+                    ("z_dot", "z dot"),
+                    ("z dash dot", "z dot"),
+                    ("zeeDot", "z dot"),
+                    ("cdot", "z dot"),
+                    ("zdot zdot", "z dot"),
+                ] {
+                    check(&snapshot, input, expected, expected, expected);
+                }
+            } else {
+                check(&snapshot, "zdot", "zdot", "zdot", "zdot");
+            }
+            for input in [
+                "draw x",
+                "draw-x",
+                "draw_x",
+                "drawX",
+                "DrawX",
+                "DRAW X",
+                "draw–X",
+                "draw — x",
+                "draw, X",
+                "draw dash x",
+                "draw minus x",
+            ] {
+                check(&snapshot, input, "droix", "droix", "droix");
+            }
+            for (input, expected) in [
+                ("Please open drawX for me.", "Please open droix for me."),
+                (
+                    "Ich arbeite mit Draw-X heute.",
+                    "Ich arbeite mit droix heute.",
+                ),
+                (
+                    "Use draw x and DrawX together.",
+                    "Use droix and droix together.",
+                ),
+                (
+                    "Keep drawXAdapter and redrawX unchanged.",
+                    "Keep drawXAdapter and redrawX unchanged.",
+                ),
+            ] {
+                check(&snapshot, input, expected, expected, expected);
+            }
+            if process == "fish" {
+                check(
+                    &snapshot,
+                    "strikes dash dash help",
+                    "droix --help",
+                    "droix --help",
+                    "droix --help",
+                );
+            } else {
+                for input in ["z-droix", "zdrawx", "c droix", "Z My Project Source Code."] {
+                    check(&snapshot, input, input, input, input);
+                }
+                check(&snapshot, "strikes", "strikes", "strikes", "strikes");
+                check(&snapshot, "felix", "felix", "felix", "felix");
+                for input in ["git,diff", "cargo. test", "nix. run"] {
+                    check(&snapshot, input, input, input, input);
+                }
+                check(
+                    &snapshot,
+                    "get pushed",
+                    "get pushed",
+                    "get pushed",
+                    "get pushed",
+                );
+                check(
+                    &snapshot,
+                    "get custom-alias",
+                    "get custom-alias",
+                    "get custom-alias",
+                    "get custom-alias",
+                );
+                check(
+                    &snapshot,
+                    "git diff--compact summary",
+                    "git diff--compact summary",
+                    "git diff--compact summary",
+                    "git diff--compact summary",
+                );
+                for input in ["zm/", "satura", "zebra", "zathura"] {
+                    check(&snapshot, input, input, input, input);
+                }
+                check(&snapshot, "strokes", "strokes", "strokes", "strokes");
+                let sentence = "She draws strokes and strikes lines.";
+                check(&snapshot, sentence, sentence, sentence, sentence);
+            }
+        }
+        // A command phrase is prose outside the terminal, including Codex/Helix
+        // hosted inside a terminal (their higher-priority modes take precedence).
+        for (app, process) in [("firefox", "firefox"), ("kitty", "codex"), ("kitty", "hx")] {
+            snapshot.focused.app_id = Some(app.into());
+            snapshot.processes = vec![super::ProcessInfo {
+                name: process.into(),
+                foreground: true,
+            }];
+            check(&snapshot, "Commit.", "commit", "Commit.", "Commit");
+            check(
+                &snapshot,
+                "Git commit git commit.",
+                "Git commit git commit.",
+                "Git commit git commit.",
+                "Git commit git commit.",
+            );
+        }
+    }
+
+    #[test]
     fn output_waits_for_letter_and_all_modifiers_to_release() {
         for keys in [vec![30, 125], vec![125], vec![30], vec![42], vec![126, 54]] {
             let mut held = [false; KEY_COUNT];
@@ -2117,6 +3018,11 @@ mod tests {
             pattern: Regex::new(r"(?i)^\s*(status|usage)[.!?]?\s*$").unwrap(),
             replace: "/$1".to_owned(),
             lowercase: true,
+            whole_session_only: false,
+            exclude_pattern: None,
+            exclude_languages: vec![],
+            spoken_punctuation: String::new(),
+            after_modes: false,
             lowercase_first: false,
             lowercase_first_whole_session: false,
             german_max_words: None,
@@ -2134,6 +3040,11 @@ mod tests {
             pattern: Regex::new(r"(?i)\b(status|usage)\b").unwrap(),
             replace: "/$1".to_owned(),
             lowercase: true,
+            whole_session_only: false,
+            exclude_pattern: None,
+            exclude_languages: vec![],
+            spoken_punctuation: String::new(),
+            after_modes: false,
             lowercase_first: false,
             lowercase_first_whole_session: false,
             german_max_words: None,
@@ -2168,6 +3079,11 @@ mod tests {
             pattern: Regex::new(r"(?i)^\s*(?:find|search)\s+(.+?)\s*$").unwrap(),
             replace: r"\k{esc}/$1".to_owned(),
             lowercase: false,
+            whole_session_only: false,
+            exclude_pattern: None,
+            exclude_languages: vec![],
+            spoken_punctuation: String::new(),
+            after_modes: false,
             lowercase_first: false,
             lowercase_first_whole_session: false,
             german_max_words: None,
