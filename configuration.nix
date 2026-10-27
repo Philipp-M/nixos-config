@@ -164,6 +164,7 @@ in
     };
 
     whisperCommand = {
+      useGpu = false;
       pollMs = 40;
       audioMs = 600;
       vadMs = 100;
@@ -241,27 +242,29 @@ in
             process = "^(hx|helix).*";
           };
 
-          commands = let
-            aliases = words: action: builtins.listToAttrs
-              (map (name: { inherit name; value = action; }) words);
-          in {
-            insert = "key esc; key i";
-            undo = "key esc; key u";
-            redo = "key esc; key shift+u";
-            escape = "key esc";
-            "select all" = "key esc; key shift+5";
+          commands =
+            let
+              aliases = words: action: builtins.listToAttrs
+                (map (name: { inherit name; value = action; }) words);
+            in
+            {
+              insert = "key esc; key i";
+              undo = "key esc; key u";
+              redo = "key esc; key shift+u";
+              escape = "key esc";
+              "select all" = "key esc; key shift+5";
 
-          }
-          // aliases [ "goto" "go to" "go-to" "go too" "go two" "go to definition" "definition" ]
-            "key esc; key g; key d"
-          // aliases [ "back" "beck" "backward" "backwards" "go back" "jump back" ]
-            "key esc; key ctrl+o"
-          // aliases [ "into" "in to" "in-to" "forward" "forwards" "go forward" "jump forward" ]
-            "key esc; key ctrl+i"
-          // aliases [ "up" "half page up" "half-page up" "page up" ]
-            "key esc; key ctrl+u"
-          // aliases [ "down" "half page down" "half-page down" "page down" ]
-            "key esc; key ctrl+d";
+            }
+            // aliases [ "goto" "go to" "go-to" "go too" "go two" "go to definition" "definition" ]
+              "key esc; key g; key d"
+            // aliases [ "back" "beck" "backward" "backwards" "go back" "jump back" ]
+              "key esc; key ctrl+o"
+            // aliases [ "into" "in to" "in-to" "forward" "forwards" "go forward" "jump forward" ]
+              "key esc; key ctrl+i"
+            // aliases [ "up" "half page up" "half-page up" "page up" ]
+              "key esc; key ctrl+u"
+            // aliases [ "down" "half page down" "half-page down" "page down" ]
+              "key esc; key ctrl+d";
         };
 
         firefox = {
@@ -286,6 +289,8 @@ in
     };
 
     dictation = {
+      quantization = "q5_0";
+      flashAttention = true;
       enableLlm = false;
       # Keep Whisper unprompted; command vocabulary lives in contextual regexes.
       vocabulary = [ ];
@@ -317,7 +322,7 @@ in
         }
         {
           name = "spoken-identifier-punctuation";
-          pattern = ''(?is)^(.*\b(?:slash|dash|minus|dot|colon)\b.*)$'';
+          pattern = ''(?is)^(.*\b(?:slash|dash|minus|dot|colon|under[ -]?score)\b.*)$'';
           replace = "$1";
           spokenPunctuation = "identifier";
           afterModes = true;

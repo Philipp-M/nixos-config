@@ -12,6 +12,12 @@ let
     hash = "sha256-ZNGCtEC5jVIDxPm9VBVE2ExgUZbE97hF36EfsjWU0eI=";
   };
 
+  dictationModel = if cfg.dictation.quantization == null then whisperLargeV3 else
+    pkgs.runCommand "ggml-large-v3-${cfg.dictation.quantization}.bin" { } ''
+      CUDA_VISIBLE_DEVICES="" ${pkgs.whisper-command-env}/bin/whisper-quantize \
+        ${whisperLargeV3} "$out" ${cfg.dictation.quantization} > /dev/null
+    '';
+
   whisperSmallEn = pkgs.fetchurl {
     url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en.bin";
     hash = "sha256-xhONbVjsyDIgl+D5h8MvG+i7ChhTKj+I9zTRu/nEHl0=";
@@ -81,6 +87,12 @@ let
         description = "Apply only to a completed recording with no earlier streamed text.";
       };
 
+      sessionStartOnly = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Apply only at the start of a recording, never to later streamed fragments.";
+      };
+
       excludeLanguages = mkOption {
         type = types.listOf types.str;
         default = [ ];
@@ -90,7 +102,7 @@ let
       spokenPunctuation = mkOption {
         type = types.enum [ "none" "identifier" "shell" ];
         default = "none";
-        description = "Convert spoken slash/dash/minus, preserving quoted text; shell mode spaces options.";
+        description = "Convert spoken punctuation, joining identifiers; shell mode spaces options. Slash/dash/minus preserve quoted text.";
       };
 
       afterModes = mkOption {
@@ -192,7 +204,8 @@ let
     };
 
     "local-whisper" = {
-      model_path = "${whisperLargeV3}";
+      model_path = "${dictationModel}";
+      flash_attn = cfg.dictation.flashAttention;
       segmentation = "silence";
       phrase_silence_ms = 500;
     };
@@ -331,6 +344,12 @@ in
         default = whisperSmallEn;
       };
 
+      useGpu = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Run voice-command recognition on the GPU.";
+      };
+
       pollMs = mkOption {
         type = types.int;
         default = 50;
@@ -398,6 +417,17 @@ in
     };
 
     dictation = {
+      quantization = mkOption {
+        type = types.nullOr (types.enum [ "q5_0" "q8_0" ]);
+        default = null;
+        description = "Quantize the existing large-v3 weights once, without another download.";
+      };
+
+      flashAttention = mkOption {
+        type = types.bool;
+        default = false;
+      };
+
       vocabulary = mkOption {
         type = types.listOf types.str;
         default = [ ];
@@ -579,7 +609,7 @@ in
       unitConfig.ConditionUser = cfg.user;
 
       serviceConfig = {
-        ExecStart = lib.escapeShellArgs [
+        ExecStart = lib.escapeShellArgs ([
           "${voiceControlRuntime}/bin/voice-control-runtime"
           "commands"
           "--config"
@@ -608,7 +638,7 @@ in
           (toString cfg.whisperCommand.threads)
           "--vad-threshold"
           (toString cfg.whisperCommand.vadThreshold)
-        ];
+        ] ++ lib.optional (!cfg.whisperCommand.useGpu) "--no-gpu");
         Restart = "always";
         RestartSec = 1;
       };

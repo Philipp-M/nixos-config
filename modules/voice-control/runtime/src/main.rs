@@ -148,6 +148,8 @@ struct TransformConfig {
     #[serde(default)]
     whole_session_only: bool,
     #[serde(default)]
+    session_start_only: bool,
+    #[serde(default)]
     exclude_languages: Vec<String>,
     #[serde(default)]
     spoken_punctuation: String,
@@ -294,6 +296,7 @@ struct Transform {
     replace: String,
     lowercase: bool,
     whole_session_only: bool,
+    session_start_only: bool,
     exclude_languages: Vec<String>,
     spoken_punctuation: String,
     after_modes: bool,
@@ -410,6 +413,7 @@ impl Transform {
             replace: raw.replace,
             lowercase: raw.lowercase,
             whole_session_only: raw.whole_session_only,
+            session_start_only: raw.session_start_only,
             exclude_languages: raw.exclude_languages,
             spoken_punctuation: raw.spoken_punctuation,
             after_modes: raw.after_modes,
@@ -426,6 +430,9 @@ impl Transform {
     }
 
     fn apply_in_session(&self, input: &str, session: Option<&DictationSession>) -> Option<String> {
+        if self.session_start_only && session.is_some_and(|session| !session.session_start) {
+            return None;
+        }
         if self.whole_session_only && !session.is_some_and(|session| session.whole_session) {
             return None;
         }
@@ -489,11 +496,11 @@ fn normalize_spoken_punctuation(input: &str, shell: bool) -> String {
         .replace_all(input, ":");
     let input = colonized.as_ref();
     let zoxide_query = shell && input.starts_with("z ");
-    // Dot is explicitly requested even inside quotes. Run after short-utterance
-    // cleanup so intentionally spoken dots cannot be mistaken for ASR periods.
+    // Dot and underscore are explicitly requested even inside quotes. Run after
+    // short-utterance cleanup so spoken dots cannot be mistaken for ASR periods.
     static Z_DOT: OnceLock<Regex> = OnceLock::new();
-    static DOT_ONLY: OnceLock<Regex> = OnceLock::new();
-    static DOT: OnceLock<Regex> = OnceLock::new();
+    static SEPARATOR_ONLY: OnceLock<Regex> = OnceLock::new();
+    static SEPARATORS: OnceLock<Regex> = OnceLock::new();
     static COMMAND_HEAD: OnceLock<Regex> = OnceLock::new();
     if Z_DOT
         .get_or_init(|| Regex::new(r"(?i)^\s*z\s+dot[.!?]*\s*$").unwrap())
@@ -501,24 +508,37 @@ fn normalize_spoken_punctuation(input: &str, shell: bool) -> String {
     {
         return input.to_owned();
     }
-    if DOT_ONLY
-        .get_or_init(|| Regex::new(r"(?i)^\s*dot[.!?]*\s*$").unwrap())
-        .is_match(input)
+    if let Some(separator) = SEPARATOR_ONLY
+        .get_or_init(|| Regex::new(r"(?i)^\s*(dot|under[ -]?score)[.!?]*\s*$").unwrap())
+        .captures(input)
     {
-        return ".".into();
+        return if separator[1].eq_ignore_ascii_case("dot") {
+            "."
+        } else {
+            "_"
+        }
+        .into();
     }
-    let dot = DOT.get_or_init(|| Regex::new(r"(?i)[\s,]*\bdot\b[\s,]*").unwrap());
+    // Process both separators together: joining underscore first would hide the
+    // word boundary in "file underscore dot rs" and prevent dot conversion.
+    let separators = SEPARATORS
+        .get_or_init(|| Regex::new(r"(?i)[\s,]*\b(dot|under[ -]?score)\b[\s,]*").unwrap());
     let command_head = COMMAND_HEAD.get_or_init(|| Regex::new(
         r"(?i)^(?:git\s+\S+|cargo(?:\s+\S+)?|nix(?:\s+(?:flake\s+)?\S+)?|rg|fd|ll|ls|cd|hx|zathura|bat|cat|mkdir|rm|cp|mv|z|droix|codex|npm|pnpm|yarn|node|npx|bun|deno|tsc|trunk|ssh|rsync|curl|wget)$"
     ).unwrap());
     let mut dotted = String::new();
     let mut dot_end = 0;
-    for found in dot.find_iter(input) {
+    for separator in separators.captures_iter(input) {
+        let found = separator.get(0).unwrap();
         dotted.push_str(&input[dot_end..found.start()]);
         if shell && command_head.is_match(&dotted) {
             dotted.push(' ');
         }
-        dotted.push('.');
+        dotted.push(if separator[1].eq_ignore_ascii_case("dot") {
+            '.'
+        } else {
+            '_'
+        });
         dot_end = found.end();
     }
     dotted.push_str(&input[dot_end..]);
@@ -645,6 +665,8 @@ fn normalize_git_options(input: &str) -> String {
 #[serde(rename_all = "camelCase")]
 struct DictationSession {
     whole_session: bool,
+    #[serde(default = "default_true")]
+    session_start: bool,
     language: String,
 }
 
@@ -1703,6 +1725,7 @@ struct CommandArgs {
     audio_ctx: u32,
     threads: u32,
     vad_threshold: f32,
+    no_gpu: bool,
 }
 
 fn run_commands(args: CommandArgs) -> Result<()> {
@@ -1712,6 +1735,8 @@ fn run_commands(args: CommandArgs) -> Result<()> {
     let mut dotool = Dotool::start(&args.dotool)?;
 
     let mut child = Command::new(&args.whisper)
+        .args(if args.no_gpu { &["--no-gpu"][..] } else { &[] })
+        .envs(args.no_gpu.then_some(("CUDA_VISIBLE_DEVICES", "")))
         .arg("-m")
         .arg(&args.model)
         .arg("-cmd")
@@ -2181,7 +2206,7 @@ where
 
 fn usage() -> ! {
     eprintln!(
-        "usage:\n  voice-control-runtime proxy --config FILE --dotool FILE\n  voice-control-runtime commands --config FILE --whisper FILE --model FILE --command-list FILE --dotool FILE --gate FILE --poll-ms N --audio-ms N --vad-ms N --startup-ms N --audio-ctx N --threads N --vad-threshold N\n  voice-control-runtime controls --port CLIENT[:PORT] --whisrs FILE --dotool FILE --gate FILE --command-note N --german-note N --enter-note N --dictation-note N --english Mod+A --german Mod+Shift+A --mouse-button 275 --german-mouse-button 276 [--disable-mouse]"
+        "usage:\n  voice-control-runtime proxy --config FILE --dotool FILE\n  voice-control-runtime commands --config FILE --whisper FILE --model FILE --command-list FILE --dotool FILE --gate FILE --poll-ms N --audio-ms N --vad-ms N --startup-ms N --audio-ctx N --threads N --vad-threshold N [--no-gpu]\n  voice-control-runtime controls --port CLIENT[:PORT] --whisrs FILE --dotool FILE --gate FILE --command-note N --german-note N --enter-note N --dictation-note N --english Mod+A --german Mod+Shift+A --mouse-button 275 --german-mouse-button 276 [--disable-mouse]"
     );
     std::process::exit(2);
 }
@@ -2212,6 +2237,7 @@ fn main() -> Result<()> {
             audio_ctx: parse_value(&args, "--audio-ctx")?,
             threads: parse_value(&args, "--threads")?,
             vad_threshold: parse_value(&args, "--vad-threshold")?,
+            no_gpu: args.iter().any(|arg| arg == "--no-gpu"),
         }),
         "controls" => run_controls(
             MidiArgs {
@@ -2377,6 +2403,59 @@ mod tests {
             ("Get kommit.", "git commit"),
             ("Git come with me.", "git commit"),
             ("Get this.", "git diff"),
+            ("skid", "git"),
+            ("SKIT.", "git"),
+            ("skid diff", "git diff"),
+            ("Skit status.", "git status"),
+            ("skid. push origin MyBranch", "git push origin MyBranch"),
+            ("skit diff--compact summary", "git diff --compact-summary"),
+            ("skid diff -- src/MyFile.rs", "git diff -- src/MyFile.rs"),
+            ("s.s.h. host", "ssh host"),
+            ("s.s.h.host", "ssh host"),
+            ("s.s.h. -p 2222 User@MyHost", "ssh -p 2222 User@MyHost"),
+            ("s. s. h. User@MyHost", "ssh User@MyHost"),
+            ("skip status", "git status"),
+            ("Skip status.", "git status"),
+            ("skip. status", "git status"),
+            ("skip status, --short", "git status --short"),
+            ("skip status--short", "git status --short"),
+            (
+                "skip status -- src/MyFile.rs",
+                "git status -- src/MyFile.rs",
+            ),
+            ("kid push", "git push"),
+            ("Kid push.", "git push"),
+            ("kid. push origin MyBranch", "git push origin MyBranch"),
+            ("kid push--force with lease", "git push --force-with-lease"),
+            ("good. def", "git diff"),
+            ("kids. diff", "git diff"),
+            ("kidz def", "git diff"),
+            ("good. tiff", "git diff"),
+            ("good dev", "git diff"),
+            ("Git logger", "git log"),
+            ("Git logger.", "git log"),
+            ("GIT LOGGER", "git log"),
+            ("kids. logger", "git log"),
+            ("git logger, --oneline", "git log --oneline"),
+            ("git logger--oneline", "git log --oneline"),
+            ("git logger -- src/MyFile.rs", "git log -- src/MyFile.rs"),
+            ("git longer", "git log"),
+            ("Git longer.", "git log"),
+            ("git longer, --oneline", "git log --oneline"),
+            ("git longer--oneline", "git log --oneline"),
+            ("git longer -- src/MyFile.rs", "git log -- src/MyFile.rs"),
+            ("good luck", "git log"),
+            ("Good luck.", "git log"),
+            ("GOOD LUCK", "git log"),
+            ("good. luck, --oneline", "git log --oneline"),
+            ("good luck--oneline", "git log --oneline"),
+            ("good luck -- src/MyFile.rs", "git log -- src/MyFile.rs"),
+            ("KIDZ. DEF.", "git diff"),
+            ("kids,def", "git diff"),
+            ("good.def", "git diff"),
+            ("kids def, --name only", "git diff --name-only"),
+            ("kidz. tiff--compact summary", "git diff --compact-summary"),
+            ("good dev -- src/MyFile.rs", "git diff -- src/MyFile.rs"),
             ("git diff--compact summary", "git diff --compact-summary"),
             (
                 "git diff double dash compact dash summary",
@@ -2491,6 +2570,43 @@ mod tests {
             ),
             ("Nicks Build.", "nix build"),
             ("Nyx flake update.", "nix flake update"),
+            ("nix Flake Update LLM-Agents", "nix flake update llm-agents"),
+            (
+                "NIX FLAKE UPDATE LLM-AGENTS.",
+                "nix flake update llm-agents",
+            ),
+            ("nix.Flake.Update LLM-Agents", "nix flake update llm-agents"),
+            ("Next fake Update LLM-Agents", "nix flake update llm-agents"),
+            (
+                "nix Flake Update LLM-Agents NIXPKGS",
+                "nix flake update llm-agents nixpkgs",
+            ),
+            (
+                "nix Flake Update NIXPKGS LLM-Agents",
+                "nix flake update nixpkgs llm-agents",
+            ),
+            ("nix Flake Update MyInput", "nix flake update MyInput"),
+            (
+                "nix Flake Check ./MyProject --keep-going",
+                "nix flake check ./MyProject --keep-going",
+            ),
+            ("nix Flake Show ./MyProject", "nix flake show ./MyProject"),
+            (
+                "nix Flake Lock --override-input Example github:Org/Repo",
+                "nix flake lock --override-input Example github:Org/Repo",
+            ),
+            (
+                "nix Flake Update LLM-Agents --flake ./MyProject",
+                "nix flake update llm-agents --flake ./MyProject",
+            ),
+            (
+                "nix Flake Update --flake LLM-Agents",
+                "nix flake update --flake LLM-Agents",
+            ),
+            (
+                "nix Flake Update \"LLM-Agents\"",
+                "nix flake update \"LLM-Agents\"",
+            ),
             ("nix, run", "nix run"),
             ("nix. run", "nix run"),
             ("nix.flake.update", "nix flake update"),
@@ -2561,6 +2677,17 @@ mod tests {
             ("Z", "z"),
             ("Z.", "z"),
             ("ZEE", "z"),
+            ("the", "z"),
+            ("The.", "z"),
+            ("THE", "z"),
+            ("the MyProject", "z myproject"),
+            ("The My Project Source Code.", "z my project source code"),
+            ("the, MyProject!", "z myproject"),
+            ("the ./MyProject/Src", "z ./myproject/src"),
+            ("the My minus Project slash Src", "z my-project/src"),
+            ("the dot", "z dot"),
+            ("the draw x", "z droix"),
+            ("the-droix", "z droix"),
             ("Z MyProject", "z myproject"),
             ("Z My Project Source Code.", "z my project source code"),
             ("Z ./MyProject/Src", "z ./myproject/src"),
@@ -2658,7 +2785,13 @@ mod tests {
                 ],
             ),
             ("codex", vec!["Codex.", "Cool, Diggs."]),
-            ("ssh", vec!["SSH.", "as aged", "Mrs. H.", "it's H"]),
+            (
+                "ssh",
+                vec![
+                    "SSH.", "s.s.h.", "S.S.H.", "s. s. h.", "s s h", "s-s-h", "as aged", "Mrs. H.",
+                    "it's H",
+                ],
+            ),
             (
                 "htop",
                 vec![
@@ -2754,6 +2887,116 @@ mod tests {
                 },
             );
         }
+        // Recognition aliases only affect the command prefix, including in a terminal.
+        snapshot.focused.app_id = Some("kitty".into());
+        for input in [
+            "I said good. def earlier.",
+            "Please explain kids. diff to me.",
+            "These words kidz def belong here.",
+            "That sounds like good. tiff today.",
+            "We need a good dev today.",
+            "Kids play outside every day.",
+            "Good development takes some time.",
+            "Please explain Git logger to me.",
+            "Please explain git longer to me.",
+            "I wish you good luck today.",
+            "Please explain kid push to me.",
+            "Please skip status checks for now.",
+            "Please explain nix Flake Update LLM-Agents to me.",
+            "Please explain skid diff to me.",
+            "We discussed skit status earlier.",
+            "skidding across the road",
+            "git log -- skid skit",
+            "Please use s.s.h. to connect.",
+            "cat s.s.h.config",
+            "rg --fixed-strings \"s.s.h.\" src/MyFile.rs",
+            "sshd",
+            "s.s.html",
+            "skip testing for now",
+            "skipping status checks",
+            "git log -- skip status",
+            "I watched the kid push the door.",
+            "I said the directory name earlier.",
+            "Theater opens its doors today.",
+            "theory",
+            "rg \"the MyProject\" src/MyFile.rs",
+            "kid pushes the door",
+            "git log -- kid push",
+            "git longername",
+            "git loggers",
+            "git log -- logger",
+            "git log -- longer luck",
+            "git diff -- good.def kids.diff",
+            "git log --grep=\"good dev\" --all",
+            "rg \"kids. diff\" src/MyFile.rs",
+        ] {
+            check(&snapshot, input, input, input, input);
+        }
+        for head in [
+            "git", "get", "kit", "good", "did", "gitt", "kid", "kids", "kidz", "skip", "skid",
+            "skit",
+        ] {
+            for subcommand in [
+                "status", "add", "log", "show", "fetch", "pull", "push", "branch", "switch",
+                "checkout", "merge", "rebase", "stash", "restore", "reset", "clone",
+            ] {
+                for separator in [" ", ". ", ","] {
+                    let input = format!("{head}{separator}{subcommand}");
+                    let expected = format!("git {subcommand}");
+                    check(&snapshot, &input, &expected, &expected, &expected);
+                }
+            }
+        }
+        // A pause must not make the middle of a recording into a command head.
+        for (input, corrected, later) in [
+            ("good. def", "git diff", "good. def"),
+            ("kids. diff", "git diff", "kids. diff"),
+            ("kidz def", "git diff", "kidz def"),
+            ("good. tiff", "git diff", "good. tiff"),
+            ("good dev", "git diff", "good dev"),
+            ("get pushed", "git push", "get pushed"),
+            ("Git logger", "git log", "Git logger"),
+            ("git longer", "git log", "git longer"),
+            ("good luck", "git log", "good luck"),
+            ("kid push", "git push", "kid push"),
+            ("skip status", "git status", "skip status"),
+            ("skid", "git", "skid"),
+            ("skit status", "git status", "skit status"),
+            ("s.s.h.", "ssh", "s.s.h."),
+            ("s.s.h. host", "ssh host", "s.s.h. host"),
+            ("The MyProject", "z myproject", "The MyProject"),
+            ("the", "z", "the"),
+            ("car golf test", "cargo test", "car golf test"),
+            ("next flake update", "nix flake update", "next flake update"),
+            (
+                "nix Flake Update LLM-Agents",
+                "nix flake update llm-agents",
+                "nix Flake Update LLM-Agents",
+            ),
+            ("fine src", "fd src", "fine src"),
+            ("hey lex file.rs", "hx file.rs", "hey lex file.rs"),
+            ("drawX", "droix", "droix"),
+            ("file dot rs", "file.rs", "file.rs"),
+            ("label colon value", "label: value", "label: value"),
+            ("snake underscore case", "snake_case", "snake_case"),
+        ] {
+            for language in ["en", "de"] {
+                for session_start in [true, false] {
+                    let body = serde_json::to_vec(&json!({
+                        "messages": [{"role": "user", "content": format!(
+                            "Selected text:\n{input}\n\nInstruction: dictate"
+                        )}],
+                        "dictation": {"wholeSession": false, "sessionStart": session_start, "language": language}
+                    })).unwrap();
+                    let result = super::apply_transform(&config, &snapshot, &body).unwrap();
+                    assert_eq!(
+                        result.map(|r| r.output).as_deref().unwrap_or(input),
+                        if session_start { corrected } else { later },
+                        "input={input:?}, language={language}, session_start={session_start}"
+                    );
+                }
+            }
+        }
         let prose = [
             "Heute ist schönes Wetter.",
             "Please show the changes.",
@@ -2781,6 +3024,25 @@ mod tests {
                 foreground: true,
             }];
             for (input, expected) in [
+                ("underscore", "_"),
+                ("UNDERSCORE.", "_"),
+                ("under score", "_"),
+                ("snake underscore case", "snake_case"),
+                ("snake under score case", "snake_case"),
+                ("snake under-score case", "snake_case"),
+                ("snake, underscore, case", "snake_case"),
+                ("snake underscore underscore case", "snake__case"),
+                ("underscore name", "_name"),
+                ("name underscore", "name_"),
+                ("file underscore name dot rs", "file_name.rs"),
+                ("file underscore dot rs", "file_.rs"),
+                ("dot underscore config", "._config"),
+                ("file dot underscore name", "file._name"),
+                ("\"snake underscore case\"", "\"snake_case\""),
+                ("'snake underscore case'", "'snake_case'"),
+                ("Use snake underscore case here.", "Use snake_case here."),
+                ("snake_case", "snake_case"),
+                ("underscores", "underscores"),
                 ("dot", "."),
                 ("dot.", "."),
                 ("dot dot", ".."),
@@ -2812,8 +3074,18 @@ mod tests {
             ] {
                 check(&snapshot, input, expected, expected, expected);
             }
+            check(
+                &snapshot,
+                "My underscore Name",
+                "my_name",
+                "My_Name",
+                "My_Name",
+            );
             if process == "fish" {
                 for (input, expected) in [
+                    ("rg underscore", "rg _"),
+                    ("git diff foo underscore bar dot rs", "git diff foo_bar.rs"),
+                    ("z My underscore Project", "z my_project"),
                     ("rg dot", "rg ."),
                     ("hx dot slash src slash main dot rs", "hx ./src/main.rs"),
                     ("git add dot", "git add ."),
@@ -2876,12 +3148,37 @@ mod tests {
                     "droix --help",
                 );
             } else {
-                for input in ["z-droix", "zdrawx", "c droix", "Z My Project Source Code."] {
+                for input in [
+                    "z-droix",
+                    "zdrawx",
+                    "c droix",
+                    "Z My Project Source Code.",
+                    "the myproject",
+                    "the",
+                ] {
                     check(&snapshot, input, input, input, input);
                 }
                 check(&snapshot, "strikes", "strikes", "strikes", "strikes");
                 check(&snapshot, "felix", "felix", "felix", "felix");
-                for input in ["git,diff", "cargo. test", "nix. run"] {
+                for input in [
+                    "git,diff",
+                    "cargo. test",
+                    "nix. run",
+                    "good. def",
+                    "kids. diff",
+                    "kidz def",
+                    "good. tiff",
+                    "good dev",
+                    "git logger",
+                    "kid push",
+                    "skip status",
+                    "nix Flake Update LLM-Agents",
+                    "skid",
+                    "skit diff",
+                    "s.s.h. host",
+                    "git longer",
+                    "good luck",
+                ] {
                     check(&snapshot, input, input, input, input);
                 }
                 check(
@@ -3019,6 +3316,7 @@ mod tests {
             replace: "/$1".to_owned(),
             lowercase: true,
             whole_session_only: false,
+            session_start_only: false,
             exclude_pattern: None,
             exclude_languages: vec![],
             spoken_punctuation: String::new(),
@@ -3041,6 +3339,7 @@ mod tests {
             replace: "/$1".to_owned(),
             lowercase: true,
             whole_session_only: false,
+            session_start_only: false,
             exclude_pattern: None,
             exclude_languages: vec![],
             spoken_punctuation: String::new(),
@@ -3080,6 +3379,7 @@ mod tests {
             replace: r"\k{esc}/$1".to_owned(),
             lowercase: false,
             whole_session_only: false,
+            session_start_only: false,
             exclude_pattern: None,
             exclude_languages: vec![],
             spoken_punctuation: String::new(),
@@ -3110,14 +3410,17 @@ mod tests {
         .unwrap();
         let english = super::DictationSession {
             whole_session: true,
+            session_start: true,
             language: "en".into(),
         };
         let german = super::DictationSession {
             whole_session: true,
+            session_start: true,
             language: "de".into(),
         };
         let partial = super::DictationSession {
             whole_session: false,
+            session_start: true,
             language: "de".into(),
         };
 

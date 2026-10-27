@@ -14,9 +14,18 @@ let
     pattern = ''(?i)^\s*(?:${aliases})(?:[.!?,;]*\s+(?:${aliases}))*[.,]?\s+([\s\S]+)$'';
     replace = "${name} $1";
   };
-  git = ''(?:git|get|kit|good|did|gitt)[.,]?\s+'';
+  gitHeads = ''(?:git|get|kit|good|did|gitt|kid|kids|kidz|skip|skid|skit)'';
+  git = ''${gitHeads}[.,]?\s+'';
   nix = ''(?:nix|nick['’]?s|nicks|next|mix|nyx|nixs|nx)[,]?\s+'';
   cargo = ''(?:cargo|kargo|car\s+go|kind\s+of|car\s+golf|cargolf|caggle)\s+'';
+  nixCommands = [
+    "build" "develop" "shell" "run" "eval" "fmt" "log"
+    "flake update" "flake check" "flake show" "flake lock"
+  ];
+  nixFlakeUpdate = ''(?:(?:${nix})?(?:flake|fake)\s+update|flix\s*flake\s+update)'';
+  # Read only the declarations; importing this attrset never fetches its inputs.
+  flakeInputs = builtins.attrNames (import ../../flake.nix).inputs;
+  knownFlakeInput = builtins.concatStringsSep "|" flakeInputs;
   gitCommands = [
     "diff" "status" "c" "commit" "add" "log" "show" "fetch" "pull" "push"
     "branch" "switch" "checkout" "merge" "rebase" "stash" "restore" "reset"
@@ -25,7 +34,8 @@ let
   ];
   gitAlias = subcommand:
     if subcommand == "commit" then ''(?:${git}(?:commit|kommit|komit|com\s+mit|come\s+with\s+me)|commit|kommit|komit)''
-    else if subcommand == "diff" then ''${git}(?:diff|dif|this)''
+    else if subcommand == "diff" then ''${git}(?:diff|dif|def|tiff|dev|this)''
+    else if subcommand == "log" then ''${git}(?:log(?:ger)?|longer|luck)''
     else if subcommand == "add" then ''${git}(?:add|and)''
     else if subcommand == "push" then ''${git}(?:the\s+)?(?:push|pushed)''
     else if subcommand == "status" then ''${git}(?:status|started)''
@@ -42,7 +52,7 @@ let
     { name = "nixpkgs"; aliases = ''(?:nixpkgs|xpkgs|(?:nick['’]?s|nix|next|no|mixed)\s+(?:p[.\s]*k[.\s]*g[.\s]*['’]?s|picky\s+g['’]?s|pick\s*,?\s*i\s+guess|pick\s+a\s+gaze|pekka\s+gays|baker\s*,?\s*i\s+guess|pick\s+a\s+kiss))''; }
     { name = "cargo"; aliases = ''(?:cargo|kargo|kind\s+of|car\s+golf|cargolf|caggle)''; }
     { name = "codex"; aliases = ''(?:codex|cool\s*,?\s+diggs)''; }
-    { name = "ssh"; aliases = ''(?:ssh|as\s+aged|mrs\.?\s+h|it['’]?s\s+h)''; }
+    { name = "ssh"; aliases = ''(?:s[.\s-]*s[.\s-]*h|as\s+aged|mrs\.?\s+h|it['’]?s\s+h)''; }
     { name = "hx"; aliases = ''(?:hx|h\s*x|h\s+ex|ha\s+iks|helix|felix|hey[\s,–—-]+lex|relax)''; }
     { name = "htop"; aliases = ''(?:htop|h[\s-]+top|age\s+tops?|ha\s+top|it\s+stopped|it['’]?s\s+(?:top|tough)|each\s+top(?:\s+five)?)''; }
     { name = "nvtop"; aliases = ''(?:nvtop|n\s*v\s*top|envy\s+top|en\s+vau\s+top)''; }
@@ -64,23 +74,23 @@ let
   ];
   commandHeads = builtins.concatStringsSep "|" (
     (map (tool: tool.aliases) tools) ++ executables ++ [
-      "git" "get" "kit" "good" "did" "gitt" "nicks" "next" "nyx" "mix"
+      gitHeads "nicks" "next" "nyx" "mix"
       "nixs" "nx" "kargo" "cd" "ls" "cat" "mkdir" "cp" "mv" "rm" "npx"
       "bun" "tsc" "rustup"
     ]
   );
   subcommands = builtins.concatStringsSep "|" (gitCommands ++ [
-    "the" "and" "pushed" "cloned" "flake" "update" "check" "build" "develop"
+    "dif" "def" "tiff" "this" "logger" "longer" "luck" "the" "and" "pushed" "cloned" "flake" "update" "check" "build" "develop"
     "shell" "run" "eval" "fmt" "lock" "test" "clippy" "clean" "doc" "install"
     "remove" "bench" "publish" "metadata" "tree" "dev" "exec" "dlx"
   ]);
   # Only command grammar boundaries, not punctuation inside argument tokens.
   boundaryCleanup = builtins.concatMap (depth:
     let
-      managers = "git|get|kit|good|did|gitt|nix|nicks|next|nyx|mix|cargo|kargo|npm|pnpm|yarn|bun|docker|gh|rustup";
+      managers = "${gitHeads}|nix|nicks|next|nyx|mix|cargo|kargo|npm|pnpm|yarn|bun|docker|gh|rustup";
       prefix = if depth == 0 then ''(\s*(?:${commandHeads}))''
         else if depth == 1 then ''(\s*(?:${managers})\s+(?:${subcommands}))''
-        else ''(\s*(?:(?:nix|nicks|next|nyx)\s+flake|(?:git|get)\s+(?:remote|stash|worktree|submodule|bisect))\s+(?:${subcommands}))'';
+        else ''(\s*(?:(?:nix|nicks|next|nyx)\s+flake|${gitHeads}\s+(?:remote|stash|worktree|submodule|bisect))\s+(?:${subcommands}))'';
     in [
       {
         name = "command-comma-${toString depth}";
@@ -97,13 +107,14 @@ let
     ]) [ 0 1 2 ];
 
 in
-boundaryCleanup ++ [
+# Anchoring a regex is insufficient when a pause starts a later streamed fragment.
+map (rule: rule // { sessionStartOnly = true; }) (boundaryCleanup ++ [
   {
     name = "leading-get-is-git";
     pattern = ''(?i)^\s*get\b'';
     replace = "git";
   }
-  (command "git" ''git'')
+  (command "git" ''(?:git|skid|skit)'')
   {
     name = "nix-joined-subcommand";
     pattern = ''(?i)^\s*(?:nix|nicks|nyx|next)[\s,-]*(run|build|develop|shell|eval|fmt|log)\b'';
@@ -121,12 +132,8 @@ boundaryCleanup ++ [
   }
   # Complete phrase only: keep "get the clone ..." available to git clone.
   (command "git diff" ''(?:git|get)\s+the'')
-  {
-    name = "attached-git-option";
-    pattern = "(?i)^\\s*${git}(${builtins.concatStringsSep "|" gitCommands})(-{1,2}[a-z])";
-    replace = "git $1 $2";
-  }
-  (command "nix flake update" ''(?:(?:${nix})?(?:flake|fake)\s+update|flix\s*flake\s+update)'')
+  (command "nix flake update" nixFlakeUpdate)
+  (withArguments "nix flake update" nixFlakeUpdate)
   (command "git add ." ''${gitAlias "add"}\s+(?:dot|punkt)'' )
   (command "git c -a" ''${gitAlias "c"}\s+(?:dash|minus)\s+a'' )
   (command "git commit -a" ''${gitAlias "commit"}\s+(?:dash|minus)\s+a'' )
@@ -136,15 +143,28 @@ boundaryCleanup ++ [
     replace = "git commit -m $1";
   }
 ]
+++ (map (sub: {
+  name = "attached-git-${sub}-option";
+  pattern = ''(?i)^\s*${gitAlias sub}(-{1,2}[a-z])'';
+  replace = "git ${sub} $1";
+}) gitCommands)
 ++ (map (sub: command "git ${sub}" (gitAlias sub)) gitCommands)
 ++ (map (sub: withArguments "git ${sub}" (gitAlias sub)) gitCommands)
-++ (map (sub: command "nix ${sub}" "${nix}${sub}") [
-  "build" "develop" "shell" "run" "eval" "fmt" "log"
-  "flake update" "flake check" "flake show" "flake lock"
-])
-++ (map (sub: withArguments "nix ${sub}" "${nix}${sub}") [
-  "build" "develop" "shell" "run" "eval" "fmt" "log"
-])
+++ (map (sub: command "nix ${sub}" "${nix}${sub}") nixCommands)
+++ (map (sub: withArguments "nix ${sub}" "${nix}${sub}") nixCommands)
+++ [
+  {
+    name = "nix-flake-update-input-trailing-period";
+    pattern = ''(?i)^(nix\s+flake\s+update(?:\s+(?:${knownFlakeInput}))+)[.]+\s*$'';
+    replace = "$1";
+  }
+]
+++ (map (input: {
+  name = "nix-flake-update-input-${input}";
+  # Canonicalize leading bare input names, preserving quoted text and flag values.
+  pattern = ''(?i)^(nix\s+flake\s+update(?:\s+(?:${knownFlakeInput}))*)\s+${input}(\s|$)'';
+  replace = "$1 ${input}$2";
+}) flakeInputs)
 ++ (map (sub: command "cargo ${sub}" "${cargo}${sub}") [
   "build" "test" "check" "run" "fmt" "clippy" "clean" "doc" "update"
   "add" "remove" "install" "bench" "publish" "metadata" "tree"
@@ -162,6 +182,12 @@ boundaryCleanup ++ [
 ++ (map (tool: withArguments tool.name tool.aliases) tools)
 ++ (builtins.concatMap (name: [ (command name name) (withArguments name name) ]) executables)
 ++ [
+  {
+    name = "leading-the-is-zoxide";
+    # German-accented z can be transcribed as the English article.
+    pattern = ''(?i)^\s*the\b'';
+    replace = "z";
+  }
   # Repair known spoken directory names before splitting other leading z forms.
   (command "z dot" ''(?:z|zee|zed|zett|c|see|si)(?:[\s,_–—-]*|[\s,]+(?:dash|minus)[\s,]+)dot'')
   (command "z droix" ''(?:z|zee|zed|zett|c|see(?:\s+you)?|si)(?:[\s,._–—-]*|[\s,]+(?:dash|minus)[\s,]+)(?:droix|draw[\s_–—-]*x)'')
@@ -205,6 +231,7 @@ boundaryCleanup ++ [
     replace = "$1";
     spokenPunctuation = "shell";
   }
+]) ++ [
   {
     name = "identifier-spoken-punctuation";
     pattern = ''(?s)^(.*)$'';

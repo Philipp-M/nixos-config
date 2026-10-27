@@ -95,7 +95,7 @@ diff --git a/src/daemon/pipeline.rs b/src/daemon/pipeline.rs
 +                return;
 +            };
 +            let outcome =
-+                apply_llm_post_process(text, &context, whole_session, &transform_language).await;
++                apply_llm_post_process(text, &context, whole_session, !streamed, &transform_language).await;
 +            if text_tx.send(outcome.text).await.is_err() {
 +                break;
 +            }
@@ -136,7 +136,7 @@ diff --git a/src/daemon/pipeline.rs b/src/daemon/pipeline.rs
      }
 
      // Wait for the typing side to observe the closed text channel and drain
-@@ -1007,7 +1073,39 @@
+@@ -1007,7 +1073,40 @@
  /// Reuses `llm::rewrite_text` exactly as the llm-command path does, with the
  /// dictated text as the "selected text" and the configured instruction as the
  /// "voice instruction".
@@ -172,30 +172,31 @@ diff --git a/src/daemon/pipeline.rs b/src/daemon/pipeline.rs
 +    text: String,
 +    context: &DaemonContext,
 +    whole_session: bool,
++    session_start: bool,
 +    language: &str,
 +) -> DictationOutcome {
      let Some(instruction) = llm_post_process_instruction(&context.config) else {
          return DictationOutcome::raw(text);
      };
-@@ -1023,7 +1121,7 @@
+@@ -1023,7 +1122,7 @@
 
      let rewritten = match tokio::time::timeout(
          LLM_POST_PROCESS_TIMEOUT,
 -        llm::rewrite_text(&llm_config, &text, instruction),
-+        llm::rewrite_dictation_text(&llm_config, &text, instruction, whole_session, language),
++        llm::rewrite_dictation_text(&llm_config, &text, instruction, whole_session, session_start, language),
      )
      .await
      {
-@@ -1104,7 +1202,7 @@
+@@ -1104,7 +1203,7 @@
      // is inverted here and `Config::validate` warns instead. The rewritten
      // text is what this function returns, so history records what was actually
      // typed, tagged by `history_backend_tag` with whether the LLM produced it.
 -    let outcome = apply_llm_post_process(text, context).await;
-+    let outcome = apply_llm_post_process(text, context, true, language).await;
++    let outcome = apply_llm_post_process(text, context, true, true, language).await;
 
      let keys = KeystrokeSettings::from_config(&context.config.input);
      let paste = context.config.input.paste;
-@@ -1338,6 +1436,89 @@
+@@ -1338,6 +1437,89 @@
  mod tests {
      use super::*;
      use std::sync::Mutex as StdMutex;
@@ -316,7 +317,7 @@ diff --git a/src/llm.rs b/src/llm.rs
  }
 
  #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
-@@ -385,6 +387,27 @@
+@@ -385,6 +387,28 @@
      selected_text: &str,
      instruction: &str,
  ) -> anyhow::Result<String> {
@@ -329,9 +330,10 @@ diff --git a/src/llm.rs b/src/llm.rs
 +    selected_text: &str,
 +    instruction: &str,
 +    whole_session: bool,
++    session_start: bool,
 +    language: &str,
 +) -> anyhow::Result<String> {
-+    let session = serde_json::json!({ "wholeSession": whole_session, "language": language });
++    let session = serde_json::json!({ "wholeSession": whole_session, "sessionStart": session_start, "language": language });
 +    rewrite_with_dictation(config, selected_text, instruction, Some(session)).await
 +}
 +
@@ -344,7 +346,7 @@ diff --git a/src/llm.rs b/src/llm.rs
      let api_key = resolve_api_key(config)?;
      info!("llm: sending to LLM (model={})", config.model);
      debug!("instruction: {:?}", instruction);
-@@ -394,6 +417,7 @@
+@@ -394,6 +418,7 @@
          config,
          &api_key,
          rewrite_messages(selected_text, instruction),
@@ -352,7 +354,7 @@ diff --git a/src/llm.rs b/src/llm.rs
      )
      .await
  }
-@@ -428,11 +452,13 @@
+@@ -428,11 +453,13 @@
      config: &LlmConfig,
      api_key: &str,
      messages: Vec<ChatMessage>,
@@ -366,7 +368,7 @@ diff --git a/src/llm.rs b/src/llm.rs
      };
 
      let client = reqwest::Client::new();
-@@ -490,11 +516,26 @@
+@@ -490,11 +517,27 @@
                  ChatMessage::user("Hello".to_string()),
              ],
              temperature: 0.3,
@@ -385,10 +387,11 @@ diff --git a/src/llm.rs b/src/llm.rs
 +            model: "local-proxy".into(),
 +            messages: rewrite_messages("Guten Morgen", "dictate"),
 +            temperature: 0.3,
-+            dictation: Some(serde_json::json!({ "wholeSession": true, "language": "de" })),
++            dictation: Some(serde_json::json!({ "wholeSession": false, "sessionStart": false, "language": "de" })),
 +        };
 +        let request = serde_json::to_value(request).unwrap();
-+        assert_eq!(request["dictation"]["wholeSession"], true);
++        assert_eq!(request["dictation"]["wholeSession"], false);
++        assert_eq!(request["dictation"]["sessionStart"], false);
 +        assert_eq!(request["dictation"]["language"], "de");
      }
 
