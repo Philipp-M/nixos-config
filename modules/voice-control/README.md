@@ -104,6 +104,39 @@ recorded misrecognitions for `rg`, `ll`, `nixpkgs`, `cargo`, `nix flake update`,
 as commands, including ordinary argument tails and Rust/JavaScript/TypeScript
 tooling. Command names are normalized; argument casing is retained except when
 the English short-recording rule has already lowercased the entire input.
+Spelled SSH forms such as `s.s.h.`, `s. s. h.`, and `s s h` normalize to `ssh`,
+including when followed by a host and options.
+
+Git prefixes also accept `kid`/`kids`/`kidz` (`kid push` → `git push`) and
+`skip` (`skip status` → `git status`). `skid` and `skit` also mean `git`,
+alone or before known subcommands. `diff` accepts `different`, `div`, `def`,
+`tiff`, and `dev`: `good. def`, `kids. diff`, `kidz def`, `good. tiff`, and `good dev` all
+become `git diff`. `Git logger`, `git longer`, and `good luck` become `git log`.
+Recognition-added `a`/`the`/`that`/`to` before a diff variant are also accepted:
+`git a diff`, `git the diff`, `git that div`, and `git to diff` → `git diff`,
+including flags and file arguments.
+`git a pull` and `git the pull` → `git pull`, including remote/branch arguments
+and attached flags.
+`git to push` → `git push`, also with remote/branch arguments and flags.
+`git there` also means `git diff`. The exact complete utterance
+`git the fuck out of here` is treated as a misrecognition of `git diff`.
+Punctuation variants such as `git the,diff` and `git the diff,--stat` are
+supported too. Sentence mentions and later streamed fragments remain literal.
+These Git prefixes work with the other known subcommands, including punctuation
+between command words and attached options.
+Command corrections apply only at the beginning of a recording. Later words
+in a sentence, including fragments emitted after a pause, remain literal.
+Spoken punctuation and the global `draw x` correction still apply throughout.
+`droics` and `droix` normalize to lowercase `droix` in every application and
+within prose, including casing and inserted straight/curly apostrophes
+(`DROICS`, `DROIC'S`, `Droi’cs`, `DROI'X`). Surrounding quotes and possessives
+are retained; longer identifiers such as `droicsAdapter` stay unchanged.
+
+Nested Nix flake commands normalize even with arguments:
+`nix Flake Update LLM-Agents` → `nix flake update llm-agents`.
+Leading bare input names use the canonical spelling declared in this repository's
+`flake.nix`. Unknown names, quoted arguments, paths, and flag values keep their
+casing; flake check/show/lock also normalize their command words with arguments.
 
 Spoken slash joins paths (`something, slash, blub` → `something/blub`). Dash and
 minus join identifiers (`some dash kebab minus case` → `some-kebab-case`), or
@@ -114,6 +147,11 @@ becomes `.`, even inside quotes; the sole exception is the complete `z dot`
 directory command. Dot conversion follows trailing-dot cleanup, so deliberately
 spoken dots survive. Filenames join (`file dot rs` → `file.rs`), while terminal
 command arguments stay separated (`rg dot` → `rg .`).
+Spoken `underscore` (also `under score`/`under-score`, any casing) becomes `_`
+and joins adjacent words in every application, including quotes and streamed
+fragments: `snake underscore case` → `snake_case`, and
+`file underscore name dot rs` → `file_name.rs`. Recognition commas are absorbed.
+After a terminal command, argument spacing is kept (`rg underscore` → `rg _`).
 Outside terminal mode, dash/minus still join identifiers and slash still joins
 paths; shell option spacing is enabled only in terminal context.
 
@@ -155,6 +193,10 @@ following path/query, even for German and streamed or multi-word input. For
 example, `Z MyProject` → `z myproject` and `Z My minus Project slash Src` →
 `z my-project/src`. In zoxide queries, spoken dash/minus join path-name segments;
 `z dot` remains literal. These rules do not apply inside Codex/Helix dictation.
+
+A leading whole word `the` is also a terminal zoxide alias for German-accented
+`z`: `the MyProject` → `z myproject`, and `the dot` → `z dot`. It follows the
+same recording-start restriction; later sentence mentions remain literal.
 
 Joined leading `z` forms in terminal dictation are also zoxide commands:
 `zm/` → `z m/`, `zMyProject/Src` → `z myproject/src`. The application exception

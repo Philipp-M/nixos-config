@@ -16,6 +16,8 @@ let
   };
   gitHeads = ''(?:git|get|kit|good|did|gitt|kid|kids|kidz|skip|skid|skit)'';
   git = ''${gitHeads}[.,]?\s+'';
+  gitDiffWord = ''(?:different|diff|dif|div|def|tiff|dev|this|there)'';
+  gitDiffFiller = ''(?:a|the|that|to)(?:\s+|[.,]+\s*)'';
   nix = ''(?:nix|nick['’]?s|nicks|next|mix|nyx|nixs|nx)[,]?\s+'';
   cargo = ''(?:cargo|kargo|car\s+go|kind\s+of|car\s+golf|cargolf|caggle)\s+'';
   droixName = ''d['’‘]?r['’‘]?o['’‘]?i['’‘]?(?:c['’‘]?s|x)'';
@@ -35,10 +37,11 @@ let
   ];
   gitAlias = subcommand:
     if subcommand == "commit" then ''(?:${git}(?:commit|kommit|komit|com\s+mit|come\s+with\s+me)|commit|kommit|komit)''
-    else if subcommand == "diff" then ''${git}(?:(?:a|the|that|to)[.,]?\s+)?(?:different|diff|dif|div|def|tiff|dev|this)''
+    else if subcommand == "diff" then ''${git}(?:${gitDiffFiller})?${gitDiffWord}''
     else if subcommand == "log" then ''${git}(?:log(?:ger)?|longer|luck)''
     else if subcommand == "add" then ''${git}(?:add|and)''
-    else if subcommand == "push" then ''${git}(?:the\s+)?(?:push|pushed)''
+    else if subcommand == "pull" then ''${git}(?:(?:a|the)(?:\s+|[.,]+\s*))?pull''
+    else if subcommand == "push" then ''${git}(?:(?:the|to)(?:\s+|[.,]+\s*))?(?:push|pushed)''
     else if subcommand == "status" then ''${git}(?:status|started)''
     else if subcommand == "c" then ''${git}(?:c|see(?:\s+you)?|to\s+see(?:\s+you)?)''
     else if subcommand == "clone" then ''${git}(?:clone[d]?|the\s+clone|club|clear)''
@@ -81,7 +84,7 @@ let
     ]
   );
   subcommands = builtins.concatStringsSep "|" (gitCommands ++ [
-    "different" "dif" "div" "def" "tiff" "this" "logger" "longer" "luck" "the" "and" "pushed" "cloned" "flake" "update" "check" "build" "develop"
+    "different" "dif" "div" "def" "tiff" "this" "there" "logger" "longer" "luck" "the" "and" "pushed" "cloned" "flake" "update" "check" "build" "develop"
     "shell" "run" "eval" "fmt" "lock" "test" "clippy" "clean" "doc" "install"
     "remove" "bench" "publish" "metadata" "tree" "dev" "exec" "dlx"
   ]);
@@ -91,7 +94,7 @@ let
       managers = "${gitHeads}|nix|nicks|next|nyx|mix|cargo|kargo|npm|pnpm|yarn|bun|docker|gh|rustup";
       prefix = if depth == 0 then ''(\s*(?:${commandHeads}))''
         else if depth == 1 then ''(\s*(?:${managers})\s+(?:${subcommands}))''
-        else ''(\s*(?:(?:nix|nicks|next|nyx)\s+flake|${gitHeads}\s+(?:remote|stash|worktree|submodule|bisect))\s+(?:${subcommands}))'';
+        else ''(\s*(?:(?:(?:nix|nicks|next|nyx)\s+flake|${gitHeads}\s+(?:remote|stash|worktree|submodule|bisect))\s+(?:${subcommands})|${gitAlias "diff"}|${gitAlias "pull"}|${gitAlias "push"}))'';
     in [
       {
         name = "command-comma-${toString depth}";
@@ -133,6 +136,8 @@ map (rule: rule // { sessionStartOnly = true; }) (boundaryCleanup ++ [
   }
   # Complete phrase only: keep "get the clone ..." available to git clone.
   (command "git diff" ''(?:git|get)\s+the'')
+  # An observed hallucinated expansion, only as the complete command utterance.
+  (command "git diff" ''${git}the\s+fuck\s+out\s+of\s+here'')
   (command "nix flake update" nixFlakeUpdate)
   (withArguments "nix flake update" nixFlakeUpdate)
   (command "git add ." ''${gitAlias "add"}\s+(?:dot|punkt)'' )
