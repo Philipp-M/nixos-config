@@ -18,6 +18,7 @@ let
   git = ''${gitHeads}[.,]?\s+'';
   nix = ''(?:nix|nick['’]?s|nicks|next|mix|nyx|nixs|nx)[,]?\s+'';
   cargo = ''(?:cargo|kargo|car\s+go|kind\s+of|car\s+golf|cargolf|caggle)\s+'';
+  droixName = ''d['’‘]?r['’‘]?o['’‘]?i['’‘]?(?:c['’‘]?s|x)'';
   nixCommands = [
     "build" "develop" "shell" "run" "eval" "fmt" "log"
     "flake update" "flake check" "flake show" "flake lock"
@@ -34,7 +35,7 @@ let
   ];
   gitAlias = subcommand:
     if subcommand == "commit" then ''(?:${git}(?:commit|kommit|komit|com\s+mit|come\s+with\s+me)|commit|kommit|komit)''
-    else if subcommand == "diff" then ''${git}(?:diff|dif|def|tiff|dev|this)''
+    else if subcommand == "diff" then ''${git}(?:(?:a|the|that|to)[.,]?\s+)?(?:different|diff|dif|div|def|tiff|dev|this)''
     else if subcommand == "log" then ''${git}(?:log(?:ger)?|longer|luck)''
     else if subcommand == "add" then ''${git}(?:add|and)''
     else if subcommand == "push" then ''${git}(?:the\s+)?(?:push|pushed)''
@@ -80,7 +81,7 @@ let
     ]
   );
   subcommands = builtins.concatStringsSep "|" (gitCommands ++ [
-    "dif" "def" "tiff" "this" "logger" "longer" "luck" "the" "and" "pushed" "cloned" "flake" "update" "check" "build" "develop"
+    "different" "dif" "div" "def" "tiff" "this" "logger" "longer" "luck" "the" "and" "pushed" "cloned" "flake" "update" "check" "build" "develop"
     "shell" "run" "eval" "fmt" "lock" "test" "clippy" "clean" "doc" "install"
     "remove" "bench" "publish" "metadata" "tree" "dev" "exec" "dlx"
   ]);
@@ -190,7 +191,7 @@ map (rule: rule // { sessionStartOnly = true; }) (boundaryCleanup ++ [
   }
   # Repair known spoken directory names before splitting other leading z forms.
   (command "z dot" ''(?:z|zee|zed|zett|c|see|si)(?:[\s,_–—-]*|[\s,]+(?:dash|minus)[\s,]+)dot'')
-  (command "z droix" ''(?:z|zee|zed|zett|c|see(?:\s+you)?|si)(?:[\s,._–—-]*|[\s,]+(?:dash|minus)[\s,]+)(?:droix|draw[\s_–—-]*x)'')
+  (command "z droix" ''(?:z|zee|zed|zett|c|see(?:\s+you)?|si)(?:[\s,._–—-]*|[\s,]+(?:dash|minus)[\s,]+)(?:${droixName}|draw[\s_–—-]*x)'')
   (command "z" ''(?:z|zee|zed|zett|c|see|si)'')
   {
     name = "zoxide";

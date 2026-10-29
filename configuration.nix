@@ -315,6 +315,11 @@ in
           replace = "droix";
         }
         {
+          name = "droix-phonetic-name";
+          pattern = ''(?i)\bd['’‘]?r['’‘]?o['’‘]?i['’‘]?(?:c['’‘]?s|x)\b'';
+          replace = "droix";
+        }
+        {
           name = "spoken-hashtag";
           pattern = ''(?i)\bhash[ -]?tag\b[\t ,]*'';
           replace = "#";
