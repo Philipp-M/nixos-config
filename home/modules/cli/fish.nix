@@ -30,7 +30,7 @@
         nx = "NIXPKGS_ALLOW_UNFREE=1 nix-shell --command fish";
         nxd = "NIXPKGS_ALLOW_UNFREE=1 nix develop --command fish";
         upgrade = "nix flake update /home/philm/dev/personal/dotfiles/ && nixos-rebuild switch --sudo --flake /home/philm/dev/personal/dotfiles/";
-        update = "nixos-rebuild switch --sudo --flake /home/philm/dev/personal/dotfiles/";
+        update = "nixos-rebuild switch --sudo --flake /home/philm/dev/personal/dotfiles/ --log-format internal-json -v -L &| ${pkgs.nix-output-monitor}/bin/nom --json; return $pipestatus[1]";
         update-boot = "nixos-rebuild boot --sudo --flake /home/philm/dev/personal/dotfiles/";
         enter = "cd"; # TODO make this fancy with nix-shell and nix develop
         # shortcuts for changing the directory
