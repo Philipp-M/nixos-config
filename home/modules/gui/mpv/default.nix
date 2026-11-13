@@ -13,7 +13,7 @@
         video-sync = "display-resample";
         sub-font-size = 23;
         cache = "yes";
-        demuxer-max-bytes = "2000M";
+        demuxer-max-bytes = "20M";
         vo = "gpu-next";
         gpu-context = "auto";
         gpu-api = "vulkan";
@@ -34,8 +34,7 @@
 
         cache-pause = "yes";
         cache-pause-initial = "yes";
-        cache-secs = 300;
-        demuxer-max-back-bytes = "12009999M";
+        cache-secs = 2;
         demuxer-cache-wait = "yes";
 
         profile-restore = "copy-equal";
