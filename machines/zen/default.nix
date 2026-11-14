@@ -101,6 +101,7 @@ in
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     ../../configuration.nix
+    ../../modules/gpu-unlock.nix
   ];
 
   nixpkgs.overlays = import ../../secrets/nix-expressions/zen-overlays.nix;
@@ -111,12 +112,11 @@ in
     bluetooth.enable = true;
     xpadneo.enable = true;
     nvidia = {
-      package = config.boot.kernelPackages.nvidiaPackages.beta;
+      gpuUnlock = {
+        enable = true;
+        targets = [ "0000:2d:00.0" ];
+      };
       open = true;
-      modesetting.enable = true;
-      powerManagement.enable = true;
-      nvidiaPersistenced = true;
-      forceFullCompositionPipeline = true;
     };
     nvidia-container-toolkit.enable = true;
   };
