@@ -36,12 +36,13 @@ let
     "lfs" "pushall" "diffd" "difff"
   ];
   gitAlias = subcommand:
-    if subcommand == "commit" then ''(?:${git}(?:commit|kommit|komit|com\s+mit|come\s+with\s+me)|commit|kommit|komit)''
+    if subcommand == "commit" then ''(?:${git}(?:commit(?:ted)?|kommit|komit|com\s+mit|come\s+with\s+me)|commit|kommit|komit)''
     else if subcommand == "diff" then ''${git}(?:${gitDiffFiller})?${gitDiffWord}''
     else if subcommand == "log" then ''${git}(?:log(?:ger)?|longer|luck)''
     else if subcommand == "add" then ''${git}(?:add|and)''
     else if subcommand == "pull" then ''${git}(?:(?:a|the)(?:\s+|[.,]+\s*))?pull''
     else if subcommand == "push" then ''${git}(?:(?:the|to)(?:\s+|[.,]+\s*))?(?:push|pushed)''
+    else if subcommand == "switch" then ''(?:${git}(?:(?:to(?:\s+|[.,]+\s*)(?:the(?:\s+|[.,]+\s*))?|a(?:\s+|[.,]+\s*)))?|guitar(?:\s+|[.,]+\s*))switch(?:ed)?''
     else if subcommand == "status" then ''${git}(?:status|started)''
     else if subcommand == "c" then ''${git}(?:c|see(?:\s+you)?|to\s+see(?:\s+you)?)''
     else if subcommand == "clone" then ''${git}(?:clone[d]?|the\s+clone|club|clear)''
@@ -84,7 +85,7 @@ let
     ]
   );
   subcommands = builtins.concatStringsSep "|" (gitCommands ++ [
-    "different" "dif" "div" "def" "tiff" "this" "there" "logger" "longer" "luck" "the" "and" "pushed" "cloned" "flake" "update" "check" "build" "develop"
+    "committed" "switched" "different" "dif" "div" "def" "tiff" "this" "there" "logger" "longer" "luck" "the" "and" "pushed" "cloned" "flake" "update" "check" "build" "develop"
     "shell" "run" "eval" "fmt" "lock" "test" "clippy" "clean" "doc" "install"
     "remove" "bench" "publish" "metadata" "tree" "dev" "exec" "dlx"
   ]);
@@ -94,7 +95,7 @@ let
       managers = "${gitHeads}|nix|nicks|next|nyx|mix|cargo|kargo|npm|pnpm|yarn|bun|docker|gh|rustup";
       prefix = if depth == 0 then ''(\s*(?:${commandHeads}))''
         else if depth == 1 then ''(\s*(?:${managers})\s+(?:${subcommands}))''
-        else ''(\s*(?:(?:(?:nix|nicks|next|nyx)\s+flake|${gitHeads}\s+(?:remote|stash|worktree|submodule|bisect))\s+(?:${subcommands})|${gitAlias "diff"}|${gitAlias "pull"}|${gitAlias "push"}))'';
+        else ''(\s*(?:(?:(?:nix|nicks|next|nyx)\s+flake|${gitHeads}\s+(?:remote|stash|worktree|submodule|bisect))\s+(?:${subcommands})|${gitAlias "diff"}|${gitAlias "pull"}|${gitAlias "push"}|${gitAlias "switch"}))'';
     in [
       {
         name = "command-comma-${toString depth}";

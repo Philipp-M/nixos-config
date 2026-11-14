@@ -118,6 +118,10 @@ including flags and file arguments.
 `git a pull` and `git the pull` → `git pull`, including remote/branch arguments
 and attached flags.
 `git to push` → `git push`, also with remote/branch arguments and flags.
+`git committed` → `git commit`, including flags, file arguments, and spoken
+message options; quoted commit messages retain their text and casing.
+`git switched`, `git to switch`, `git to the switch`, `git a switch`, and
+`guitar switch` → `git switch`, including branch arguments and flags.
 `git there` also means `git diff`. The exact complete utterance
 `git the fuck out of here` is treated as a misrecognition of `git diff`.
 Punctuation variants such as `git the,diff` and `git the diff,--stat` are
