@@ -24,6 +24,19 @@ in
   nixpkgs.overlays = [
     inputs.rust-overlay.overlays.default
     (final: prev: {
+      xwayland-satellite = prev.xwayland-satellite.overrideAttrs (oldAttrs: {
+        patches = (oldAttrs.patches or [ ]) ++ [
+          # Bridge Wayland -> X11 drag and drop (e.g. Dolphin -> Bitwig).
+          # https://github.com/Supreeeme/xwayland-satellite/pull/534
+          (prev.fetchurl {
+            name = "xwayland-satellite-pr-534.patch";
+            url = "https://github.com/Supreeeme/xwayland-satellite/commit/390df8948c6300bd6b059f22f690c986b4b35650.patch";
+            hash = "sha256-81RP6Kjv/kYEY7nyYQigr9J87mU3NKyHhNAmZGXcABk=";
+          })
+        ];
+      });
+    })
+    (final: prev: {
       bitwig-studio = prev.bitwig-studio.overrideAttrs (finalAttrs: oldAttrs: {
         version = "6.0.11";
         src = prev.fetchurl {
