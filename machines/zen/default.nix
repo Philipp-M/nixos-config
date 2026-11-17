@@ -539,6 +539,7 @@ in
   home-manager.users.philm = {
     modules.mpd.enable = true;
     services.blueman-applet.enable = true;
+    modules.gui.firefox.nvidiaHardwareDecoding = true;
     home.sessionVariables = {
       LIBVA_DRIVER_NAME = "nvidia";
     };

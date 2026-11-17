@@ -7,6 +7,7 @@
     enableRedistributableFirmware = true;
     bluetooth.enable = true;
     nvidia = {
+      videoAcceleration = true;
       package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
       open = false;
       modesetting.enable = true;
@@ -79,6 +80,7 @@
   console.font = lib.mkDefault "${pkgs.terminus_font}/share/consolefonts/ter-u28n.psf.gz";
 
   home-manager.users.philm = {
+    modules.gui.firefox.nvidiaHardwareDecoding = true;
     services.blueman-applet.enable = true;
     home.sessionVariables.LIBVA_DRIVER_NAME = "nvidia";
     programs.fish.shellAliases = {

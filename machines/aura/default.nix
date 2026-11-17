@@ -14,7 +14,7 @@ in
 
   hardware = {
     enableRedistributableFirmware = true;
-    opengl = {
+    graphics = {
       extraPackages = with pkgs; [
         intel-media-driver
         libvdpau-va-gl

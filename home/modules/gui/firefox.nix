@@ -1,10 +1,23 @@
 { ... }:
 { pkgs, lib, config, ... }: {
   options.modules.gui.firefox.enable = lib.mkEnableOption "Enable personal firefox config";
+  options.modules.gui.firefox.nvidiaHardwareDecoding = lib.mkEnableOption
+    "NVIDIA VA-API decoding (disables Firefox's RDD sandbox)";
 
   config = lib.mkIf config.modules.gui.firefox.enable {
     programs.firefox = {
       enable = true;
+      # NVIDIA's VA-API bridge needs access blocked by the decoder sandbox.
+      # Intel/AMD use native VA-API and keep the sandbox enabled.
+      package = lib.mkIf config.modules.gui.firefox.nvidiaHardwareDecoding (
+        pkgs.firefox.overrideAttrs (old: {
+          makeWrapperArgs = (old.makeWrapperArgs or [ ]) ++ [
+            "--set" "MOZ_DISABLE_RDD_SANDBOX" "1"
+            "--set" "LIBVA_DRIVER_NAME" "nvidia"
+            "--set" "NVD_BACKEND" "direct"
+          ];
+        })
+      );
       configPath = ".mozilla/firefox";
       policies = {
         PDFjs.Enabled = false;
@@ -52,6 +65,12 @@
             "gfx.webrender.program-binary-disk" = true;
             "layout.css.devPixelsPerPx" = "1.25";
             "media.gpu-process-decoder" = true;
+            "media.ffmpeg.vaapi.enabled" = true;
+            "media.rdd-ffmpeg.enabled" = true;
+            "media.hardware-video-decoding.force-enabled" =
+              lib.mkIf config.modules.gui.firefox.nvidiaHardwareDecoding true;
+            "gfx.x11-egl.force-enabled" =
+              lib.mkIf config.modules.gui.firefox.nvidiaHardwareDecoding true;
             "media.navigator.enabled" = false;
             "media.video_stats.enabled" = false;
             "mousewheel.acceleration.factor" = 0;
